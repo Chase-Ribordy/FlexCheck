@@ -1,0 +1,514 @@
+<style>
+/* Root scope — nothing outside can match unless it's inside .fcv3-scope /
+.fcv3-scope [class^="fcv3-"],
+.fcv3-scope [class=" fcv3-"] { box-sizing: border-box; }
+
+/* Wrapper + details */
+.fcv3-scope .fcv3-wrapper { margin:3rem auto 2rem; max-width:420px; text-align:center; }
+.fcv3-scope .fcv3-details { background:
+#0f172a; padding:1.25rem; border-radius:.85rem; box-shadow:0 0 14px rgba(0,0,0,.35); }
+.fcv3-scope .fcv3-summary { cursor:pointer; font-weight:700; font-size:1rem; color:
+#38bdf8; letter-spacing:.02em;
+  padding:.5rem 1rem; border-radius:.5rem; background:
+#1e293b; list-style:none; }
+
+/* Current selection pill */
+.fcv3-scope .fcv3-pill { margin:1rem auto 0; max-width:360px; padding:.5rem .75rem; border-radius:.5rem;
+  background:
+#0b1220; color:
+#93c5fd; border:1px solid 
+#1d4ed8; font-size:.85rem; }
+.fcv3-scope .fcv3-sep { opacity:.7; }
+
+/* List */
+.fcv3-scope .fcv3-list { list-style:none; padding:0; margin-top:1rem; }
+.fcv3-scope .fcv3-list li { margin-bottom:.65rem; }
+.fcv3-scope .fcv3-list a {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:.75rem 1rem; background:
+#1e293b; border-radius:.75rem; color:
+#e2e8f0; text-decoration:none; font-weight:500;
+  transition:all .15s ease; box-shadow:0 0 6px rgba(56,189,248,.12); border:1px solid transparent;
+}
+.fcv3-scope .fcv3-list a .fcv3-chip {
+  background:
+#38bdf8; color:
+#0f172a; padding:.2rem .5rem; border-radius:.5rem; font-weight:700; font-size:.8rem;
+  min-width:2.5rem; text-align:center;
+}
+
+/* Active state (applied inline via JS or with a class) */
+.fcv3-scope .is-active { background:
+#0b1220 !important; color:
+#93c5fd !important; border-color:
+#1d4ed8 !important; }
+.fcv3-scope .is-active .fcv3-chip { background:
+#1d4ed8 !important; }
+
+/* Loading Animation */
+.fcv3-scope .fcv3-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: 
+#0f172a;
+  padding: 2rem;
+  border-radius: .85rem;
+  box-shadow: 0 0 14px rgba(0,0,0,.35);
+  margin: 3rem auto 2rem;
+  max-width: 420px;
+}
+
+.fcv3-scope .fcv3-spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid 
+#1e293b;
+  border-radius: 50%;
+  border-top-color: 
+#38bdf8;
+  animation: fcv3-spin 1s ease-in-out infinite;
+  margin-right: 0.75rem;
+}
+
+.fcv3-scope .fcv3-loading-text {
+  color: 
+#93c5fd;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+@keyframes fcv3-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Pulse dots animation */
+.fcv3-scope .fcv3-dots {
+  display: inline-block;
+}
+
+.fcv3-scope .fcv3-dots::after {
+  content: '';
+  animation: fcv3-dots 1.5s infinite;
+}
+
+@keyframes fcv3-dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+/* Summary layout to make room for the caret */
+.fcv3-scope .fcv3-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;               /* space between caret and label */
+}
+
+/* Caret base state */
+.fcv3-scope .fcv3-caret {
+  display: inline-flex;
+  width: 1rem;
+  height: 1rem;
+  line-height: 1;
+  transform: rotate(0deg);
+  transition: transform .22s ease;  /* smooth rotate */
+  opacity: .9;
+}
+
+/* When details is open, rotate and do a quick 'pop' nudge */
+.fcv3-scope details[open] .fcv3-caret {
+  transform: rotate(90deg);
+  animation: fcv3-caret-pop .25s ease-out;
+}
+
+/* Optional: subtle nudge/pop animation on open */
+@keyframes fcv3-caret-pop {
+  0%   { transform: rotate(90deg) translateX(-2px); }
+  60%  { transform: rotate(90deg) translateX(0); }
+  100% { transform: rotate(90deg) translateX(0); }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .fcv3-scope .fcv3-caret {
+    transition: none;
+    animation: none !important;
+  }
+}
+
+</style>
+
+<div id="FC_LIVE_PASTFLEXCHECKS"
+     class="fcv3-scope fc-block"
+     data-fc-scope="past-flexchecks"
+     style="display:none" data-email="">
+
+  <!-- Loading Screen -->
+  <div id="pastChecksLoading" class="fcv3-loading" style="display:none;">
+    <div class="fcv3-spinner"></div>
+    <div class="fcv3-loading-text">
+      Loading past FlexChecks<span class="fcv3-dots"></span>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div id="pastChecksWrapper" class="fcv3-wrapper" style="display:none;">
+    <details id="pastChecksDetails" class="fcv3-details">
+     <summary class="fcv3-summary">
+  <span class="fcv3-caret" aria-hidden="true">
+    <!-- right-pointing caret (will rotate) -->
+    <svg viewBox="0 0 24 24" width="16" height="16" focusable="false" aria-hidden="true">
+      <path d="M8 5l8 7-8 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </span>
+  View Past FlexChecks
+</summary>
+
+
+      <div id="currentEntryPill" class="fcv3-pill" style="display:none;">
+        Viewing:
+        <span id="pillDate" class="fcv3-pill__date"></span>
+        <span class="fcv3-sep">•</span>
+        FlexScore <strong id="pillScore" class="fcv3-pill__score"></strong>
+      </div>
+
+      <ul id="pastCheckList" class="fcv3-list">
+        <!-- entries injected via JS -->
+      </ul>
+    </details>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ---- URL parameter handling (define FIRST)
+  function getParamInsensitive(name){
+    try{
+      const u = new URL(location.href);
+      const direct = u.searchParams.get(name);
+      if (direct != null) return direct;
+      for (const [k, v] of u.searchParams.entries()){
+        if (k.toLowerCase() === name.toLowerCase()) return v;
+      }
+    }catch{}
+    return '';
+  }
+  
+  function handleUrlParams(){
+    const email = getParamInsensitive('email');
+    const entryId = getParamInsensitive('entryId');
+    
+    if (email || entryId) {
+      try {
+        // Set up owner if email provided
+        if (email) {
+          const owner = JSON.parse(localStorage.getItem('flexcheckOwner') || '{}');
+          owner.email = email;
+          if (entryId) {
+            owner.preferredEntryId = entryId;
+            if (!owner.entryIds) owner.entryIds = [];
+            if (!owner.entryIds.includes(entryId)) owner.entryIds.push(entryId);
+          }
+          owner.updatedAt = Date.now();
+          localStorage.setItem('flexcheckOwner', JSON.stringify(owner));
+        }
+      } catch(e) {
+        console.log('FlexCheck: Error handling URL params:', e);
+      }
+    }
+  }
+
+  // Handle URL params IMMEDIATELY
+  handleUrlParams();
+
+  const WRAP = document.getElementById('FC_LIVE_PASTFLEXCHECKS');
+  if (!WRAP) return;
+
+  const loadingEl = document.getElementById('pastChecksLoading');
+  const wrapperEl = document.getElementById('pastChecksWrapper');
+
+  // ---- visibility helpers
+  const showPastChecks = ()=> (WRAP.style.display = '');
+  const hidePastChecks = ()=> (WRAP.style.display = 'none');
+  const showPastChecksLoading = () => {
+    showPastChecks();
+    loadingEl.style.display = 'flex';
+    wrapperEl.style.display = 'none';
+  };
+  const showPastChecksContent = () => {
+    showPastChecks();
+    loadingEl.style.display = 'none';
+    wrapperEl.style.display = 'block';
+  };
+  const hidePastChecksAll = () => {
+    hidePastChecks();
+    loadingEl.style.display = 'none';
+    wrapperEl.style.display = 'none';
+  };
+
+  // FIXED: Single event dispatch + debouncing
+  let evaluateTimeout = null;
+  let lastRenderState = '';
+
+  // ---- owner + cache
+  function pastChecksHasFlexCheckOwner(){
+    try{
+      const raw = localStorage.getItem('flexcheckOwner');
+      if (!raw || raw.trim() === '') return false;
+      
+      if (raw.trim().startsWith('{')){
+        const j = JSON.parse(raw);
+        return !!(j?.email && j.email.trim());
+      }
+      return !!(raw.replace(/"/g,'').trim());
+    }catch{ 
+      return false; 
+    }
+  }
+
+  function pastChecksPeekOwnerLocal(){
+    try{
+      const raw = localStorage.getItem('flexcheckOwner');
+      if (!raw) return '';
+      if (raw.trim().startsWith('{')){
+        const j = JSON.parse(raw);
+        return (j?.email || '').trim();
+      }
+      return raw.replace(/"/g,'').trim();
+    }catch{ return ''; }
+  }
+  
+  function pastChecksGetCache(){
+    try{
+      const raw = localStorage.getItem('flexcheckCacheV3');
+      if (!raw) return null;
+      return JSON.parse(raw);
+    }catch{ return null; }
+  }
+
+  // build a URL with entryId set; optionally navigate (reload)
+  function pastChecksSetUrlEntryId(entryId, navigate=false, push=true){
+    try{
+      const u = new URL(location.href);
+      u.searchParams.set('entryId', String(entryId));
+      const urlStr = u.toString();
+      
+      if (navigate){
+        // HARD PAGE RELOAD - Forces all widgets to re-initialize with new entryId
+        console.log('FlexCheck: Hard reload to entryId:', entryId);
+        location.href = urlStr;  // Use location.href for hard reload
+        return;
+      }
+      
+      // Soft navigation (URL update only)
+      const state = { entryId };
+      if (push) history.pushState(state, '', urlStr);
+      else history.replaceState(state, '', urlStr);
+    }catch(e){
+      console.error('FlexCheck: Error setting URL:', e);
+    }
+  }
+
+  // ---- data shaping
+  const pastChecksFmtDate = (iso, weekKey) => {
+    if (iso){
+      try{
+        return new Date(iso).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+      }catch{}
+    }
+    return weekKey ? String(weekKey) : '—';
+  };
+  
+  const pastChecksGetScore = (e) => {
+    const s = (e?.result?.score ?? e?.score);
+    return (s == null || isNaN(Number(s))) ? '—' : Math.round(Number(s));
+  };
+
+  function pastChecksGetEntriesForOwner(ownerEmail){
+    const cache = pastChecksGetCache();
+    if (!cache) return [];
+    
+    const byId = cache?.entriesById || {};
+    let all = Object.values(byId);
+
+    const hasEmailField = all.some(e => typeof e?.email === 'string' && e.email);
+    if (hasEmailField && ownerEmail){
+      all = all.filter(e => (e.email||'').toLowerCase() === ownerEmail.toLowerCase());
+    }
+
+    all.sort((a,b)=>{
+      const A = a?.createdAtISO ? Date.parse(a.createdAtISO) : 0;
+      const B = b?.createdAtISO ? Date.parse(b.createdAtISO) : 0;
+      if (B !== A) return B - A;
+      if ((b.weekKey||'') !== (a.weekKey||'')) return String(b.weekKey||'').localeCompare(String(a.weekKey||''));
+      return String(b.entryId||'').localeCompare(String(a.entryId||''));
+    });
+
+    return all;
+  }
+
+  // ---- render
+  function pastChecksRenderList(entries, currentId){
+    const list = document.getElementById('pastCheckList');
+    const pill = document.getElementById('currentEntryPill');
+    const pillDate = document.getElementById('pillDate');
+    const pillScore = document.getElementById('pillScore');
+
+    list.innerHTML = '';
+
+    if (!entries.length){
+      hidePastChecksAll();
+      return;
+    }
+
+    // pick active
+    let activeId = currentId || String(entries[0].entryId);
+    if (!currentId) pastChecksSetUrlEntryId(activeId, /*navigate*/false, /*push*/false);
+
+    entries.forEach(e=>{
+      const id = String(e.entryId);
+      const dateStr = pastChecksFmtDate(e.createdAtISO, e.weekKey);
+      const score = pastChecksGetScore(e);
+      const isActive = id === String(activeId);
+
+      const li = document.createElement('li');
+      li.style.marginBottom = '0.65rem';
+      li.innerHTML = `
+        <a href="#" data-entry-id="${id}"
+           style="
+             display:flex;justify-content:space-between;align-items:center;
+             padding:.75rem 1rem;background:${isActive ? '#0b1220' : '#1e293b'};
+             border-radius:.75rem;color:${isActive ? '#93c5fd' : '#e2e8f0'};
+             text-decoration:none;font-weight:500;transition:all .15s ease;
+             box-shadow:0 0 6px rgba(56,189,248,.12);
+             border:${isActive ? '1px solid #1d4ed8' : '1px solid transparent'};
+           "
+        >
+          <span style="display:flex;gap:.5rem;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            <span>${isActive ? '👀' : '🗓'}</span>
+            <span>${dateStr}</span>
+          </span>
+          <span style="
+            background:${isActive ? '#1d4ed8' : '#38bdf8'};
+            color:#0f172a;padding:.2rem .5rem;border-radius:.5rem;
+            font-weight:700;font-size:.8rem;min-width:2.5rem;text-align:center;
+          ">${score}</span>
+        </a>
+      `;
+      list.appendChild(li);
+    });
+
+    // current pill (no ID shown)
+    const active = entries.find(e => String(e.entryId) === String(activeId));
+    if (pill){
+      if (active){
+        pillDate.textContent = pastChecksFmtDate(active.createdAtISO, active.weekKey);
+        pillScore.textContent = pastChecksGetScore(active);
+        pill.style.display = 'block';
+      } else {
+        pill.style.display = 'none';
+      }
+    }
+
+    // FIXED: Hard reload click handlers
+    list.querySelectorAll('a[data-entry-id]').forEach(a=>{
+      a.addEventListener('click', (ev)=>{
+        ev.preventDefault();
+        const id = a.getAttribute('data-entry-id');
+        if (!id) return;
+        
+        // Visual feedback
+        a.style.opacity = '0.7';
+        setTimeout(() => a.style.opacity = '1', 100);
+        
+        // Hard reload with new entryId
+        pastChecksSetUrlEntryId(id, /*navigate*/ true, /*push*/ false);
+      });
+    });
+
+    // auto-open details if present
+    const det = document.getElementById('pastChecksDetails');
+    if (det) det.open = true;
+    
+    showPastChecksContent();
+  }
+
+  // FIXED: Debounced evaluation with change detection
+  function scheduleEvaluate(){
+    // Clear any pending evaluation
+    if (evaluateTimeout) {
+      clearTimeout(evaluateTimeout);
+    }
+    
+    // Schedule new evaluation after 150ms of quiet
+    evaluateTimeout = setTimeout(pastChecksEvaluate, 150);
+  }
+
+  async function pastChecksEvaluate(){
+    // Clear the timeout since we're running now
+    evaluateTimeout = null;
+    
+    // Owner gate: required to show anything
+    if (!pastChecksHasFlexCheckOwner()) {
+      if (lastRenderState !== 'hidden') {
+        hidePastChecksAll();
+        lastRenderState = 'hidden';
+      }
+      return;
+    }
+
+    const ownerEmail = (window.flexcheck?.getOwner?.()?.email) || pastChecksPeekOwnerLocal();
+    const entries = pastChecksGetEntriesForOwner(ownerEmail);
+    const currentId = getParamInsensitive('entryId');
+    
+    // Create a state signature for change detection
+    const newState = `${ownerEmail}:${entries.length}:${entries.map(e => e.entryId).join(',')}:${currentId}`;
+    
+    // Only show loading if this is a real change
+    if (newState !== lastRenderState) {
+      if (!entries.length) {
+        hidePastChecksAll();
+        lastRenderState = 'hidden';
+        return;
+      }
+      
+      // Show loading only briefly, then render
+      showPastChecksLoading();
+      
+      // Small delay to show loading state, then render
+      setTimeout(() => {
+        pastChecksRenderList(entries, currentId);
+        lastRenderState = newState;
+      }, 100);
+    }
+  }
+
+  // FIXED: Single event listener setup
+  function pastChecksSetupStorageListener() {
+    // Cross-tab changes
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'flexcheckOwner' || e.key === 'flexcheckCacheV3') {
+        scheduleEvaluate();
+      }
+    });
+
+    // Same-tab changes - listen to only ONE event to avoid duplicates
+    document.addEventListener('flexcheck:cacheUpdated', scheduleEvaluate);
+    document.addEventListener('flexcheck:ownerChanged', scheduleEvaluate);
+  }
+
+  // ---- boot
+  (function boot(){
+    hidePastChecksAll(); // Start hidden
+    pastChecksSetupStorageListener();
+    
+    // Initial evaluation (no debounce needed on boot)
+    pastChecksEvaluate();
+    
+    // Handle back/forward navigation
+    window.addEventListener('popstate', scheduleEvaluate);
+  })();
+})();
+</script>

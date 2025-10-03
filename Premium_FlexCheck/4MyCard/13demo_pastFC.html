@@ -1,0 +1,157 @@
+<div id="pastDemoPast" class="fc-block" data-fc-demo="entry" data-fc-timeout="3000">
+<!-- ░░░ Past flexChecks Dropdown (Styled UI) ░░░ -->
+<div id="pastDemoChecksWrapper" style="margin:3rem auto 2rem;max-width:420px;text-align:center;display:none;">
+  <details style="background:#0f172a;padding:1.25rem;border-radius:.85rem;box-shadow:0 0 14px rgba(0,0,0,0.35);">
+    <summary style="cursor:pointer;font-weight:700;font-size:1rem;color:#38bdf8;letter-spacing:0.02em;
+                    padding:.5rem 1rem;border-radius:.5rem;background:#1e293b;">
+      View Past FlexChecks
+    </summary>
+    <ul id="pastDemoCheckList" style="list-style:none;padding:0;margin-top:1.25rem;">
+      <!-- entries injected via JS -->
+    </ul>
+  </details>
+</div>
+</div>
+
+<!-- PastDemo Popup Modal -->
+<div id="pastDemoPopup" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:1000;justify-content:center;align-items:center;">
+  <div id="pastDemoPopupContent" style="background:#0f172a;padding:2rem;border-radius:1rem;max-width:400px;width:90%;text-align:center;box-shadow:0 0 20px rgba(0,0,0,0.5);border:1px solid #1e293b;">
+    <h3 style="color:#38bdf8;margin:0 0 1rem 0;font-size:1.3rem;font-weight:700;">Your FlexCheck History</h3>
+    <p style="color:#e2e8f0;margin:0 0 1.5rem 0;line-height:1.5;font-size:0.95rem;">
+      Every FlexCheck entry is kept track of based on your email address. 
+      <strong style="color:#38bdf8;">Log in with the same email</strong> to access all of your submissions and track your progress over time!
+    </p>
+    <div style="display:flex;gap:0.75rem;justify-content:center;">
+      <button id="pastDemoCloseBtn" style="background:#374151;color:#e2e8f0;border:none;padding:0.75rem 1.5rem;border-radius:0.5rem;cursor:pointer;font-weight:500;transition:all 0.2s ease;">
+        Close
+      </button>
+      <button id="pastDemoStartBtn" style="background:#38bdf8;color:#0f172a;border:none;padding:0.75rem 1.5rem;border-radius:0.5rem;cursor:pointer;font-weight:700;transition:all 0.2s ease;">
+        Start FlexCheck
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const PASTDEMO_ROOT = document.getElementById('pastDemoPast');
+  if (!PASTDEMO_ROOT) return;
+  // Prevent double init if this script runs twice
+  if (PASTDEMO_ROOT.dataset.pastDemoInitialized === '1') return;
+  PASTDEMO_ROOT.dataset.pastDemoInitialized = '1';
+  
+  // Demo-only mock data (kept local to this closure)
+  const PASTDEMO_MOCK = [
+    { entryId: "flex_1234", date: "2025-07-22", flexScore: 119 },
+    { entryId: "flex_1221", date: "2025-07-10", flexScore: 107 },
+    { entryId: "flex_1199", date: "2025-06-29", flexScore: 102 }
+  ];
+  
+  // Find elements *inside* the demo container only
+  const pastDemoWrapper = PASTDEMO_ROOT.querySelector('#pastDemoChecksWrapper');
+  const pastDemoList = PASTDEMO_ROOT.querySelector('#pastDemoCheckList');
+  const pastDemoPopup = document.getElementById('pastDemoPopup');
+  const pastDemoCloseBtn = document.getElementById('pastDemoCloseBtn');
+  const pastDemoStartBtn = document.getElementById('pastDemoStartBtn');
+  
+  if (!pastDemoWrapper || !pastDemoList || !pastDemoPopup) return;
+  
+  // Clear any previous content this demo may have added
+  pastDemoList.innerHTML = '';
+  
+  // Function to show popup
+  const showPastDemoPopup = () => {
+    pastDemoPopup.style.display = 'flex';
+  };
+  
+  // Function to hide popup
+  const hidePastDemoPopup = () => {
+    pastDemoPopup.style.display = 'none';
+  };
+  
+  // Render
+  PASTDEMO_MOCK.forEach(entry => {
+    const date = new Date(entry.date).toLocaleDateString('en-US', {
+      year: 'numeric', month: 'short', day: 'numeric'
+    });
+    
+    const li = document.createElement('li');
+    li.style.marginBottom = '0.75rem';
+    
+    const pastDemoLink = document.createElement('div');
+    pastDemoLink.style.display = 'flex';
+    pastDemoLink.style.justifyContent = 'space-between';
+    pastDemoLink.style.alignItems = 'center';
+    pastDemoLink.style.padding = '.75rem 1rem';
+    pastDemoLink.style.background = '#1e293b';
+    pastDemoLink.style.borderRadius = '.75rem';
+    pastDemoLink.style.color = '#e2e8f0';
+    pastDemoLink.style.fontWeight = '500';
+    pastDemoLink.style.transition = 'all 0.2s ease';
+    pastDemoLink.style.boxShadow = '0 0 6px rgba(56,189,248,.1)';
+    pastDemoLink.style.cursor = 'pointer';
+    
+    const left = document.createElement('span');
+    left.textContent = `🗓 ${date}`;
+    
+    const pastDemoChip = document.createElement('span');
+    pastDemoChip.textContent = String(entry.flexScore);
+    pastDemoChip.style.background = '#38bdf8';
+    pastDemoChip.style.color = '#0f172a';
+    pastDemoChip.style.padding = '.2rem .5rem';
+    pastDemoChip.style.borderRadius = '.5rem';
+    pastDemoChip.style.fontWeight = '700';
+    pastDemoChip.style.fontSize = '.8rem';
+    pastDemoChip.style.cursor = 'pointer';
+    
+    pastDemoLink.appendChild(left);
+    pastDemoLink.appendChild(pastDemoChip);
+    
+    // Hover effects
+    pastDemoLink.addEventListener('mouseenter', () => { 
+      pastDemoLink.style.background = '#334155'; 
+    });
+    pastDemoLink.addEventListener('mouseleave', () => { 
+      pastDemoLink.style.background = '#1e293b'; 
+    });
+    
+    // Click handler for the entire row (but especially the chip)
+    pastDemoLink.addEventListener('click', showPastDemoPopup);
+    
+    li.appendChild(pastDemoLink);
+    pastDemoList.appendChild(li);
+  });
+  
+  // Popup event listeners
+  pastDemoCloseBtn.addEventListener('click', hidePastDemoPopup);
+  
+  pastDemoStartBtn.addEventListener('click', () => {
+    window.location.href = 'https://www.gameplanfitness.com/flexcheck/premium-flexcheck/';
+  });
+  
+  // Close popup when clicking outside the content
+  pastDemoPopup.addEventListener('click', (e) => {
+    if (e.target === pastDemoPopup) {
+      hidePastDemoPopup();
+    }
+  });
+  
+  // Hover effects for popup buttons
+  pastDemoCloseBtn.addEventListener('mouseenter', () => {
+    pastDemoCloseBtn.style.background = '#4b5563';
+  });
+  pastDemoCloseBtn.addEventListener('mouseleave', () => {
+    pastDemoCloseBtn.style.background = '#374151';
+  });
+  
+  pastDemoStartBtn.addEventListener('mouseenter', () => {
+    pastDemoStartBtn.style.background = '#0ea5e9';
+  });
+  pastDemoStartBtn.addEventListener('mouseleave', () => {
+    pastDemoStartBtn.style.background = '#38bdf8';
+  });
+  
+  // Only reveal inside the demo container
+  pastDemoWrapper.style.display = 'block';
+})();
+</script>

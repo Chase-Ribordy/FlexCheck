@@ -1,0 +1,318 @@
+<style>
+/* ░░░ FLEXCHECK GUIDE CONTAINER ░░░ */
+.flexcheck-guide-container {
+  background-color: #0f172a;
+  padding: 2rem 1rem;
+  border-radius: 1rem;
+  max-width: 760px;
+  margin: 0 auto 3rem;
+  box-shadow: 0 0 20px rgba(74, 222, 128, 0.15);
+  border: 1px solid #334155;
+}
+
+/* ░░░ GREEN GLOW HEADER ░░░ */
+.green-glow-header-container {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  margin-bottom: 2.5rem;
+  border: 2px solid #4ade80;
+  border-radius: 1rem;
+
+  background: linear-gradient(270deg,
+    rgba(15, 118, 110, 0.5),
+    rgba(22, 163, 74, 0.5),
+    rgba(34, 197, 94, 0.5),
+    rgba(6, 95, 70, 0.5)
+  );
+  background-size: 600% 600%;
+  animation: animatedGradient 45s ease infinite;
+
+  box-shadow:
+    0 0 12px #4ade80,
+    0 0 24px rgba(74, 222, 128, 0.5),
+    0 0 28px rgba(253, 224, 71, 0.25),
+    0 0 36px rgba(132, 204, 22, 0.18);
+}
+
+/* Green Subheading */
+.green-glow-subheading {
+  font-weight: 400;
+  font-size: 0.9rem;
+  color: #dcfce7;
+  margin-bottom: 0.3rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* Main Glowing Gradient Heading */
+.green-glow-main-heading {
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #4ade80, #facc15);
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.6),
+    0 0 8px rgba(255, 255, 255, 0.1);
+}
+
+/* Glow Pop Animation Trigger */
+.green-glow-header-container.clicked {
+  animation: glowPop 0.6s ease-out;
+}
+
+/* Background Animation */
+@keyframes animatedGradient {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Pop Glow Animation */
+@keyframes glowPop {
+  0% {
+    transform: scale(0.97);
+    box-shadow:
+      0 0 14px #4ade80,
+      0 0 28px #4ade80,
+      0 0 38px rgba(132, 204, 22, 0.5);
+  }
+  60% {
+    transform: scale(1.05);
+    box-shadow:
+      0 0 20px #4ade80,
+      0 0 40px #22c55e,
+      0 0 50px rgba(132, 204, 22, 0.8);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 12px #4ade80,
+      0 0 24px rgba(74, 222, 128, 0.5),
+      0 0 30px rgba(132, 204, 22, 0.3);
+  }
+}
+/* 🔦 Flash Highlight Animation */
+@keyframes greenFlash {
+  0% {
+    background: linear-gradient(270deg, #bbf7d0, #86efac, #4ade80, #bbf7d0);
+    background-size: 400% 400%;
+    box-shadow:
+      0 0 16px #bbf7d0,
+      0 0 24px #86efac,
+      0 0 36px rgba(34, 197, 94, 0.7);
+    transform: scale(1.02);
+  }
+
+  50% {
+    background-position: 100% 50%;
+    transform: scale(1.05);
+  }
+
+  100% {
+    background: linear-gradient(270deg,
+      rgba(20, 83, 45, 0.4),
+      rgba(54, 160, 94, 0.4),
+      rgba(34, 197, 94, 0.4),
+      rgba(132, 204, 22, 0.4));
+    background-size: 600% 600%;
+    box-shadow:
+      0 0 8px #4ade80,
+      0 0 16px rgba(74, 222, 128, 0.3),
+      0 0 20px rgba(132, 204, 22, 0.15);
+    transform: scale(1);
+  }
+}
+
+
+.green-glow-header-container.flash-animate {
+  animation: greenFlash 0.75s ease-out;
+}
+
+</style>
+
+
+</style>
+
+  <!-- ░░░ FLEXCHECK PLAYER GUIDE ░░░ -->
+  <div class="intro-container">
+    <div class="green-glow-header-container">
+      <h4 class="green-glow-subheading">FlexCheck System</h4>
+      <h2 class="green-glow-main-heading">🎮 Player Strategy Guide</h2>
+    </div>
+  </div>
+
+<div class="flexcheck-guide-container">
+
+  <div style="border-left: 3px solid #22c55e; padding-left: 1rem; margin-bottom: 2.5rem; color:#cbd5e1; font-size:0.9rem; line-height:1.65;">
+    <p style="margin-top: 0;">
+      <b>FlexCheck</b> started as a tool to assess muscle balance, division fit, and training priorities. Now it's a game of angles, timing, and strategy.
+    </p>
+
+    <p>
+      Some use it to improve. Others chase the leaderboard. <strong>You can do both.</strong>
+    </p>
+
+    <h4 style="color:#4ade80; font-weight:700; margin:1.75rem 0 0.5rem; font-size: 1.2rem;">🎲 Each Entry Is a Dice Roll</h4>
+    <ul style="margin-left:1.25rem; list-style:disc;">
+      <li>Each entry is scored <b>independently</b></li>
+      <li>Your physique could land in different tiers based on lighting, pose, angle</li>
+      <li>No memory - every submission is a new shot</li>
+    </ul>
+
+    <h4 style="color:#4ade80; font-weight:700; margin:1.75rem 0 0.5rem; font-size: 1.2rem;">✅ Game the System (Legally)</h4>
+    <ul style="margin-left:1.25rem; list-style:disc;">
+      <li><b>Re-enter:</b> New entry = new score</li>
+      <li><b>Lighting:</b> Bright, even light = better clarity = higher score</li>
+      <li><b>Train first:</b> Post-pump = more fullness = higher score</li>
+      <li><b>Angles:</b> Tilt, distance, crop = stronger presence</li>
+      <li><b>Reverse game:</b> Want Cooked Tier? Submit a cursed shot</li>
+    </ul>
+
+    <h4 style="color:#4ade80; font-weight:700; margin:1.75rem 0 1rem; font-size: 1.2rem;">🧠 Strategies</h4>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:2rem;">
+      <div style="border:1px solid #00FF00; border-radius:0.5rem; padding:0.75rem; background-color:#1e293b;">
+        <h5 style="margin:0; color:#4ade80; font-size:0.95rem;">📅 Early Entry</h5>
+        <p style="margin:0.25rem 0 0; font-size:0.85rem; color:#cbd5e1;">
+          Submit Monday-Wednesday to scout the leaderboard and adapt.
+        </p>
+      </div>
+
+      <div style="border:1px solid #00FF00; border-radius:0.5rem; padding:0.75rem; background-color:#1e293b;">
+        <h5 style="margin:0; color:#4ade80; font-size:0.95rem;">⏱️ Last-Minute Snipe</h5>
+        <p style="margin:0.25rem 0 0; font-size:0.85rem; color:#cbd5e1;">
+          Upload right before Friday 7 PM CT to sneak into Top 3.
+        </p>
+      </div>
+
+      <div style="border:1px solid #00FF00; border-radius:0.5rem; padding:0.75rem; background-color:#1e293b;">
+        <h5 style="margin:0; color:#4ade80; font-size:0.95rem;">🎯 Tier Targeting</h5>
+        <p style="margin:0.25rem 0 0; font-size:0.85rem; color:#cbd5e1;">
+          Frame your look to hit Top, Mid, or Cooked Tier based on vibe and effort.
+        </p>
+      </div>
+
+      <div style="border:1px solid #00FF00; border-radius:0.5rem; padding:0.75rem; background-color:#1e293b;">
+        <h5 style="margin:0; color:#4ade80; font-size:0.95rem;">📸 Volume Play</h5>
+        <p style="margin:0.25rem 0 0; font-size:0.85rem; color:#cbd5e1;">
+          Submit 2-4 styles. Let the algorithm decide which one wins.
+        </p>
+      </div>
+    </div>
+
+    <h4 style="color:#4ade80; font-weight:700; margin:1.75rem 0 0.5rem; font-size: 1.2rem;">🔁 Weekly Reset = Fresh Game</h4>
+    <ul style="margin-left:1.25rem; list-style:disc;">
+      <li>Leaderboard resets Friday @ 7 PM CT</li>
+      <li>Get to Top 3, then get community VOTES for the top spot for that week</li>
+      <li>No memory. No carryover. Just reroll and go.</li>
+    </ul>
+
+    <h4 style="color:#facc15; font-weight:800; margin:1.75rem 0 0.5rem; font-size: 1.2rem;">🏆 Why Compete?</h4>
+    <p>
+      🔍 Master your physique on camera<br>
+      🧠 Refine your goals and priorities<br>
+      🏅 Win clout and Hall of Fame status<br>
+      🎮 Flex smarter. Win faster.
+    </p>
+
+    <p style="margin-top:1.5rem; font-weight:700; color:#4ade80;">
+      🔁 Score higher. Tier Targeting. Spam Submissions to keep rerolling your score - Whatever it takes to Win Your Week.
+    </p>
+  </div>
+<!-- ✍️ CTA Submission (Green Glow Edition) -->
+<div style="background:#1e293b;border:1px solid #334155;border-radius:0.75rem;padding:1.25rem;margin:2rem 0;box-shadow:0 0 12px rgba(74,222,128,0.15);">
+  <h3 style="font-size:1.05rem;color:#f1f5f9;margin:0 0 0.4rem;">🔁 Ready for Your Next Roll?</h3>
+  <p style="font-size:0.88rem;color:#cbd5e1;margin-bottom:0.75rem;">
+    Beat your last score - Submit a new FlexCheck to stay competitive this week:
+  </p>
+  <a href="#" onclick="goToFormWithData(event)"
+   style="display:inline-block;font-size:0.85rem;background:#4ade80;color:#0f172a;
+          font-weight:700;padding:0.55rem 1.1rem;border-radius:0.65rem;
+          text-decoration:none;box-shadow:0 0 6px #4ade80, 0 0 12px rgba(74,222,128,0.6);">
+  Submit Your FlexCheck →
+</a>
+</div>
+</div>
+
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const header = document.querySelector(".green-glow-header-container");
+  let hasFlashedOnce = false;
+
+  if (!header) return;
+
+  // Scroll trigger: only runs once
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !hasFlashedOnce) {
+        flashOnce(header);
+        hasFlashedOnce = true;
+      }
+    });
+  }, { threshold: 0.6 });
+
+  observer.observe(header);
+
+  // Click trigger: can run repeatedly
+  header.addEventListener("click", () => {
+    flashOnce(header);
+  });
+
+  function flashOnce(el) {
+    el.classList.remove("flash-animate"); // reset if already on
+    void el.offsetWidth; // force reflow
+    el.classList.add("flash-animate");
+  }
+});
+function goToFormWithData(event) {
+    event.preventDefault();
+    
+    // Get cached data from flexcheckCacheV3
+    const cachedDataString = localStorage.getItem('flexcheckCacheV3');
+    if (!cachedDataString) {
+        // No cached data, go to form normally
+        window.open('https://www.gameplanfitness.com/flexcheck/premium-flexcheck/', '_blank');
+        return;
+    }
+    
+    try {
+        const cachedData = JSON.parse(cachedDataString);
+        const firstEntry = Object.values(cachedData.entriesById)[0];
+        
+        if (!firstEntry) {
+            // No entry data, go to form normally
+            window.open('https://www.gameplanfitness.com/flexcheck/premium-flexcheck/', '_blank');
+            return;
+        }
+        
+        // Build URL with parameters
+        const baseUrl = 'https://www.gameplanfitness.com/flexcheck/premium-flexcheck/';
+        const params = new URLSearchParams();
+        
+        // Add all parameters based on field mapping
+        if (firstEntry.email) {
+            params.append('email', firstEntry.email);
+        }
+        if (firstEntry.result) {
+            const result = firstEntry.result;
+            if (result.age) params.append('numeric_field_4', result.age);
+            if (result.heightCm) params.append('numeric_field_2', result.heightCm);
+            if (result.heightIn) params.append('numeric_field', result.heightIn);
+            if (result.socialHandle) params.append('input_text', result.socialHandle);
+            if (result.weightKg) params.append('numeric_field_1', result.weightKg);
+            if (result.weightLb) params.append('numeric_field_3', result.weightLb);
+            if (result.trainingAgeYears) params.append('numeric_field_5', result.trainingAgeYears);
+        }
+        
+        // Navigate to form page with parameters
+        window.open(baseUrl + '?' + params.toString(), '_blank');
+        
+    } catch (error) {
+        console.error('Error processing cached data:', error);
+        // Fallback to normal form
+        window.open('https://www.gameplanfitness.com/flexcheck/premium-flexcheck/', '_blank');
+    }
+}
+</script>

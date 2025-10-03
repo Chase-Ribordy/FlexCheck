@@ -1,0 +1,507 @@
+<!-- ░░░ flexCHECK NAVBAR – GAMIFIED ░░░ -->
+<nav class="flexcheck-nav">
+  <a href="/flexcheck/flexcheck-player-card" class="nav-item" data-tab="playercard">
+    <span class="emoji">🎴</span>
+    <span class="label">My Card</span>
+  </a>
+  <a href="/flexcheck" class="nav-item" data-tab="home">
+    <span class="emoji">🏠</span>
+    <span class="label">Home</span>
+  </a>
+  <a href="/flexcheck/flexcheck-leaderboard" class="nav-item" data-tab="leaderboard">
+    <span class="emoji">🏆</span>
+    <span class="label">Leaderboard</span>
+  </a>
+</nav>
+
+<style>
+/* ========== NAV BAR WRAPPER ========== */
+.flexcheck-nav {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 1rem 0.75rem;
+  background: linear-gradient(to right, #0f172a, #1e293b);
+  border-bottom: 2px solid var(--accent, #27BEFA);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  position: relative;
+  z-index: 10;
+}
+
+/* ========== NAV ITEMS ========== */
+.nav-item {
+  color: rgba(255,255,255,0.4);
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: color 0.3s ease, transform 0.2s;
+  position: relative;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.nav-item .emoji {
+  font-size: 1.2rem;
+  margin-bottom: 0.2rem;
+  transition: transform 0.3s ease;
+}
+
+.nav-item.active,
+.nav-item:hover {
+  color: var(--accent, #27BEFA);
+}
+
+.nav-item.active .emoji {
+  transform: scale(1.2);
+}
+
+.nav-item:active {
+  transform: scale(0.94);
+}
+
+/* optional glow effect when active */
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 3px;
+  background: var(--accent, #27BEFA);
+  border-radius: 99px;
+  box-shadow: 0 0 6px var(--accent, #27BEFA);
+}
+</style>
+
+<script>
+/* ========= FLEXCHECK NAV CONTEXT (fixed, simplified) ========= */
+window.GAS_URL = 'https://script.google.com/macros/s/AKfycbz8Uf7b7CUidKpmY5Vf8C-ejYOx8K-qCcJmNwyvTqQzH9PooXRJNqyZGzI61tN6mIsX/exec';
+
+(function(){
+  if (window.flexcheck?.__inited) return;
+
+  const STORE_KEY = 'flexcheckOwner';
+  const EMAIL_RE  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
+
+  // ---- storage ----
+  const storage = {
+    get(){ try { return JSON.parse(localStorage.getItem(STORE_KEY)||'null')||null; } catch { return null; } },
+    set(o){ try { localStorage.setItem(STORE_KEY, JSON.stringify({...o, updatedAt: Date.now()})); } catch {} },
+    clear(){ try { localStorage.removeItem(STORE_KEY); } catch {} }
+  };
+
+  // ---- helpers ----
+  const onlyDigits = x => (String(x||'').match(/\d+/g)||[]).join('');
+  const validEmail = e => EMAIL_RE.test(String(e||''));
+  function getUrlParams(){
+    const u = new URL(location.href);
+    const entries = Object.fromEntries(u.searchParams.entries());
+    const k = Object.keys(entries).find(k => k.toLowerCase()==='entryid');
+    return {
+      entryId: k ? onlyDigits(entries[k]) : '',
+      email: entries.email ? entries.email.trim() : ''
+    };
+  }
+
+  // ---- state ----
+  let owner = storage.get();      // { email, preferredEntryId, entryIds[] } | null
+  let viewerEntryId = '';         // ephemeral: which card to show
+
+  // FIXED: Add missing function
+  function initViewerFromUrlOrOwner(){
+    const { entryId } = getUrlParams();
+    viewerEntryId = entryId || owner?.preferredEntryId || '';
+  }
+
+  function wireNavLinks(){
+    // carry viewer across nav links
+    document.querySelectorAll('.flexcheck-nav .nav-item').forEach(a => {
+      try{
+        const url = new URL(a.getAttribute('href'), location.origin);
+        url.searchParams.delete('email'); // keep links clean
+        if (viewerEntryId) url.searchParams.set('entryId', viewerEntryId);
+        a.setAttribute('href', url.pathname + url.search);
+      }catch{}
+    });
+
+    // active tab highlight
+    let pathname = location.pathname.toLowerCase();
+    if (pathname.endsWith('/')) pathname = pathname.slice(0,-1);
+    const tabs = {
+      playercard: '/flexcheck/flexcheck-player-card',
+      leaderboard: '/flexcheck/flexcheck-leaderboard',
+      home: '/flexcheck'
+    };
+    for (const [key, url] of Object.entries(tabs)) {
+      const el = document.querySelector(`.nav-item[data-tab="${key}"]`);
+      el?.classList.toggle('active', pathname === url);
+    }
+  }
+
+  // ---- public API for widgets ----
+  async function setOwnerEmail(email, entryIds){
+    if (!validEmail(email)) throw new Error('Invalid email');
+    const ids = Array.isArray(entryIds) ? entryIds.map(onlyDigits).filter(Boolean) : [];
+    // pick the highest numeric ID
+    const latest = ids.length ? ids.slice().sort((a,b)=> (parseInt(b,10)||0)-(parseInt(a,10)||0))[0] : '';
+    owner = {
+      email,
+      preferredEntryId: latest || owner?.preferredEntryId || '',
+      entryIds: ids
+    };
+    storage.set(owner);
+    if (!getUrlParams().entryId) {
+      viewerEntryId = owner.preferredEntryId || '';
+      wireNavLinks();
+    }
+  }
+
+  function setOwnerPreferred(entryId, { updateUrl = true } = {}){
+    const id = onlyDigits(entryId);
+    if (!id || !owner) return;
+    owner.preferredEntryId = id;
+    if (Array.isArray(owner.entryIds) && !owner.entryIds.includes(id)) owner.entryIds.push(id);
+    storage.set(owner);
+    viewerEntryId = id;
+    if (updateUrl) {
+      const u = new URL(location.href);
+      u.searchParams.set('entryId', id);
+      history.replaceState(null, '', u.toString());
+    }
+    wireNavLinks();
+  }
+
+  function setViewerEphemeral(entryId, { pushUrl = false } = {}){
+    viewerEntryId = onlyDigits(entryId);
+    if (pushUrl) {
+      const u = new URL(location.href);
+      u.searchParams.set('entryId', viewerEntryId);
+      history.replaceState(null, '', u.toString());
+    }
+    wireNavLinks();
+  }
+
+  function claimOwnerFromUrl(){
+    const { email } = getUrlParams();
+    if (!validEmail(email)) return '';   // return empty string if none
+    owner = owner || { email: '', preferredEntryId: '', entryIds: [] };
+    owner.email = email;
+    storage.set(owner);
+    wireNavLinks();
+    return email;                        // <— return email so caller can use it
+  }
+
+  // FIXED: Move clearOwner inside the proper object
+  function clearOwner() {
+    // Clear localStorage
+    localStorage.removeItem('flexcheckOwner');
+    localStorage.removeItem('flexcheckCacheV3');
+    localStorage.removeItem('userEmail'); // Widget also checks this
+    
+    // Clear any other cache items that might exist
+    Object.keys(localStorage).forEach(key => {
+        if (key.toLowerCase().includes('flexcheck')) {
+            localStorage.removeItem(key);
+        }
+    });
+    
+    // Clear global variables
+    if (window.flexcheckCache) {
+        window.flexcheckCache.ownerEmail = '';
+        // Clear the cache object entirely if possible
+        if (typeof window.flexcheckCache.clear === 'function') {
+            window.flexcheckCache.clear();
+        }
+    }
+    if (window.flexcheckOwner) {
+        window.flexcheckOwner = '';
+    }
+    
+    // Dispatch events to notify other parts of the app
+    try {
+        window.dispatchEvent(new CustomEvent('flexcheck:ownerChanged'));
+        window.dispatchEvent(new CustomEvent('flexcheck:cacheUpdated'));
+    } catch {}
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initViewerFromUrlOrOwner();
+    wireNavLinks();
+    window.flexcheck = {
+      __inited: true,
+      getOwner: () => owner,
+      getViewerEntryId: () => viewerEntryId,
+      getCurrentEntryId: () => getUrlParams().entryId || viewerEntryId || owner?.preferredEntryId || '',
+      setOwnerEmail,
+      setOwnerPreferred,
+      setViewerEphemeral,
+      claimOwnerFromUrl,
+      clearOwner  // FIXED: Now properly inside the object
+    };
+  });
+})();
+
+/* First-touch handler:
+   - If ?email= is present, store owner, then scrub email from URL.
+   - Viewer (entryId) remains whatever it already resolved to. */
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const email = window.flexcheck?.claimOwnerFromUrl?.(); // string or ''
+  if (!email) return;
+
+  // hydrate IDs immediately (picks latest by your setOwnerEmail patch)
+  try {
+    const res = await fetch(`${GAS_URL}?fn=ids&email=${encodeURIComponent(email)}`, { credentials:'omit' });
+    if (res.ok) {
+      const json = await res.json();
+      const ids = Array.isArray(json?.entryIds) ? json.entryIds : [];
+      await window.flexcheck.setOwnerEmail(email, ids);
+    }
+  } catch (e) {
+    console.warn('ID hydrate failed:', e);
+  }
+
+  // scrub email from the URL at the end
+  const u = new URL(location.href);
+  u.searchParams.delete('email');
+  history.replaceState(null, '', u.toString());
+});
+
+// ===== FLEXCHECK CACHE (v3) — understands new Processed schema & legacy =====
+(function(){
+  const CK = 'flexcheckCacheV3';
+
+  const GAS = (()=>{ const u = window.GAS_URL; if(!u) console.warn('[flexcheckCache] GAS_URL missing'); return u; })();
+
+  // --- storage ---
+  function load(){
+    try{
+      return JSON.parse(localStorage.getItem(CK)||'null')
+             || { entriesById:{}, ownerEmail:'', entryIdsByOwner:{} };
+    }catch{
+      return { entriesById:{}, ownerEmail:'', entryIdsByOwner:{} };
+    }
+  }
+  function save(c){
+    try{ localStorage.setItem(CK, JSON.stringify({ ...c, savedAt: Date.now() })); }catch{}
+  }
+  const uniq = a => Array.from(new Set(a));
+
+  // --- normalizer: NEW processed shape first, falls back to legacy shape ---
+  function normalizeEntry(raw){
+    if (!raw) return null;
+
+    // Detect "Processed" hydrated shape
+    const isProcessed = !!(raw.profile || raw.divisionFit || raw.media);
+
+    let entryId       = String(raw.entryId ?? raw.id ?? '').trim();
+    let ticket        = String(raw.ticket ?? raw.ticketId ?? '').trim();
+    let email         = raw.email || '';
+    let isPaid        = !!raw.isPaid;
+
+    let createdAtISO  = raw.createdAtISO || raw.createdAt || raw.timestamp || '';
+    let cachedAt      = raw.cachedAt || Date.now();
+    let weekKey       = raw.weekKey || '';
+
+    let divisionFit, muscleRatings, score, summary, bestExercises, biomechanics, photos, profile;
+
+    if (isProcessed){
+      // New GAS (Processed) record
+      divisionFit    = raw.divisionFit   || {};
+      muscleRatings  = raw.muscleRatings || {};
+      score          = (typeof raw.score === 'number') ? raw.score : null;
+      summary        = raw.summary || '';
+      bestExercises  = Array.isArray(raw.bestExercises) ? raw.bestExercises : [];
+      biomechanics   = Array.isArray(raw.biomechanics)  ? raw.biomechanics  : [];
+      photos         = Array.isArray(raw.media?.photos) ? raw.media.photos  : [];
+      profile        = raw.profile || {};
+    } else {
+      // Legacy shape (from old Submissions endpoint)
+      const r = raw.result || {};
+      divisionFit    = r.divisionFit   || {};
+      muscleRatings  = r.muscleRatings || {};
+      score          = (typeof r.score === 'number') ? r.score : null;
+      summary        = r.summary || '';
+      bestExercises  = Array.isArray(r.bestExercises) ? r.bestExercises : [];
+      biomechanics   = Array.isArray(r.biomechanics)  ? r.biomechanics  : [];
+      const sheetPhotos  = Array.isArray(raw.photoUrls)
+        ? raw.photoUrls
+        : (typeof raw.photoUrls === 'string'
+            ? raw.photoUrls.split(',').map(s=>s.trim()).filter(Boolean)
+            : []);
+      const resultPhotos = Array.isArray(r.imageUrls) ? r.imageUrls : [];
+      photos = uniq([...sheetPhotos, ...resultPhotos]);
+      profile = {
+        age: r.age,
+        heightCm: r.heightCm,
+        heightIn: r.heightIn,
+        weightKg: r.weightKg,
+        weightLb: r.weightLb,
+        trainingAgeYears: r.trainingAgeYears,
+        socialHandle: r.socialHandle || raw.socialHandle || ''
+      };
+    }
+
+    // Unify shape to what your renderer expects
+    return {
+      entryId,
+      ticket,
+      ticketId: ticket,
+      email,
+      isPaid,
+      createdAtISO,
+      cachedAt,
+      weekKey,
+      photos,
+      result: {
+        score,
+        summary,
+        divisionFit,
+        muscleRatings,
+        age:              profile.age ?? null,
+        heightCm:         profile.heightCm ?? null,
+        heightIn:         profile.heightIn ?? null,
+        weightKg:         profile.weightKg ?? null,
+        weightLb:         profile.weightLb ?? null,
+        trainingAgeYears: profile.trainingAgeYears ?? null,
+        socialHandle:     profile.socialHandle ?? ''
+      },
+      bestExercises,
+      biomechanics
+    };
+  }
+
+  // --- in-memory API ---
+  const store = {
+    get(id){ return load().entriesById[id] || null; },
+    getAll(){ return Object.values(load().entriesById); },
+    set(entry){
+      if (!entry || !entry.entryId) return;
+      const c = load();
+      c.entriesById[entry.entryId] = entry;
+      if (entry.email){
+        const list = c.entryIdsByOwner[entry.email] || [];
+        c.entryIdsByOwner[entry.email] = uniq([...list, entry.entryId]);
+      }
+      save(c);
+    },
+    upsertMany(entries, ownerEmail){
+      const c = load();
+      for (const e of entries){
+        if (!e || !e.entryId) continue;
+        c.entriesById[e.entryId] = e;
+        const key = ownerEmail || e.email;
+        if (key){
+          const list = c.entryIdsByOwner[key] || [];
+          c.entryIdsByOwner[key] = uniq([...list, e.entryId]);
+        }
+      }
+      if (ownerEmail) c.ownerEmail = ownerEmail;
+      save(c);
+    },
+    clearOwner(){ save({ entriesById:{}, ownerEmail:'', entryIdsByOwner:{} }); }
+  };
+
+  // --- network priming ---
+  window.flexcheckCache = {
+    getEntry: id => store.get(id),
+    getAllEntries: () => store.getAll(),
+    setEntry: raw => store.set(normalizeEntry(raw)),
+    primeOwnerEntries: (rawEntries, ownerEmail) => {
+      const arr = Array.isArray(rawEntries) ? rawEntries : [];
+      store.upsertMany(arr.map(normalizeEntry).filter(Boolean), ownerEmail || '');
+    },
+    clearOwnerCache: () => store.clearOwner(),
+
+    async fetchAndPrimeOwner(email){
+      if (!GAS) throw new Error('GAS_URL not configured');
+      const r = await fetch(`${GAS}?fn=entries&email=${encodeURIComponent(email)}`, { credentials:'omit' });
+      if (!r.ok) throw new Error('entries fetch failed');
+      const j = await r.json();
+      const normalized = Array.isArray(j.entries) ? j.entries.map(normalizeEntry).filter(Boolean) : [];
+      store.upsertMany(normalized, email);
+      return normalized;
+    },
+
+    async fetchEntry(entryId){
+      if (!GAS) throw new Error('GAS_URL not configured');
+      const r = await fetch(`${GAS}?fn=entry&entryId=${encodeURIComponent(entryId)}`, { credentials:'omit' });
+      if (!r.ok) throw new Error('entry fetch failed');
+      const j = await r.json();
+      const n = j.entry ? normalizeEntry(j.entry) : null;
+      if (n) store.set(n);
+      return n;
+    }
+  };
+})();
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const fx = window.flexcheck;
+  const cache = window.flexcheckCache;
+  if (!fx || !cache) return;
+
+  // FIXED: Use URL-first resolution
+  const viewer = fx.getCurrentEntryId();
+  if (!viewer) {
+    // show "Enter email to fetch your cards" UI
+    const playerCardEl = document.querySelector('#playerCard');
+    if (playerCardEl) {
+      playerCardEl.textContent = 'Enter your email to fetch your cards.';
+    }
+    return;
+  }
+
+  // 2) render from cache immediately if we have it
+  const cached = cache.getEntry(viewer);
+  if (cached) renderPlayerCard(cached, { fromCache: true });
+
+  // 3) fetch fresh in background
+  try {
+    const fresh = await cache.fetchEntry(viewer);
+    if (fresh) renderPlayerCard(fresh, { fromCache: false });
+  } catch(e){ console.warn(e); }
+
+  // 4) optional: if owner known and we haven't primed, prefetch all owner entries once
+  const ownerEmail = fx.getOwner()?.email;
+  if (ownerEmail) {
+    try { await cache.fetchAndPrimeOwner(ownerEmail); } catch(e){}
+  }
+});
+
+// Your renderer – wire to your existing placeholders
+function renderPlayerCard(entry, { fromCache } = {}){
+  const scoreEl  = document.querySelector('#score');
+  const sumEl    = document.querySelector('#summary');
+  const ageEl    = document.querySelector('#age');
+  const htEl     = document.querySelector('#height');
+  const wtEl     = document.querySelector('#weight');
+  const taEl     = document.querySelector('#trainingAge');
+  const handleEl = document.querySelector('#handle');
+
+  scoreEl  && (scoreEl.textContent  = entry.result?.score ?? '—');
+  sumEl    && (sumEl.textContent    = entry.result?.summary ?? '—');
+  ageEl    && (ageEl.textContent    = entry.result?.age ?? '—');
+  htEl     && (htEl.textContent     = entry.result?.heightCm ? `${entry.result.heightCm} cm` : '—');
+  wtEl     && (wtEl.textContent     = entry.result?.weightKg ? `${entry.result.weightKg} kg` : '—');
+  taEl     && (taEl.textContent     = entry.result?.trainingAgeYears ?? '—');
+  handleEl && (handleEl.textContent = entry.result?.socialHandle || '');
+
+  const imgWrap = document.querySelector('#imageStrip');
+  if (imgWrap){
+    const photos = Array.isArray(entry.photos) ? entry.photos : [];
+    imgWrap.innerHTML = photos.map(u => `<img src="${u}" loading="lazy" style="max-width:120px;border-radius:8px;margin-right:6px">`).join('');
+  }
+
+  const dfEl = document.querySelector('#divisionFit');
+  if (dfEl){
+    const df = entry.result?.divisionFit || {};
+    dfEl.innerHTML = Object.entries(df).map(([k,v]) => `<div>${k}: <strong>${v}</strong></div>`).join('');
+  }
+}
+</script>

@@ -1,0 +1,743 @@
+<!-- 🧠 GamePlan flexCheck: Scroll-Activated Premium View -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+/* ========== CORE CARD ========== */
+.gpflex {
+  font-family: Inter, system-ui, sans-serif;
+  background: #0d0d11;
+  color: #e5e7eb;
+  max-width: 450px;
+  margin: 2rem auto;
+  padding: 1rem;
+  border-radius: 1.25rem;
+  box-shadow: 0 0 28px rgba(0,0,0,.65);
+}
+.gpflex h1 {
+  background: linear-gradient(90deg,#0ea5e9,#38bdf8,#22c55e);
+  -webkit-background-clip: text;
+  color: transparent;
+  font-size: 1.45rem;
+  font-weight: 800;
+  text-align: center;
+  margin: .2rem 0;
+}
+.gpsubtitle {
+  font-size: .9rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-top: 1.6rem;
+}
+
+/* ========== SCORE ========== */
+.gpscore {
+  font-size: 4rem;
+  font-weight: 900;
+  text-align: center;
+  color: #38bdf8;
+  text-shadow: 0 0 4px rgba(56,189,248,.45);
+}
+.gpscore.loading::after {
+  content: '';
+  display: block;
+  margin: 1.4rem auto 0;
+  width: 32px;
+  height: 32px;
+  border: 4px solid #38bdf8;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ========== CHARTS, GRIDS, META, ETC ========== */
+/* [omitted here for brevity – keep your original CSS for carousel, .gpmeta, .gpgrid, .gpexercise, etc] */
+/* All your original styles remain valid and untouched */
+
+/* ========== flex TOGGLE ========== */
+.flexcheck-toggle {
+  display: block;
+  width: 100%;
+  padding: .9rem 1.1rem;
+  background: #1f2937;
+  border: 2px solid #38bdf8;
+  color: #e5e7eb;
+  font-size: .9rem;
+  font-weight: 700;
+  border-radius: .75rem;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+  transition: background 0.3s;
+}
+.flexcheck-toggle:hover {
+  background: #0ea5e9;
+  color: #0d0d11;
+}
+/* ---------- CORE CARD ---------- */
+.gpflex{font-family:Inter,system-ui,sans-serif;background:#0d0d11;color:#e5e7eb;
+        max-width:500px;margin:2rem auto;padding:1rem;border-radius:1.25rem;
+        box-shadow:0 0 28px rgba(0,0,0,.65)}
+.gpflex h1{background:linear-gradient(90deg,#0ea5e9,#38bdf8,#22c55e);
+           -webkit-background-clip:text;color:transparent;font-size:1.45rem;font-weight:800;
+           letter-spacing:.03em;text-align:center;margin:.2rem 0}
+.gpsubtitle{font-size:.9rem;font-weight:600;letter-spacing:.04em;color:#94a3b8;
+            text-transform:uppercase;margin-top:1.6rem}
+
+/* ---------- SCORE ---------- */
+.gpscore{font-size:4rem;font-weight:900;text-align:center;color:#38bdf8;
+         text-shadow:0 0 4px rgba(56,189,248,.45)}
+.gpscore.loading::after{content:'';display:block;margin:1.4rem auto 0;width:32px;height:32px;
+         border:4px solid #38bdf8;border-top-color:transparent;border-radius:50%;
+         animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- CAROUSEL ---------- */
+.carousel-shell{position:relative;margin-top:1.4rem}
+.gpcarousel{
+  display:flex;gap:.8rem;overflow-x:auto;padding-bottom:.6rem;
+  scroll-flex-type:x mandatory;scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;
+}
+.gpcarousel::-webkit-scrollbar{display:none}
+.gpcarousel img{scroll-flex-align:center;max-height:260px;width:auto;border-radius:.9rem;
+                flex:none;box-shadow:0 0 10px rgba(0,0,0,.55)}
+
+
+/* ---------- PROFILE ROW ---------- */
+.gpmeta{background:#111827;border:1px solid #1f2937;border-radius:.75rem;padding:.5rem .9rem;
+        display:flex;justify-content:center;gap:.4rem;flex-wrap:wrap;font-size:.8rem;
+        margin-top:1rem;text-align:center}
+.gpmeta span{color:#94a3b8}
+.gpmeta .handle{color:#facc15;font-weight:600}
+
+/* ---------- DIVISION GRID ---------- */
+.gpgrid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-top:1.8rem}
+.gpgrid-item{background:#1f2937;padding:1rem;border-radius:1rem;text-align:center;
+             font-size:.8rem;font-weight:600;color:#e5e7eb;line-height:1.35}
+.gpgrid-item span{display:block;font-weight:700;font-size:1.25rem;color:#38bdf8;margin:.35rem 0 0}
+
+/* ---------- KEY EXERCISE ---------- */
+.gpexercise{margin-top:2rem;padding:1rem;background:#111827;border-radius:1rem;
+            box-shadow:0 0 8px rgba(255,255,255,.04)}
+.gpexercise h4{margin:0 0 .35rem;color:#facc15;font-size:1rem}
+.gpexercise p{margin:0;font-size:.85rem;line-height:1.45}
+
+/* ---------- INFO ACCORDIONS ---------- */
+.gpinfo-container{background:#0d0d11;color:#e5e7eb;max-width:450px;margin:.85rem auto 0;
+                  padding:1.8rem;border-radius:1.25rem;box-shadow:0 0 28px rgba(0,0,0,.65)}
+.gpinfo-toggle{background:none;color:#facc15;border:1px solid #facc15;border-radius:.6rem;
+               padding:.6rem 1rem;cursor:pointer;font-weight:600;font-size:.9rem;width:100%;
+               transition:background .25s}
+.gpinfo-toggle:hover{background:#facc15;color:#0d0d11}
+.gpinfo-panel{max-height:0;overflow:hidden;opacity:0;
+              transition:max-height .6s ease,opacity .6s ease}
+.gpinfo-container.active .gpinfo-panel{max-height:1400px;opacity:1;margin-top:.55rem}
+.gpinfo-breakdown{list-style:none;padding:0;font-size:.83rem;line-height:1.45}
+.gpinfo-breakdown li::before{content:'✓';margin-right:.4rem;color:#22c55e;font-weight:600}
+.gpinfo-rating-scale {list-style:none;padding:0;font-size:.83rem;line-height:1.45}
+.gpscale-bar{background:#1f2937;border-radius:1rem;height:14px;overflow:hidden;margin:.4rem 0}
+.gpscale-fill{background:linear-gradient(90deg,#f43f5e,#f59e0b,#10b981,#3b82f6);height:100%;width:0}
+
+/* ---------- CTA ---------- */
+@keyframes pulse{0%,100%{transform:scale(.96)}50%{transform:scale(1.04)}}
+.gpcta{display:block;width:100%;padding:.9rem 1rem;margin:2rem 0 0;background:#fbbf24;border:none;
+       border-radius:.75rem;color:#0d0d11;font-weight:700;font-size:.95rem;text-align:center;
+       cursor:pointer;animation:pulse 3s ease-in-out infinite;transition:background .2s;text-decoration:none}
+.gpcta:hover{background:#facc15}
+.gpcta--small{margin-top:1.6rem;font-size:.82rem;padding:.7rem 1rem;animation:breathe 5s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+
+/* ---------- EXERCISE CARDS ---------- */
+.exCard{margin:.9rem 0;padding:1rem 1.1rem;background:#111827;border-radius:1rem;position:relative;overflow:hidden}
+
+
+/* ---------- UNLOCK MINI-GAME ---------- */
+.unlockLive-wrapper { text-align:center; margin-top:1rem; }
+.unlockLive-btn{
+  display:inline-flex; align-items:center; gap:.6rem;
+  padding:.9rem 1.4rem; background:linear-gradient(90deg,#0ea5e9,#38bdf8);
+  border:none; border-radius:.9rem; color:#0d0d11; font-weight:700; font-size:.95rem;
+  cursor:pointer; box-shadow:0 0 16px rgba(56,189,248,.65);
+  transition:transform .2s ease, box-shadow .2s ease;
+  animation: breath 3s ease-in-out infinite;
+
+}
+.unlockLive-btn:hover{ transform:scale(1.05); box-shadow:0 0 24px rgba(56,189,248,.85); }
+.unlockLive-btn:hover{ 
+  transform:scale(1.05); 
+  box-shadow:0 0 24px rgba(56,189,248,.85); 
+}
+
+@keyframes breath{
+  0%,100%{transform:scale(.96)}
+  50%{transform:scale(1.05)}
+}
+
+.exercise-wrap.hidden{ display:none; }
+.exCard{ opacity:0; transform:perspective(600px) rotateY(90deg); }
+.exCard.show{ animation:cardFlip 1.85s ease-out forwards; }
+@keyframes cardFlip{
+  40%{ transform:perspective(600px) rotateY(-10deg); opacity:.5; }
+  100%{ transform:perspective(600px) rotateY(0); opacity:1; }
+}
+.exercise-wrap.glow{ animation:flashGlow 1.3s ease-out forwards; }
+@keyframes flashGlow{
+  0%{ box-shadow:0 0 0 rgba(56,189,248,0); }
+  40%{ box-shadow:0 0 18px rgba(56,189,248,.85); }
+  70%{ box-shadow:0 0 12px rgba(56,189,248,.35); }
+  100%{ box-shadow:0 0 0 rgba(56,189,248,0); }
+}
+
+/* custom spacing for the leaderboard header */
+.leaderboard-title{
+  margin:3rem 0 .3rem;      /* ↑ adjust the 3rem to taste */
+  text-align:center;
+}
+
+/* (optional) tweak note spacing if you want it closer */
+.leaderboard-note{
+  font-size:.8rem;
+  text-align:center;
+  color:#94a3b8;
+  margin:-.2rem 0 1rem;     /* tighten or loosen as you like */
+}
+/* Disable clicks while loading */
+#FC_LIVE_Breakdown[data-loading] { pointer-events: none; }
+/* Optional: ensure the whole area is visibly 'loading' */
+#FC_LIVE_Breakdown[data-loading] { cursor: progress; }
+</style>
+
+
+
+
+<!-- (Optional) Chart.js if not already on the page -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+
+<div id="FC_LIVE_Breakdown" class="fc-block" style="display:none">
+  <div class="flexcheck-expand-wrapper" style="margin-top:3rem;max-width:500px;margin-inline:auto;">
+    <button id="flexToggleBtn" class="flexcheck-toggle" onclick="toggleFlexDetails()">
+      See Full FlexCheck Breakdown
+    </button>
+
+    <div id="flex-details" style="max-height:0;overflow:hidden;transition:max-height 0.6s ease, opacity 0.4s ease;opacity:0;">
+      <div class="gpflex" id="flex">
+        <h1>GamePlan FlexScore</h1>
+        <p id="score" class="gpscore loading">0</p>
+
+        <!-- Carousel -->
+        <div class="carousel-shell"><div id="photo-carousel" class="gpcarousel"></div></div>
+
+        <!-- Meta -->
+        <div class="gpmeta" id="profile-row"></div>
+
+        <!-- Charts -->
+        <h3 class="gpsubtitle">Major Muscles</h3>
+        <canvas id="majorChart" height="200"></canvas>
+        <h3 class="gpsubtitle" style="margin-top:1.8rem">Accessory Muscles</h3>
+        <canvas id="accessoryChart" height="250"></canvas>
+
+        <!-- Score Meaning -->
+        <div class="gpinfo-container">
+          <button class="gpinfo-toggle">What does my score mean?</button>
+          <div class="gpinfo-panel">
+            <div class="gpscale-bar"><div class="gpscale-fill" id="gpscale-fill"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:.5rem;color:#94a3b8;padding:0 .2rem;margin-bottom:1rem">
+              <span>Untrained</span><span>Beginner</span><span>Athletic</span><span>Competitor</span><span>Pro</span>
+            </div>
+
+            <p style="font-size:.85rem;line-height:1.5">
+              Your SnapScore (1–100) reflects muscularity, balance, and detail. We weigh roundness, mass, insertions,
+              proportions, and symmetry against elite bodybuilding standards.
+            </p>
+
+            <ul class="gpinfo-breakdown">
+              <li><strong>Roundness:</strong> 3-D look of each muscle</li>
+              <li><strong>Mass:</strong> Size for your frame</li>
+              <li><strong>Insertions:</strong> Genetic shape & attachments</li>
+              <li><strong>Proportions:</strong> Upper/lower & limb/torso balance</li>
+            </ul>
+
+            <p class="gpinfo-rating-scale"><strong>Rating Guide:</strong><br>
+              100 – Top-tier IFBB Pro<br>
+               90 – Elite amateur competitor<br>
+               80 – Regional-level stage ready<br>
+               70 – Could prep and compete soon<br>
+               60 – Fit gym-goer, strong aesthetics<br>
+               50 – Healthy recreational lifter<br>
+               40 – Slightly trained or novice<br>
+               &lt;40 – Beginner or low development
+            </p>
+          </div>
+        </div>
+
+        <!-- Division Fit -->
+        <h3 class="gpsubtitle">Division Fit</h3>
+        <div class="gpgrid" id="division-grid">
+          <div class="gpgrid-item" id="div-MensPhysique"></div>
+          <div class="gpgrid-item" id="div-ClassicPhysique"></div>
+          <div class="gpgrid-item" id="div-Bodybuilding212"></div>
+          <div class="gpgrid-item" id="div-OpenBodybuilding"></div>
+        </div>
+
+        <!-- Summary -->
+        <h3 class="gpsubtitle" style="margin-top:1.6rem">Summary</h3>
+        <p id="summary" style="margin-top:.4rem;font-size:.9rem;line-height:1.55"></p>
+
+        <!-- Biomechanics -->
+        <div class="gpinfo-container">
+          <button class="gpinfo-toggle">Biomechanics Breakdown</button>
+          <div class="gpinfo-panel"><ul class="gpinfo-breakdown" id="biomechanics-list"></ul></div>
+        </div>
+
+        <!-- Unlock + Exercises -->
+        <h3 class="gpsubtitle" style="margin:2rem 0 .3rem;text-align:center">Key Exercises</h3>
+        <p style="text-align:center;font-size:.8rem;color:#94a3b8;margin:-.2rem 0 1rem">Unlock the moves to level-up your physique</p>
+        <div id="unlockLive-wrapper" class="unlockLive-wrapper">
+          <button id="unlockLive-btn" class="unlockLive-btn" aria-label="Unlock Exercises" onclick="unlockExercises()">
+    <span style="font-size:34px;color:#38bdf8;filter:drop-shadow(0 0 6px rgba(56,189,248,.55));">🔒</span>
+
+            <span>Tap to Unlock</span>
+          </button>
+        </div>
+
+        <div id="exercise-wrap" class="exercise-wrap hidden"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<script>
+(function () {
+  const WRAP = document.getElementById('FC_LIVE_Breakdown');
+  if (!WRAP) return;
+
+  // === Config ===
+  const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxmySjLLGynKo_k_YuqnONRqaoSXnY-x3oXmdXjgBd-7qdhrt3lBR28c1_sq5_yKhu5TQ/exec';
+
+  // === Tiny helpers ===
+  const $ = sel => WRAP.querySelector(sel);
+  const show = () => (WRAP.style.display = '');
+  const hide = () => (WRAP.style.display = 'none');
+
+  function observeAndRun(el, fn, threshold = 0.5) {
+  if (!el) return;
+  const obs = new IntersectionObserver((entries, o) => {
+    if (entries[0].isIntersecting) { fn(); o.disconnect(); }
+  }, { threshold });
+  obs.observe(el);
+}
+
+
+  // --- skeleton / loading ---
+  function ensureSkeleton() {
+    if (WRAP.querySelector('#breakdown-skeleton')) return;
+    const shell = document.createElement('div');
+    shell.id = 'breakdown-skeleton';
+    shell.className = 'achv-shimmer';
+    shell.innerHTML = `
+      <div id="achievements-skeleton"
+           style="display:flex;align-items:center;justify-content:center;gap:1rem;min-height:180px;
+                  background:#0b1220;border:1px solid #1f2a44;border-radius:0.75rem;
+                  box-shadow:0 0 10px rgba(74,222,128,0.10); width:100%;">
+        <div class="achv-spinner" aria-hidden="true"
+             style="width:28px;height:28px;border-radius:50%;
+                    border:3px solid rgba(255,255,255,0.25);border-top-color:#4ade80;
+                    animation:achv-spin .8s linear infinite;"></div>
+        <div>
+          <div class="achv-line lg" style="height:14px;width:160px;border-radius:999px;background:#15213a;margin:6px 0;"></div>
+          <div class="achv-line"    style="height:12px;width:120px;border-radius:999px;background:#15213a;margin:6px 0;"></div>
+          <div class="achv-row"     style="display:flex;gap:10px;margin-top:10px;">
+            <div class="achv-pill" style="width:34px;height:34px;border-radius:12px;background:#15213a;"></div>
+            <div class="achv-pill" style="width:34px;height:34px;border-radius:12px;background:#15213a;"></div>
+            <div class="achv-pill" style="width:34px;height:34px;border-radius:12px;background:#15213a;"></div>
+          </div>
+        </div>
+      </div>
+    `;
+    const content = $('#flex-details');
+    (content?.parentNode || WRAP).insertBefore(shell, content || WRAP.firstChild);
+  }
+  function removeSkeleton(){ WRAP.querySelector('#breakdown-skeleton')?.remove(); }
+  function setLoading(on){
+    if (on){
+      WRAP.setAttribute('data-loading','1');
+      WRAP.setAttribute('aria-busy','true');
+      try{ WRAP.inert = true; }catch{}
+      ensureSkeleton(); show();
+    } else {
+      WRAP.removeAttribute('data-loading');
+      WRAP.removeAttribute('aria-busy');
+      try{ WRAP.inert = false; }catch{}
+      removeSkeleton();
+    }
+  }
+
+  // === URL / entry resolution ===
+  function getParamInsensitive(name){
+    try{
+      const u = new URL(location.href);
+      let v = u.searchParams.get(name);
+      if (v != null) return v;
+      for (const [k,val] of u.searchParams.entries()){
+        if (k.toLowerCase() === name.toLowerCase()) return val;
+      }
+    }catch{}
+    return '';
+  }
+  function safeResolveEntryId(){
+    const fromUrl = getParamInsensitive('entryId');
+    if (fromUrl) return String(fromUrl).trim();
+    if (typeof window.resolveViewerIdSlow === 'function'){
+      try{ return String(window.resolveViewerIdSlow() || '').trim(); }catch{}
+    }
+    return '';
+  }
+
+  // === Shape normalizer (cache {result.*} vs GAS flat) ===
+  function normalize(rec){
+    if (!rec) return null;
+    const r = rec.result || rec;
+    const obj = {
+      entryId:           rec.entryId || r.entryId || '',
+      ticket:            rec.ticket || r.ticket || '',
+      email:             rec.email || r.email || '',
+
+      score:             r.score ?? rec.score ?? null,
+      photos:            Array.isArray(rec.photos) ? rec.photos
+                          : Array.isArray(r.photos) ? r.photos
+                          : Array.isArray(rec.imageUrls) ? rec.imageUrls
+                          : [],
+
+      socialHandle:      r.socialHandle ?? rec.socialHandle ?? '',
+      age:               r.age ?? rec.age ?? null,
+
+      heightCm:          r.heightCm ?? rec.heightCm ?? null,
+      heightIn:          r.heightIn ?? rec.heightIn ?? null,
+      weightKg:          r.weightKg ?? rec.weightKg ?? null,
+      weightLb:          r.weightLb ?? rec.weightLb ?? null,
+
+      trainingAgeYears:  r.trainingAgeYears ?? rec.trainingAgeYears ?? null,
+
+      summary:           r.summary ?? rec.summary ?? '',
+      biomechanics:      r.biomechanics ?? rec.biomechanics ?? [],
+      bestExercises:     r.bestExercises ?? rec.bestExercises ?? r.keyExercises ?? [],
+
+      muscleRatings:     r.muscleRatings ?? rec.muscleRatings ?? { major:{}, accessory:{} },
+      divisionFit:       r.divisionFit   ?? rec.divisionFit   ?? {}
+    };
+    obj.muscleRatings = {
+      major:     { ...(obj.muscleRatings?.major||{}) },
+      accessory: { ...(obj.muscleRatings?.accessory||{}) }
+    };
+    obj.divisionFit = { ...(obj.divisionFit||{}) };
+    return obj;
+  }
+
+  // Prefer live values; fallback to cache when live is empty/null
+  function mergeLiveOverCache(live, cache){
+    const L = normalize(live)  || {};
+    const C = normalize(cache) || {};
+    const coalesce = (a,b)=> (a ?? b);
+
+    return {
+      entryId:           coalesce(L.entryId, C.entryId),
+      ticket:            coalesce(L.ticket,  C.ticket),
+      email:             coalesce(L.email,   C.email),
+
+      score:             coalesce(L.score,   C.score),
+      photos:            (L.photos && L.photos.length ? L.photos : (C.photos || [])),
+
+      socialHandle:      coalesce(L.socialHandle,     C.socialHandle),
+      age:               coalesce(L.age,              C.age),
+      heightCm:          coalesce(L.heightCm,         C.heightCm),
+      heightIn:          coalesce(L.heightIn,         C.heightIn),
+      weightKg:          coalesce(L.weightKg,         C.weightKg),
+      weightLb:          coalesce(L.weightLb,         C.weightLb),
+      trainingAgeYears:  coalesce(L.trainingAgeYears, C.trainingAgeYears),
+
+      summary:           coalesce(L.summary,          C.summary),
+      biomechanics:      (L.biomechanics && L.biomechanics.length ? L.biomechanics : (C.biomechanics||[])),
+      bestExercises:     (L.bestExercises && L.bestExercises.length ? L.bestExercises : (C.bestExercises||[])),
+
+      muscleRatings: {
+        major:     { ...(C.muscleRatings?.major||{}),     ...(L.muscleRatings?.major||{}) },
+        accessory: { ...(C.muscleRatings?.accessory||{}), ...(L.muscleRatings?.accessory||{}) }
+      },
+      divisionFit: { ...(C.divisionFit||{}), ...(L.divisionFit||{}) }
+    };
+  }
+
+  function isRenderable(j){
+    const n = normalize(j);
+    return !!(n && (n.score != null || (n.photos && n.photos.length)));
+  }
+
+  // === Cache read (no localStorage content used) ===
+  function getCachedByEntryId(entryId){
+    try{
+      if (window.flexcheckCache?.getEntryById) {
+        return window.flexcheckCache.getEntryById(entryId);
+      }
+      if (window.flexcheckCache?.getAllEntries) {
+        return window.flexcheckCache.getAllEntries()
+          .find(e => String(e.entryId) === String(entryId)) || null;
+      }
+    }catch{}
+    return null;
+  }
+
+  // === Live fetch (polls if pending) ===
+  async function fetchLive(entryId){
+    if (!entryId) return null;
+    let res = null;
+    for (let i=0; i<8; i++){
+      try{
+        const url = `${ENDPOINT}?entryId=${encodeURIComponent(entryId)}&debug=1`;
+        const r = await fetch(url, { cache: 'no-store' });
+        const j = await r.json();
+        res = j;
+        if (!j?.pending) break;
+      }catch(e){
+        console.error('[Breakdown] fetch error', e);
+      }
+      await new Promise(r => setTimeout(r, 800));
+    }
+    return res;
+  }
+
+  // === Race-proof boot ===
+  let RENDER_TOKEN = 0;
+
+  async function boot(){
+    const myToken = ++RENDER_TOKEN;
+    setLoading(false);
+    hide();
+
+    const entryId = safeResolveEntryId();
+    if (!entryId) return;
+
+    setLoading(true); // show skeleton
+    show();
+
+    const [live, cache] = await Promise.all([
+      fetchLive(entryId),
+      Promise.resolve(getCachedByEntryId(entryId))
+    ]);
+
+    if (myToken !== RENDER_TOKEN) return; // stale result; ignore
+
+    let model = null;
+    if (live && !live.pending && isRenderable(live)){
+      model = mergeLiveOverCache(live, cache);
+      WRAP.dataset.source = 'live+cache';
+    } else if (cache && isRenderable(cache)){
+      model = normalize(cache);
+      WRAP.dataset.source = 'cache-only';
+    }
+
+    if (!model){
+      setLoading(false);
+      hide();
+      return;
+    }
+
+    try{
+      render(model); // flat, normalized
+      console.debug('[Breakdown] rendered', {
+        source: WRAP.dataset.source,
+        hasScore: model.score != null,
+        handle: model.socialHandle,
+        age: model.age,
+        hCm: model.heightCm, hIn: model.heightIn,
+        wKg: model.weightKg, wLb: model.weightLb
+      });
+    }finally{
+      setLoading(false);
+      show();
+    }
+  }
+
+  // === UI helpers ===
+  function animateScore(score) {
+    const el = $('#score');
+    if (!el) return;
+    const target = Math.max(0, Math.round(Number(score)||0));
+    let cur = 0, inc = Math.max(1, Math.round(target / 60));
+    const id = setInterval(() => {
+      cur += inc;
+      if (cur >= target) { cur = target; clearInterval(id); }
+      el.textContent = cur;
+    }, 28);
+  }
+
+  function unlockExercises() {
+    const unlockWrap   = $('#unlockLive-wrapper');
+    const exerciseWrap = $('#exercise-wrap');
+    if (!unlockWrap || !exerciseWrap) return;
+    unlockWrap.style.display = 'none';
+    exerciseWrap.classList.remove('hidden');
+    [...exerciseWrap.children].forEach((card, i) =>
+      setTimeout(() => card.classList.add('show'), i * 250)
+    );
+    exerciseWrap.classList.add('glow');
+    setTimeout(() => exerciseWrap.classList.remove('glow'), 1300);
+    if (!exerciseWrap.children.length) {
+      const note = document.createElement('div');
+      note.className = 'exCard show';
+      note.innerHTML = '<h4>Coming soon</h4><p>We’re generating your key exercises for this FlexCheck.</p>';
+      exerciseWrap.appendChild(note);
+    }
+  }
+  window.unlockExercises = unlockExercises;
+
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.gpinfo-toggle');
+    if (!btn || !WRAP.contains(btn)) return;
+    const box   = btn.closest('.gpinfo-container');
+    const panel = box?.querySelector('.gpinfo-panel');
+    if (!box || !panel) return;
+
+    const isOpen = box.classList.toggle('active');
+    btn.setAttribute('aria-expanded', String(isOpen));
+    panel.style.maxHeight = isOpen ? panel.scrollHeight + 'px' : '0';
+    panel.style.opacity   = isOpen ? '1' : '0';
+  });
+
+  function toggleFlexDetails() {
+    const content = $('#flex-details');
+    const btn = $('#flexToggleBtn');
+    if (!content || !btn) return;
+    const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+    content.style.maxHeight = isOpen ? '0' : '5000px';
+    content.style.opacity   = isOpen ? '0' : '1';
+    btn.textContent = isOpen ? 'See Full FlexCheck Breakdown' : '❌ Hide FlexCheck Breakdown';
+  }
+  window.toggleFlexDetails = toggleFlexDetails;
+
+  // === Render (expects flat model) ===
+  function render(j) {
+    const score = Number(j.score) || 0;
+
+    const scoreEl = $('#score');
+    if (scoreEl) scoreEl.classList.remove('loading');
+    observeAndRun(scoreEl, () => animateScore(score));
+    observeAndRun($('#gpscale-fill'), () => {
+      const fill = $('#gpscale-fill');
+      if (fill) fill.style.width = Math.max(0, Math.min(100, score)) + '%';
+    });
+
+    // photos
+    const lane = $('#photo-carousel');
+    if (lane) {
+      lane.innerHTML = '';
+      (j.photos || []).forEach(src => {
+        if (!src) return;
+        const img = new Image();
+        img.src = src;
+        img.alt = 'progress photo';
+        lane.appendChild(img);
+      });
+    }
+
+    // meta
+    const meta = [];
+    meta.push(j.socialHandle ? `<span class="handle">${j.socialHandle}</span>` : '<span class="handle">Unknown</span>');
+    if (j.age != null)      meta.push(`<span>${j.age}</span>`);
+    if (j.heightCm)         meta.push(`<span>${j.heightCm}cm</span>`);
+    else if (j.heightIn)    meta.push(`<span>${j.heightIn}in</span>`);
+    if (j.weightKg)         meta.push(`<span>${j.weightKg}kg</span>`);
+    else if (j.weightLb)    meta.push(`<span>${j.weightLb}lb</span>`);
+    const profileRow = $('#profile-row');
+    if (profileRow) profileRow.innerHTML = meta.join(' • ');
+
+    // charts (Chart.js optional)
+const bar = (canvasSel, obj, color) => {
+  if (!obj || typeof window.Chart === 'undefined') return;
+  const el = $(canvasSel);
+  if (!el) return;
+  const labels = Object.keys(obj), data = Object.values(obj);
+  if (!labels.length) return;
+  new window.Chart(el, {
+    type: 'bar',
+    data: { labels, datasets: [{ data, backgroundColor: color }] },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, max: 100 } }
+    }
+  });
+};
+observeAndRun($('#majorChart'),     () => bar('#majorChart',     j.muscleRatings?.major, '#3b82f6'));
+observeAndRun($('#accessoryChart'), () => bar('#accessoryChart', j.muscleRatings?.accessory, '#10b981'));
+
+    // division fit
+    const labelMap = {
+      MensPhysique: 'Mens<br>Physique',
+      ClassicPhysique: 'Classic<br>Physique',
+      Bodybuilding212: 'Bodybuilding<br>212',
+      OpenBodybuilding: 'Open<br>Bodybuilding'
+    };
+    const desc = {
+      MensPhysique: 'Beach-body V-taper',
+      ClassicPhysique: 'Golden-era balance',
+      Bodybuilding212: 'Short-frame mass',
+      OpenBodybuilding: 'Maximum overall size'
+    };
+    Object.keys(labelMap).forEach(k => {
+      const el = $(`#div-${k}`);
+      const val = j.divisionFit?.[k];
+      if (el && val != null) {
+        el.innerHTML = `${labelMap[k]}<span>${val}%</span><br><small style="font-size:.7rem;color:#94a3b8">${desc[k]}</small>`;
+      }
+    });
+
+    // summary
+    const sumEl = $('#summary');
+    if (sumEl) sumEl.textContent = j.summary || '';
+
+    // biomechanics
+    const ul = $('#biomechanics-list');
+    if (ul) {
+      ul.innerHTML = '';
+      (j.biomechanics || []).forEach(txt => {
+        const li = document.createElement('li');
+        li.textContent = txt;
+        ul.appendChild(li);
+      });
+    }
+
+    // exercises
+    const arr = Array.isArray(j.bestExercises) ? j.bestExercises
+             : (j.keyExercises ? j.keyExercises
+             : (j.bestExercise ? [j.bestExercise] : []));
+    const wrap = $('#exercise-wrap');
+    if (wrap) {
+      wrap.innerHTML = '';
+      (arr || []).forEach(ex => {
+        if (!ex || !ex.name) return;
+        const card = document.createElement('div');
+        card.className = 'exCard';
+        card.innerHTML = `<h4>${ex.name}</h4>${ex.reason ? `<p>${ex.reason}</p>` : ''}`;
+        wrap.appendChild(card);
+      });
+      const unlockWrap = $('#unlockLive-wrapper');
+      if (unlockWrap) unlockWrap.style.display = 'block';
+      wrap.classList.add('hidden');
+    }
+  }
+
+  // === Wire boot ===
+  window.addEventListener('flexcheck:viewerChanged', boot);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
+</script>

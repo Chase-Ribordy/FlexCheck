@@ -1,0 +1,716 @@
+<style>
+        @keyframes popPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes fcSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Email input validation states */
+        #emailInput {
+            padding: .5rem .75rem;
+            border-radius: .5rem;
+            width: 90%;
+            margin-bottom: 1rem;
+            border: 1px solid #475569;
+            transition: all 0.3s;
+            background: #1e293b;
+            color: #f8fafc;
+        }
+
+        #emailInput:focus {
+            outline: none;
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.1);
+        }
+
+        #emailInput.invalid {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+            animation: shake 0.3s;
+        }
+
+        #emailInput.valid {
+            border-color: #10b981 !important;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* FlexCheck button styles */
+        .fc-btn {
+            padding: .5rem 1rem;
+            border-radius: .5rem;
+            background: #38bdf8;
+            color: #0d0d11;
+            font-weight: 700;
+            border: none;
+            box-shadow: 0 0 12px rgba(56,189,248,0.2);
+            transition: all .2s ease;
+            cursor: pointer;
+            position: relative;
+            min-width: 100px;
+        }
+
+        .fc-btn:hover:not(.is-loading):not(:disabled) {
+            transform: translateY(-1px);
+            background: #0ea5e9;
+        }
+
+        .fc-btn:active:not(.is-loading):not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .fc-btn.is-loading {
+            opacity: .8;
+            cursor: not-allowed;
+            background: #64748b !important;
+        }
+
+        .fc-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .fc-btn .btn-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .fc-btn .spin {
+            display: none;
+            width: 1em;
+            height: 1em;
+            border: 2px solid rgba(15,23,42,.25);
+            border-top-color: #0d0d11;
+            border-radius: 50%;
+            animation: fcSpin .8s linear infinite;
+        }
+
+        .fc-btn.is-loading .spin {
+            display: inline-block;
+        }
+
+        /* Logout button styles */
+        .logout-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fef2f2;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Error message styling */
+        .error-message {
+            background: #7f1d1d;
+            border: 1px solid #991b1b;
+            color: #fecaca;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Auth section styles */
+        .auth-section {
+            transition: opacity 0.3s ease;
+        }
+
+        .auth-section.hidden {
+            display: none;
+        }
+
+.logout-btn.loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.logout-btn .loading-spinner {
+    display: none;
+    width: 1em;
+    height: 1em;
+    border: 2px solid rgba(254, 242, 242, 0.3);
+    border-top-color: #fef2f2;
+    border-radius: 50%;
+    animation: fcSpin 0.8s linear infinite;
+    margin-right: 0.5rem;
+}
+
+.logout-btn.loading .loading-spinner {
+    display: inline-block;
+}
+    </style>
+
+<!-- ✅ FLEXCHECK ENTRY BLOCK -->
+<div style="max-width:760px;margin:2rem auto;text-align:center;">
+
+    <!-- 📥 New Submission Button -->
+    <button onclick="openFlexModal()" style="
+        background:linear-gradient(135deg,#38bdf8,#0ea5e9);
+        color:#0f172a;font-weight:700;font-size:1rem;padding:0.9rem 1.5rem;
+        border:none;border-radius:0.75rem;cursor:pointer;
+        box-shadow:0 0 12px rgba(56,189,248,0.2);transition:0.25s all;
+        margin-bottom:1rem;">
+        📝 Submit New FlexCheck
+    </button>
+
+    <!-- 🔐 Authentication Section -->
+    <div id="authSection">
+        <!-- Return Link (shown when logged out) -->
+        <p id="returnLink" class="auth-section" style="margin-top:0;margin-bottom:0.5rem;">
+            <a href="#" onclick="handleReturnClick(event)" style="
+                font-style:italic;color:#94a3b8;font-size:0.85rem;
+                cursor:pointer;display:inline-block;">
+                🔑 Login to Your Player Card
+            </a>
+        </p>
+
+        <!-- Logout Section (shown when logged in) -->
+        <div id="logoutSection" class="auth-section hidden" style="margin-top:0;margin-bottom:0.5rem;">
+            <button onclick="handleLogout()" class="logout-btn" id="logoutBtn">
+    <span class="loading-spinner"></span>
+    <span class="btn-text">🚪 Logout</span>
+</button>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ FLEXCHECK SUBMISSION MODAL -->
+<div id="flexModal" style="
+    display:none;position:fixed;inset:0;z-index:9999;
+    background:rgba(0,0,0,0.7);align-items:center;justify-content:center;">
+    
+    <div style="background:#111827;padding:2rem;border-radius:1rem;
+                box-shadow:0 0 30px rgba(0,0,0,0.4);max-width:95%;
+                width:860px;margin:auto;position:relative;">
+
+        <!-- ❌ Close Button -->
+        <button onclick="closeFlexModal()" style="
+            position:absolute;top:0.75rem;right:0.75rem;
+            background:none;border:none;font-size:1.2rem;
+            color:#94a3b8;cursor:pointer;">✕</button>
+
+        <!-- Main Content Box -->
+        <div style="background:linear-gradient(135deg,#0f172a,#1e293b);
+            border:1px solid #334155;border-left:4px solid #38bdf8;
+            padding:1.25rem 1.5rem;border-radius:1rem;
+            box-shadow:0 0 16px rgba(56,189,248,0.12);
+            display:flex;align-items:center;justify-content:space-between;
+            flex-wrap:wrap;gap:1.25rem;">
+
+            <!-- Left Content -->
+            <div style="flex:1;min-width:140px;">
+                <p style="margin:0;color:#f8fafc;font-size:0.98rem;font-weight:600;">
+                    Submit Your <span style="color:#38bdf8;">FlexCheck</span> by 
+                    <span style="color:#facc15;">Thursday 7PM CT</span>
+                </p>
+                <ul style="color:#cbd5e1;font-size:0.85rem;margin:0.5rem 0 0 1rem;padding:0;list-style:disc;">
+                    <li>⚡ Instant Physique Score</li>
+                    <li>📊 Compete for Leaderboard</li>
+                    <li>👑 Any Physique can WIN!</li>
+                </ul>
+            </div>
+
+            <!-- CTA Button -->
+            <a href="#" onclick="goToFormWithData(event)"
+   style="text-decoration:none;flex-shrink:0;padding:0.7rem 1.4rem;
+          border-radius:0.6rem;background:linear-gradient(135deg,#38bdf8,#0ea5e9);
+          color:#0f172a;font-size:0.95rem;font-weight:800;
+          box-shadow:0 0 10px rgba(56,189,248,0.3);
+          transition:all 0.25s ease;text-align:center;letter-spacing:0.5px;
+          animation:popPulse 2s ease-in-out infinite;">
+    🚀 Submit Now →
+</a>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ RETURN VIA EMAIL MODAL -->
+<div id="emailModal" style="
+    display:none;position:fixed;inset:0;z-index:9999;
+    background:rgba(0,0,0,0.7);align-items:center;justify-content:center;">
+    <div style="background:#111827;padding:2rem;border-radius:1rem;
+                box-shadow:0 0 30px rgba(0,0,0,0.4);text-align:center;
+                max-width:90%;width:340px;margin:auto;position:relative;">
+
+        <!-- ❌ Close Button -->
+        <button onclick="closeModal()" style="
+            position:absolute;top:0.75rem;right:0.75rem;
+            background:none;border:none;font-size:1.2rem;
+            color:#94a3b8;cursor:pointer;">✕</button>
+
+        <h3 style="color:#f9fafb;margin-bottom:0.75rem;font-size:1rem;">
+            Enter your email to return to your Player Card
+        </h3>
+        
+        <input id="emailInput" type="email" placeholder="you@example.com" 
+               onkeyup="validateEmailInput()" />
+        
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message">
+            ❌ <span id="errorText"></span>
+        </div>
+        
+        <!-- Success Message -->
+        <div id="successMessage" style="
+            display:none;background:#065f46;border:1px solid #059669;
+            color:#d1fae5;padding:0.75rem;border-radius:0.5rem;margin-bottom:1rem;
+            font-size:0.9rem;">
+            ✅ <span id="successText"></span>
+        </div>
+        
+        <button id="submitBtn" type="button" class="fc-btn" onclick="submitEmail()">
+            <div class="btn-content">
+                <span class="label">Submit</span>
+                <span class="spin" aria-hidden="true"></span>
+            </div>
+        </button>
+    </div>
+</div>
+
+<script>
+// ---- Enhanced flexcheck system with logout support ----
+window.flexcheck = window.flexcheck || {
+    getOwner: () => {
+        try {
+            const raw = localStorage.getItem('flexcheckOwner');
+            if (!raw) return { email: '', preferredEntryId: null };
+            return JSON.parse(raw);
+        } catch {
+            return { email: '', preferredEntryId: null };
+        }
+    },
+    setOwnerEmail: async (email, ids) => {
+  await new Promise(r => setTimeout(r, 100));
+  const sortedIds = ids.map(String).sort((a,b)=>(parseInt(b,10)||0)-(parseInt(a,10)||0));
+  const owner = { email, preferredEntryId: sortedIds[0] || null, entryIds: ids };
+  localStorage.setItem('flexcheckOwner', JSON.stringify(owner));
+  try { window.dispatchEvent(new CustomEvent('flexcheck:ownerChanged', { detail: owner })); } catch {}
+  return owner;
+},
+
+    clearOwner: () => {
+        // Clear all FlexCheck related localStorage
+        localStorage.removeItem('flexcheckOwner');
+        localStorage.removeItem('flexcheckCacheV3');
+        
+        // Clear any other cache items that might exist
+        Object.keys(localStorage).forEach(key => {
+            if (key.toLowerCase().includes('flexcheck')) {
+                localStorage.removeItem(key);
+            }
+        });
+        
+        // Dispatch events to notify other parts of the app
+        try {
+            window.dispatchEvent(new CustomEvent('flexcheck:ownerChanged'));
+            window.dispatchEvent(new CustomEvent('flexcheck:cacheUpdated'));
+        } catch {}
+    }
+};
+
+// ✅ Your deployed Web App URL (ends with /exec)
+window.GAS_URL = window.GAS_URL || 'https://script.google.com/macros/s/AKfycbz8Uf7b7CUidKpmY5Vf8C-ejYOx8K-qCcJmNwyvTqQzH9PooXRJNqyZGzI61tN6mIsX/exec';
+window.GAS_KEY = window.GAS_KEY || '';
+
+// --------------------------------------------------------------
+let isProcessing = false;
+let abortController = null;
+
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function setButtonLoading(loading) {
+    const btn = document.getElementById('submitBtn');
+    if (!btn) return;
+    if (loading) {
+        btn.classList.add('is-loading');
+        btn.disabled = true;
+        btn.querySelector('.label').textContent = 'Searching...';
+        isProcessing = true;
+    } else {
+        btn.classList.remove('is-loading');
+        btn.disabled = false;
+        btn.querySelector('.label').textContent = 'Submit';
+        isProcessing = false;
+    }
+}
+
+function validateEmailInput() {
+    const emailEl = document.getElementById('emailInput');
+    const email = emailEl.value.trim();
+    emailEl.classList.remove('invalid', 'valid');
+    hideError();
+    if (email === '') return false;
+    if (isValidEmail(email)) {
+        emailEl.classList.add('valid');
+        return true;
+    } else {
+        emailEl.classList.add('invalid');
+        return false;
+    }
+}
+
+function showError(message) {
+    const errorEl = document.getElementById('errorMessage');
+    const textEl = document.getElementById('errorText');
+    if (errorEl && textEl) {
+        textEl.textContent = message;
+        errorEl.classList.add('show');
+    }
+}
+
+function hideError() {
+    const errorEl = document.getElementById('errorMessage');
+    if (errorEl) errorEl.classList.remove('show');
+}
+
+function showSuccess(message, callback) {
+    const successEl = document.getElementById('successMessage');
+    const textEl = document.getElementById('successText');
+    if (successEl && textEl) {
+        textEl.textContent = message;
+        successEl.style.display = 'block';
+        if (callback) setTimeout(callback, 1500);
+    }
+}
+
+function hideSuccess() {
+    const successEl = document.getElementById('successMessage');
+    if (successEl) successEl.style.display = 'none';
+}
+
+// -------- Auth State Management ----------
+function updateAuthUI() {
+    const owner = window.flexcheck.getOwner();
+    const returnLink = document.getElementById('returnLink');
+    const logoutSection = document.getElementById('logoutSection');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (owner && owner.email) {
+        // User is logged in - show logout section with loading state
+        returnLink.classList.add('hidden');
+        logoutSection.classList.remove('hidden');
+        
+        // Add loading state for 1.5 seconds
+        if (logoutBtn) {
+            logoutBtn.classList.add('loading');
+            setTimeout(() => {
+                logoutBtn.classList.remove('loading');
+            }, 1500);
+        }
+    } else {
+        // User is logged out - show return link
+        returnLink.classList.remove('hidden');
+        logoutSection.classList.add('hidden');
+    }
+}
+
+function handleLogout() {
+    console.log('BEFORE CLEAR:');
+    console.log('flexcheckOwner localStorage:', localStorage.getItem('flexcheckOwner'));
+    console.log('flexcheckCacheV3 localStorage:', localStorage.getItem('flexcheckCacheV3'));
+    console.log('window.flexcheckCache.ownerEmail:', window.flexcheckCache?.ownerEmail);
+    console.log('window.flexcheckOwner:', window.flexcheckOwner);
+    
+    // Clear all flexcheck data first
+    window.flexcheck.clearOwner();
+    
+    console.log('AFTER CLEAR:');
+    console.log('flexcheckOwner localStorage:', localStorage.getItem('flexcheckOwner'));
+    console.log('flexcheckCacheV3 localStorage:', localStorage.getItem('flexcheckCacheV3'));
+    console.log('window.flexcheckCache.ownerEmail:', window.flexcheckCache?.ownerEmail);
+    console.log('window.flexcheckOwner:', window.flexcheckOwner);
+    
+    // Force reload to clean demo state
+    const baseUrl = location.origin + '/flexcheck/flexcheck-player-card/';
+    location.replace(baseUrl);
+}
+
+// -------- Navigation / modal helpers ----------
+function gotoMyCard(entryId) {
+    const id = String(entryId || '').replace(/\D+/g, '');
+    const url = new URL('/flexcheck/flexcheck-player-card', location.origin);
+    if (id) url.searchParams.set('entryId', id);
+    location.href = url.pathname + url.search;
+}
+
+function flexReady(cb) {
+    if (window.flexcheck && window.flexcheck.getOwner) return cb();
+    const checkInterval = setInterval(() => {
+        if (window.flexcheck && window.flexcheck.getOwner) {
+            clearInterval(checkInterval);
+            cb();
+        }
+    }, 30);
+}
+
+function openFlexModal() {
+    document.getElementById("flexModal").style.display = "flex";
+}
+
+function closeFlexModal() {
+    document.getElementById("flexModal").style.display = "none";
+}
+
+function closeModal() {
+    if (abortController) {
+        abortController.abort();
+        abortController = null;
+    }
+    setButtonLoading(false);
+    hideSuccess();
+    hideError();
+    const emailEl = document.getElementById('emailInput');
+    if (emailEl) emailEl.classList.remove('invalid', 'valid');
+    document.getElementById("emailModal").style.display = "none";
+}
+
+
+// -------- GAS helpers ----------
+function buildGASUrl(fn, params = {}) {
+    if (!window.GAS_URL) throw new Error('GAS_URL is not defined');
+    const url = new URL(window.GAS_URL);
+    url.searchParams.set('fn', fn);
+    for (const [k, v] of Object.entries(params)) {
+        if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
+    }
+    if (window.GAS_KEY) {
+        url.searchParams.set('key', window.GAS_KEY);
+    }
+    return url.toString();
+}
+
+async function gasGet(fn, params, signal) {
+    const url = buildGASUrl(fn, params);
+    const res = await fetch(url, {
+        method: 'GET',
+        signal,
+    });
+    let data;
+    try {
+        data = await res.json();
+    } catch (e) {
+        throw new Error('Invalid JSON from GAS');
+    }
+    return { httpOk: res.ok, data };
+}
+
+// -------- Main email submission ----------
+async function submitEmail() {
+    if (isProcessing) return;
+
+    const emailEl = document.getElementById('emailInput');
+    const email = emailEl.value.trim().toLowerCase();
+
+    hideError();
+    hideSuccess();
+
+    if (!email) {
+        showError('Please enter an email address');
+        emailEl.focus();
+        return;
+    }
+    if (!isValidEmail(email)) {
+        emailEl.classList.add('invalid');
+        showError('Please enter a valid email address');
+        emailEl.focus();
+        return;
+    }
+
+    abortController = new AbortController();
+    setButtonLoading(true);
+
+    try {
+        // Step 1: Get entry IDs for the email
+        const { data } = await gasGet('ids', { email }, abortController.signal);
+
+        if (!data || data.ok !== true) {
+            const msg = (data && data.error) ? data.error : 'Lookup failed';
+            showError(msg);
+            emailEl.focus();
+            return;
+        }
+
+        const ids = Array.isArray(data.entryIds) ? data.entryIds : [];
+        if (!ids.length) {
+            showError('No FlexCheck entries found for this email');
+            emailEl.focus();
+            return;
+        }
+
+        // Step 2: Fetch and cache all entries for this email FIRST
+        // This is the critical missing piece!
+        try {
+            const entriesResponse = await gasGet('entries', { email }, abortController.signal);
+            if (entriesResponse.data && entriesResponse.data.entries) {
+                // Use the cache system to store the entries
+                if (window.flexcheckCache && window.flexcheckCache.primeOwnerEntries) {
+                    window.flexcheckCache.primeOwnerEntries(entriesResponse.data.entries, email);
+                }
+            }
+        } catch (cacheError) {
+            console.warn('Failed to pre-cache entries, but continuing:', cacheError);
+            // Don't fail the whole flow if caching fails
+        }
+
+        // Step 3: Save owner info AFTER cache is populated
+        // Now setOwnerEmail can access the cached entries to determine the most recent by timestamp
+        await window.flexcheck.setOwnerEmail(email, ids);
+        const owner = window.flexcheck.getOwner();
+        const targetId = owner?.preferredEntryId || ids[0];
+
+        setButtonLoading(false);
+        abortController = null;
+
+        showSuccess(`Found ${ids.length} ${ids.length === 1 ? 'entry' : 'entries'}! Redirecting...`, () => {
+            closeModal();
+            // Force full page reload to refresh all widgets
+            const url = new URL('/flexcheck/flexcheck-player-card', location.origin);
+            if (targetId) url.searchParams.set('entryId', targetId);
+            location.href = url.href;
+        });
+
+    } catch (error) {
+        setButtonLoading(false);
+        if (abortController) abortController = null;
+
+        if (error && error.message === 'AbortError') {
+            return;
+        }
+        console.error('Email lookup error:', error);
+        showError('Connection error. Please try again.');
+        emailEl.focus();
+    }
+}
+
+// -------- Events ----------
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize auth UI
+    updateAuthUI();
+    
+    // Listen for owner changes
+    window.addEventListener('flexcheck:ownerChanged', updateAuthUI);
+    
+    const emailEl = document.getElementById('emailInput');
+    if (emailEl) {
+        emailEl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                submitEmail();
+            }
+        });
+    }
+});
+
+window.addEventListener('submit', (e) => {
+    if (e.target && e.target.contains && e.target.contains(document.getElementById('emailInput'))) {
+        e.preventDefault();
+    }
+});
+function goToFormWithData(event) {
+    event.preventDefault();
+    
+    // Get cached data from flexcheckCacheV3
+    const cachedDataString = localStorage.getItem('flexcheckCacheV3');
+    if (!cachedDataString) {
+        // No cached data, go to form normally
+        window.open('https://www.gameplanfitness.com/flexcheck/premium-flexcheck/', '_blank');
+        return;
+    }
+    
+    try {
+        const cachedData = JSON.parse(cachedDataString);
+const currentEntryId = window.flexcheck.getCurrentEntryId && window.flexcheck.getCurrentEntryId();
+const currentEntry = cachedData.entriesById[currentEntryId] || Object.values(cachedData.entriesById)[0];
+
+if (!currentEntry) {
+  window.open('https://www.gameplanfitness.com/flexcheck/premium-flexcheck/', '_blank');
+  return;
+}
+
+if (currentEntry.email) params.append('email', currentEntry.email);
+if (currentEntry.result) {
+  const result = currentEntry.result;
+  if (result.age) params.append('numeric_field_4', result.age);
+  if (result.heightCm) params.append('numeric_field_2', result.heightCm);
+  if (result.heightIn) params.append('numeric_field', result.heightIn);
+  if (result.socialHandle) params.append('input_text', result.socialHandle);
+  if (result.weightKg) params.append('numeric_field_1', result.weightKg);
+  if (result.weightLb) params.append('numeric_field_3', result.weightLb);
+  if (result.trainingAgeYears) params.append('numeric_field_5', result.trainingAgeYears);
+}
+
+        
+        // Navigate to form page with parameters
+        window.open(baseUrl + '?' + params.toString(), '_blank');
+        
+    } catch (error) {
+        console.error('Error processing cached data:', error);
+        // Fallback to normal form
+        window.open('https://www.gameplanfitness.com/flexcheck/premium-flexcheck/', '_blank');
+    }
+}
+function handleReturnClick(e) {
+  if (e && e.preventDefault) e.preventDefault();
+
+  flexReady(() => {
+    const owner = window.flexcheck.getOwner();
+
+    // 🔑 Patch: if no owner email in cache → force email modal
+    if (!owner || !owner.email) {
+      document.getElementById("emailModal").style.display = "flex";
+      return;
+    }
+
+    // Existing behavior if owner exists
+    const id = (window.flexcheck.getCurrentEntryId && window.flexcheck.getCurrentEntryId())
+      || owner?.preferredEntryId
+      || '';
+    if (id) {
+      gotoMyCard(id);
+    } else {
+      document.getElementById("emailModal").style.display = "flex";
+    }
+  });
+}
+
+</script>

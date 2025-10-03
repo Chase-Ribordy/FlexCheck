@@ -1,0 +1,915 @@
+<!-- GamePlan Player Card – fixed iris animation -->
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Hemi+Head:wght@700&display=swap">
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+body {
+  position: relative;
+}
+/* ───────────  MASTER PALETTE  ──────────────────────────────── */
+:root{
+  --accent:#27BEFA;       /* default = BLUE                     */
+  --rail:#212830;         /* dark grey bar background           */
+  --text2:#8b909b;        /* secondary text (values / footer)   */
+}
+/* podium swap-outs (just add the class to .gp-wrapper) */
+.theme-gold   {--accent:#d4a427;}   /* 1st */
+.theme-silver {--accent:#c0c0c8;}   /* 2nd */
+.theme-bronze {--accent:#cd7f32;}   /* 3rd */
+
+/* ───────────  BASE LAYOUT  ─────────────────────────────────── */
+.gp-wrapper {
+  position: relative;
+  margin: auto;
+  width: 100%;                   /* ⬅️ NEW: matches .spotlight-card */
+
+  max-width: 416px;                          /* slightly smaller than 420px */
+  aspect-ratio: 1365 / 2048;                /* Maintains card proportion */
+  
+  background-color: #0b1630;                /* Deep navy background */
+  background-image: url('https://www.gameplanfitness.com/wp-content/uploads/2025/07/Final_playercard_bluev2.webp');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+ border-radius: 20px;                       /* round the card corners */
+  overflow: hidden;                          /* ensure background/image is clipped to the shape */
+
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);    /* optional: soft glow for polish */
+
+}
+
+.gp-box {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font: 700 12px/1 'Inter', sans-serif;
+  /* Remove pointer-events: none OR override it */
+}
+
+.image-mask {
+  pointer-events: auto; /* Ensure clicks are registered */
+}
+
+/* ───────────  COORDINATE MAP (all % of wrapper)  ───────────── */
+.name-container    {top:  8%; left:50%; width:70%; height:10%;transform:translateX(-50%);}
+.image-mask        {top:22.5%; left:13%; width:45%; height:46.5%;}
+.flexscore-banner  {top:22.7%; left:63.5%; width:29%; height:15%;}
+.stats-container   {top:41.5%; left:60.5%; width:34%; height:28%;}
+.star-zone         {top:70%;  left:7%;  width:84%; height:14%;}
+.bottom-footer     {top:89%;  left:50%; width:70%; height:4%; transform:translateX(-50%);}
+
+/* ───────────  NAME / HANDLE  ───────────────────────────────── */
+.name-container {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  width: 70%;
+  height: 10%;
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;       /* Vertical centering */
+  justify-content: center;   /* Horizontal centering */
+  text-align: center;
+
+  font-family: 'Hemi Head', sans-serif;
+font-size: clamp(14px, 4.5vw, 22px);  letter-spacing: 1px;
+  line-height: 1;
+
+  background: rgba(0, 0, 0, 0.3);
+  clip-path: inset(0 round 6px);
+  padding: 0 6%;
+
+  white-space: nowrap;         /* ⛔ no wrapping */
+  overflow: hidden;            /* ⛔ cut off if too long */
+  text-overflow: ellipsis;     /* (…) if too long */
+}
+
+
+/* ───────────  PHOTO MASK (fixed)  ───────────────────────────── */
+/* ───────────  IMAGE MASK  ──────────── */
+.image-mask{
+  position:absolute;
+  overflow:hidden;           /* hides the "off‑screen" slide */
+  cursor:pointer;
+
+  /* ✨ the mask (moved back from .slide) */
+  border-radius:0 0 0 10%;
+  clip-path:polygon(0 0,87% 0,100% 7.5%,100% 100%,0 100%);
+}
+/* decorative blue outline */
+.image-mask::after{
+  content:'';
+  position:absolute;inset:0;
+  border:4px solid var(--accent);
+  border-radius:inherit;
+  clip-path:inherit;
+  pointer-events:none;
+}
+
+/* ───────────  CAROUSEL SIZING  ───────── */
+.carousel{
+  display:flex;
+  height:100%;
+  width:100%;                /* ⬅️  was 200% */
+  transition:transform .4s ease;
+}
+.slide{
+  flex:0 0 100%;             /* each slide = card width   */
+  position:relative;
+  /* we no longer need clip‑path / border here               */
+}
+.slide img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+
+/* start out dark, blurry, and highly desaturated */
+filter: blur(15px) grayscale(1) brightness(0.3) contrast(0.8) saturate(0.5);
+transition: filter 1s ease-out; /* animate to clear */
+}
+
+.slide img.clear { /* final state */
+  filter: blur(0) grayscale(0) brightness(1) contrast(1) saturate(1);
+}
+
+
+
+
+.dots {
+  position: absolute;
+  bottom: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 50%;
+  transition: background 0.3s;
+}
+
+.dot.active {
+  background: var(--accent);
+}
+/* ───────────  image corner logo  ─────────── */
+.logo-overlay{
+  position:absolute;
+  bottom:6%;                  /* tweaks: 6 % looks balanced */
+  right:6%;
+  width:clamp(32px,14%,60px); /* pretty small, but scales with card */
+  height:auto;
+  opacity:.3;                 /* optional subtlety */
+  pointer-events:none;        /* keeps carousel clicks/swipes working */
+}
+
+
+/* ───────────  flex-SCORE  ──────────────────────────────────── */
+.flexscore-banner {
+  flex-direction: column;
+  gap: 0.5em;
+  background: rgba(0, 0, 0, 0.25);
+  clip-path: inset(0 round 8px);
+}
+
+.flexscore-banner .label {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--accent);
+}
+
+.flexscore-banner .value {
+  font-weight: 800;
+  font-size: 58px;
+  line-height: 0.9;
+  color: var(--accent);
+}
+
+/* ───── Responsive Adjustment for Mobile ───── */
+@media (max-width: 480px) {
+  .flexscore-banner .label {
+    font-size: 12px;
+  }
+
+  .flexscore-banner .value {
+    font-size: 42px;
+  }
+}
+
+
+/* ───────────  STATS PANEL  ─────────────────────────────────── */
+.stats-container{
+  flex-direction:column;justify-content:space-between;align-items:stretch;
+  padding:2% 2.5%;gap:6%;background:rgba(0,0,0,.28);clip-path:inset(0 round 10px);
+}
+.stat-row   {display:flex;flex-direction:column;gap:4px;}
+.stat-head  {display:flex;justify-content:space-between;align-items:center;}
+.stat-label {font:500 12px/1 'Inter',sans-serif;color:var(--accent);}
+.stat-value {font:350 10px/1 'Inter',sans-serif;color:var(--text2);}
+.rail       {position:relative;height:9px;border-radius:5px;background:var(--rail);}
+.fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--accent);
+  width: 0; /* Start at 0 for animation */
+  transition: width 1s ease;
+}
+
+/* ───────────  STARS & TRAINING AGE  ────────────────────────── */
+.star-zone{display:flex;flex-direction:column;align-items:center;gap:.6em;}
+
+.star-row img{
+  width:25px;
+  height:auto;
+  opacity:0;                 /* start fully hidden */
+}
+
+.train-label{
+  font:600 14px/1 'Inter',sans-serif;
+  color:var(--accent);
+}
+
+/* ───────────  FOOTER  ──────────────────────────────────────── */
+.bottom-footer{
+  font-family:'Hemi Head',sans-serif;font-style:italic;font-size:22px;color:var(--text2);
+}
+
+@keyframes glowFadeInOut {
+  0%   {
+    opacity: 0;
+    text-shadow: none;
+  }
+  20% {
+    opacity: 1;
+    text-shadow: 0 0 5px transparent;
+  }
+  40% {
+    text-shadow: 0 0 15px var(--accent);
+  }
+  70% {
+    text-shadow: 0 0 25px var(--accent);
+  }
+  100% {
+  text-shadow: 0 0 0px rgba(30, 144, 255, 0); /* same color as --accent but 0 opacity */
+  }
+}
+
+.name-container.glow {
+  animation: glowFadeInOut 5s ease-in-out forwards;
+}
+
+/* ───────── Fixed iris‑reveal animation (fade-only workaround) ───────── */
+@keyframes irisReveal {
+  0%   { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.img-preloader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  z-index: 10;
+  /* Use fade-only animation to avoid clip-path flashing */
+  animation: irisReveal 2s cubic-bezier(.22, .61, .36, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes fadeLogoIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.img-preloader img {
+  width: 40%; 
+  height: auto;
+  opacity: 0;
+  z-index: 1; /* Ensure logo appears above the overlay */
+  position: relative;
+  animation: fadeLogoIn 1.2s ease-in forwards 0.3s;
+}
+
+@keyframes glowPulse {
+  0%   { text-shadow: none; }
+  50%  { text-shadow: 0 0 20px var(--accent); }
+  100% { text-shadow: none; }
+}
+
+.glow-pulse {
+  animation: glowPulse 3s ease-out;
+}
+
+@keyframes starPulse {
+  0%   { filter: drop-shadow(0 0 0px var(--accent)); }
+  50%  { filter: drop-shadow(0 0 10px var(--accent)); }
+  100% { filter: drop-shadow(0 0 0px var(--accent)); }
+}
+
+.star-pulse {
+  animation: starPulse 0.6s ease-out;
+}
+
+@keyframes fillPulse {
+  0% {
+    background-image: linear-gradient(90deg, var(--accent-start), var(--accent-start));
+    background-size: 100% 100%;
+    background-position: 0% 50%;
+  }
+  10% {
+    background-image: linear-gradient(90deg, var(--accent-start), var(--accent-mid), var(--accent-end));
+    background-size: 200% 100%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  90% {
+    background-image: linear-gradient(90deg, var(--accent-start), var(--accent-mid), var(--accent-end));
+  }
+  100% {
+    background-image: linear-gradient(90deg, var(--accent-start), var(--accent-start));
+    background-size: 100% 100%;
+    background-position: 0% 50%;
+  }
+}
+.fill {
+  --accent-start: var(--accent);
+  --accent-mid: #ffffff;
+  --accent-end: var(--accent);
+}
+@keyframes pulse-animate {
+  0%   { transform: scale(1); background-color: var(--accent); }
+  50%  { transform: scale(1.05); background-color: #fff; }
+  100% { transform: scale(1); background-color: var(--accent); }
+}
+
+.pulse-animate {
+  animation: pulse-animate 0.6s ease-out;
+}
+.player-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  max-width: 480px;
+  margin: auto;
+  padding: 1rem;
+  background: transparent;
+}
+/* tap target + flash hint */
+.stat-value[data-role="height"],
+.stat-value[data-role="weight"] { cursor: pointer; }
+
+.stat-value.unit-flash { color: var(--accent) !important; transition: color .25s ease; }
+
+
+</style>
+
+<!-- ░░░ FlexCheck — LIVE PLAYER CARD (uses cache + binder) ░░░ -->
+<div id="FC_LIVE_PLAYERCARD" class="fc-block" style="display:none">
+
+  <div class="player-section">
+    <div class="gp-wrapper">
+      <!-- SOCIAL / NAME -->
+      <div class="gp-box name-container" data-role="handle"></div>
+
+      <!-- PLAYER PHOTO -->
+      <div class="gp-box image-mask">
+        <div class="img-preloader">
+          <img src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/GP_2024_logo300x223.webp" alt="GamePlan logo">
+        </div>
+
+        <!-- dynamic carousel -->
+        <div class="carousel" data-role="carousel"></div>
+
+        <div class="dots" data-role="dots"></div>
+
+        <img class="logo-overlay"
+             src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/GP_2024_logo300x223.webp"
+             alt="GamePlan logo">
+      </div>
+
+      <!-- flex-SCORE -->
+      <div class="gp-box flexscore-banner">
+        <div class="label">FLEXSCORE</div>
+        <div class="value" data-role="score">0</div>
+      </div>
+
+      <!-- AGE • HEIGHT • WEIGHT -->
+      <div class="gp-box stats-container">
+        <div class="stat-row" data-stat="age">
+          <div class="stat-head"><span class="stat-label">AGE</span><span class="stat-value" data-role="age">—</span></div>
+          <div class="rail"><div class="fill" data-role="ageBar" style="width:0"></div></div>
+        </div>
+        <div class="stat-row" data-stat="height">
+          <div class="stat-head"><span class="stat-label">HEIGHT</span><span class="stat-value" data-role="height">—</span></div>
+          <div class="rail"><div class="fill" data-role="heightBar" style="width:0"></div></div>
+        </div>
+        <div class="stat-row" data-stat="weight">
+          <div class="stat-head"><span class="stat-label">WEIGHT</span><span class="stat-value" data-role="weight">—</span></div>
+          <div class="rail"><div class="fill" data-role="weightBar" style="width:0"></div></div>
+        </div>
+      </div>
+
+      <!-- STARS + TRAINING AGE -->
+      <div class="gp-box star-zone">
+        <div class="star-row" data-role="stars"></div>
+        <div class="train-label" data-role="trainingAgeLabel">Training&nbsp;Age:&nbsp;—</div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="gp-box bottom-footer">GamePlan&nbsp;Player&nbsp;Card</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const WRAP = document.getElementById('FC_LIVE_PLAYERCARD');
+  if (!WRAP) return;
+
+  // ---- visibility helpers
+  const show = ()=> (WRAP.style.display = '');
+  const hide = ()=> (WRAP.style.display = 'none');
+
+  // ---- tiny local binder (works even if window.bindEntry isn't loaded yet)
+  function getPath(obj, path){
+    if (!obj || !path) return undefined;
+    try{
+      return path.replace(/\[(\d+)\]/g, '.$1')
+                 .split('.')
+                 .reduce((o,k)=> (o==null?undefined:o[k]), obj);
+    }catch{ return undefined; }
+  }
+  function setField(root, selector, value){
+    const [sel, attr] = selector.split('@');
+    const el = root.querySelector(sel);
+    if (!el) return;
+    if (attr){ el.setAttribute(attr, value ?? ''); }
+    else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA'){ el.value = value ?? ''; }
+    else { el.textContent = (value ?? '').toString(); }
+  }
+  function localBind(root, entry, mapping){
+    for (const [selector, pathOrFn] of Object.entries(mapping)){
+      if (typeof pathOrFn === 'function'){
+        const [sel] = selector.split('@');
+        const el = root.querySelector(sel);
+        if (el) pathOrFn(entry, el);
+      } else {
+        setField(root, selector, getPath(entry, pathOrFn));
+      }
+    }
+  }
+  const bindAny = (root, entry, mapping) =>
+    (window.bindEntry ? window.bindEntry(root, entry, mapping) : localBind(root, entry, mapping));
+
+  // ---- utilities
+  const clamp = (n,min,max)=> Math.max(min, Math.min(max, n));
+  const round = n => Math.round(Number(n||0));
+  const isRenderable = e => !!(e && (e.result?.score != null || (Array.isArray(e.photos) && e.photos.length)));
+
+  function getParamInsensitive(name){
+    try{
+      const u = new URL(location.href);
+      let v = u.searchParams.get(name);
+      if (v != null) return v;
+      for (const [k,val] of u.searchParams.entries()){
+        if (k.toLowerCase() === name.toLowerCase()) return val;
+      }
+    }catch{}
+    return '';
+  }
+  function peekLocalEntry(id){
+    try{
+      const raw = localStorage.getItem('flexcheckCacheV3');
+      if (!raw) return null;
+      const j = JSON.parse(raw);
+      return j?.entriesById?.[String(id)] || null;
+    }catch{ return null; }
+  }
+  function waitForGlobals(maxMs=6000){
+    return new Promise(resolve=>{
+      const t0 = Date.now();
+      (function tick(){
+        if (window.flexcheck && window.flexcheckCache) return resolve(true);
+        if (Date.now() - t0 > maxMs) return resolve(false);
+        setTimeout(tick, 50);
+      })();
+    });
+  }
+
+  // ---- UI renderers from your demo behavior
+  const STAR_URL = 'https://www.gameplanfitness.com/wp-content/uploads/2025/07/blue_star.png';
+  function countUpTo(el, target, msPerStep=20){
+  target = Math.max(0, parseInt(target || 0, 10));
+  const cur = parseInt(String(el.textContent || '').replace(/\D+/g,''), 10);
+  const start = Number.isFinite(cur) ? cur : 0;
+
+  if (start >= target){            // already at/above target → just set once
+    el.textContent = String(target);
+    return;
+  }
+  let v = start;
+  const timer = setInterval(()=>{
+    v += 1;
+    if (v >= target){ v = target; clearInterval(timer); }
+    el.textContent = String(v);
+  }, msPerStep);
+}
+  function renderStars(entry){
+  const years = Number(entry?.result?.trainingAgeYears ?? 0);
+  const n = Math.max(0, Math.min(10, Math.round(years)));
+  const row = WRAP.querySelector('[data-role="stars"]');
+  if (!row) return;
+
+  // skip rebuild if we've already rendered this exact state
+  const key = `${entry.entryId || ''}:${n}`;
+  if (row.dataset.renderKey === key){
+    // ensure they're visible (no re-stagger)
+    row.querySelectorAll('img').forEach(img => { img.style.opacity = 1; img.style.transition = ''; });
+    return;
+  }
+  row.dataset.renderKey = key;
+
+  row.innerHTML = Array.from({length:n}).map(()=> `<img src="${STAR_URL}" style="opacity:0">`).join('');
+  // animate only on first render for this key
+  Array.from(row.querySelectorAll('img')).forEach((img,i)=>{
+    setTimeout(()=>{ img.style.transition='opacity .4s ease'; img.style.opacity='1'; }, i*200);
+    
+    // ADD THIS: Attach click listener to each star as it's created
+    img.addEventListener('click', () => {
+      img.classList.remove('star-pulse');   // reset if active
+      void img.offsetWidth;                 // force reflow
+      img.classList.add('star-pulse');
+    });
+  });
+
+  const label = WRAP.querySelector('[data-role="trainingAgeLabel"]');
+  if (label){
+    const txt = years > 10 ? '10+ Yrs' : (Number.isFinite(years) ? `${Math.round(years)} Yrs` : '—');
+    label.textContent = `Training\u00A0Age:\u00A0${txt}`;
+  }
+}
+  function pct(v, min, max){
+    if (v==null || !isFinite(v)) return 0;
+    return clamp(((v - min) / (max - min)) * 100, 0, 100);
+  }
+  function renderStatBars(entry){
+    const age = Number(entry?.result?.age);
+    const hCm = Number(entry?.result?.heightCm);
+    const wKg = Number(entry?.result?.weightKg);
+    const agePct = pct(age, 0, 60);
+    const hPct   = pct(hCm, 150, 200);
+    const wPct   = pct(wKg, 50, 150);
+    const ageBar = WRAP.querySelector('[data-role="ageBar"]');
+    const hBar   = WRAP.querySelector('[data-role="heightBar"]');
+    const wBar   = WRAP.querySelector('[data-role="weightBar"]');
+    [ [ageBar, agePct], [hBar, hPct], [wBar, wPct] ].forEach(([el,p])=>{
+      if (!el) return; el.style.transition = 'width 600ms ease'; requestAnimationFrame(()=>{ el.style.width = p.toFixed(0) + '%'; });
+    });
+  }
+  function initCarousel(photos){
+  const car = WRAP.querySelector('[data-role="carousel"]');
+  const dotsWrap = WRAP.querySelector('[data-role="dots"]');
+  if (!car || !dotsWrap) return;
+
+  const list = Array.isArray(photos) ? photos : [];
+  car.innerHTML = list.map(u => `<div class="slide"><img class="clear" src="${u}" /></div>`).join('');
+
+  const slides = Array.from(car.querySelectorAll('.slide'));
+
+  // KEY: don't stretch the track; each slide is already 100% via CSS
+  car.style.width = '100%';            // or: '' to remove any prior inline width
+  car.style.transform = 'translateX(0%)';
+  car.style.willChange = 'transform';
+
+  let index = 0;
+  function go(i){
+    index = clamp(i, 0, Math.max(0, slides.length - 1));
+    car.style.transform = `translateX(-${index * 100}%)`; // move one full slide each time
+    dotsWrap.querySelectorAll('.dot').forEach((d,j)=> d.classList.toggle('active', j===index));
+  }
+
+  // dots
+  dotsWrap.innerHTML = '';
+  slides.forEach((_,i)=>{
+    const dot = document.createElement('span');
+    dot.className = 'dot' + (i===0 ? ' active' : '');
+    dot.addEventListener('click', ()=> go(i));
+    dotsWrap.appendChild(dot);
+  });
+
+  // click-to-advance
+  const imageMask = WRAP.querySelector('.image-mask');
+  imageMask?.addEventListener('click', ()=> go((index + 1) % Math.max(1, slides.length)));
+
+  // swipe
+  let startX = 0;
+  car.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive:true });
+  car.addEventListener('touchend', e => {
+    const delta = e.changedTouches[0].clientX - startX;
+    if (Math.abs(delta) > 50){
+      go(clamp(index + (delta < 0 ? 1 : -1), 0, slides.length - 1));
+    }
+  }, { passive:true });
+
+  // remove preloader after animation
+  const pre = WRAP.querySelector('.img-preloader');
+  pre?.addEventListener('animationend', ev => { if (ev.animationName === 'irisReveal') pre.remove(); });
+
+  go(0);
+}
+
+  // ---- mapping
+  const map = {
+'[data-role="handle"]': (e, el) => {
+  const h = e?.result?.socialHandle;
+  el.textContent = h && String(h).trim() ? h : `#${e.entryId}`;
+},    '[data-role="score"]'       : (e, el) => countUpTo(el, e.result?.score ?? 0),
+'[data-role="age"]': (e, el) => {
+  el.textContent = e?.result?.age ?? '—';
+},
+'[data-role="height"]': (e, el) => {
+  const cm = e?.result?.heightCm;
+  el.textContent = (cm != null && !Number.isNaN(cm)) ? `${Math.round(cm)} cm` : '—';
+},
+'[data-role="weight"]': (e, el) => {
+  const kg = e?.result?.weightKg;
+  el.textContent = (kg != null && !Number.isNaN(kg)) ? `${Math.round(kg)} kg` : '—';
+},
+    '[data-role="trainingAgeLabel"]' : e => '', // set by renderStars
+    '[data-role="stars"]'       : (e, el) => renderStars(e),
+    '[data-role="carousel"]'    : (e, el) => initCarousel(e.photos || []),
+  };
+
+  // ---- boot
+  // 1) Optimistic: if URL has ?entryId, show immediately (no more stuck display:none)
+  const fastId = getParamInsensitive('entryId');
+  if (fastId){ show(); }
+
+  (async function start(){
+    const ok = await waitForGlobals(6000);
+    // Even if globals never arrive, we at least showed the block.
+
+    const fx = window.flexcheck, cache = window.flexcheckCache;
+
+    async function bindFor(id){
+      if (!id) { hide(); return; }
+      const cached = cache?.getEntry?.(String(id));
+      if (isRenderable(cached)){
+        bindAny(WRAP, cached, map);
+        renderStatBars(cached);
+        show();
+currentEntry = cached;
+applyUnits(currentEntry);
+wireUnitToggle();
+      } else {
+        show(); // keep visible while fetching
+      }
+      try{
+        const fresh = await cache?.fetchEntry?.(String(id));
+        if (isRenderable(fresh)){
+          bindAny(WRAP, fresh, map);
+          renderStatBars(fresh);
+          show();
+currentEntry = fresh;     // set this to the entry you just bound
+applyUnits(currentEntry);
+wireUnitToggle();
+        } else if (!isRenderable(cached)) {
+          // Nothing real after fetch → hide to avoid empty block
+          hide();
+        }
+      }catch{}
+    }
+
+    const startId = 
+  fastId ||  // URL parameter first
+  fx?.getCurrentEntryId?.() ||  // Use new URL-first method
+  fx?.getOwner?.()?.preferredEntryId || '';
+
+    bindFor(startId);
+// ADD THIS: Listen for URL/entry changes
+window.addEventListener('flexcheck:entryChanged', ev => {
+  const newEntryId = ev?.detail?.entryId || fx?.getCurrentEntryId?.();
+  if (newEntryId) bindFor(newEntryId);
+});
+
+window.addEventListener('flexcheck:viewerChanged', ev => bindFor(ev.detail?.entryId));
+    window.addEventListener('flexcheck:viewerChanged', ev => bindFor(ev.detail?.entryId));
+  })();
+// ---- unit helpers (shared) ----
+let currentEntry = null;
+WRAP.dataset.units = 'metric';  // default
+
+function getCurrentEntryId(){
+  const urlId = getParamInsensitive('entryId');
+  if (urlId) return urlId;
+  
+  const fx = window.flexcheck;
+  return fx?.getCurrentEntryId?.() || fx?.getOwner?.()?.preferredEntryId || '';
+}
+
+function cmToFeetIn(cm){
+  // use true cm; round to nearest inch
+  const totalIn = Math.round(Number(cm || 0) / 2.54);
+  const ft = Math.floor(totalIn / 12);
+  const inch = totalIn % 12;
+  return `${ft}ft ${inch}in`;
+}
+function kgToLb(kg){ return Math.round(Number(kg || 0) * 2.2046226218); }
+
+function applyUnits(entry){
+  const mode = WRAP.dataset.units || 'metric';
+  const hEl = WRAP.querySelector('[data-role="height"]');
+  const wEl = WRAP.querySelector('[data-role="weight"]');
+  const cm = entry?.result?.heightCm;
+  const kg = entry?.result?.weightKg;
+
+  if (mode === 'imperial'){
+    if (hEl) hEl.textContent = (cm!=null) ? cmToFeetIn(cm) : '—';
+    if (wEl) wEl.textContent = (kg!=null) ? `${kgToLb(kg)} lb` : '—';
+  } else {
+    if (hEl) hEl.textContent = (cm!=null) ? `${Math.trunc(cm)} cm` : '—'; // always truncate cm
+    if (wEl) wEl.textContent = (kg!=null) ? `${Math.round(kg)} kg` : '—';
+  }
+}
+function flashUnits(){
+  ['[data-role="height"]','[data-role="weight"]'].forEach(sel=>{
+    const el = WRAP.querySelector(sel);
+    if (!el) return;
+    el.classList.remove('unit-flash'); void el.offsetWidth; // restart transition
+    el.classList.add('unit-flash');
+    setTimeout(()=> el.classList.remove('unit-flash'), 450);
+  });
+}
+function toggleUnits(){
+  if (!currentEntry) return;
+  WRAP.dataset.units = (WRAP.dataset.units === 'imperial') ? 'metric' : 'imperial';
+  applyUnits(currentEntry);
+  flashUnits();
+}
+function wireUnitToggle(){
+  ['[data-role="height"]','[data-role="weight"]'].forEach(sel=>{
+    const el = WRAP.querySelector(sel);
+    if (el && !el.__unitWired){
+      el.__unitWired = true;
+      el.addEventListener('click', toggleUnits);
+    }
+  });
+}
+  // helper reused above
+  function getParamInsensitive(name){
+    try{
+      const u = new URL(location.href);
+      let v = u.searchParams.get(name);
+      if (v != null) return v;
+      for (const [k,val] of u.searchParams.entries()){
+        if (k.toLowerCase() === name.toLowerCase()) return val;
+      }
+    }catch{}
+    return '';
+  }
+})();
+
+// 🔢 Live FlexScore Count-Up Animation
+function animateFlexScore() {
+  const flexValue = document.querySelector('.flexscore-banner .value[data-role="score"]');
+  if (!flexValue) return;
+  
+  const target = parseInt(flexValue.textContent, 10);
+  let count = 0;
+  const flexInterval = setInterval(() => {
+    count += 1;
+    flexValue.textContent = count;
+    if (count >= target) clearInterval(flexInterval);
+  }, 30);
+}
+
+// 🎆 Dramatic FlexScore Click Effect
+function dramaticFlexScoreClick() {
+  const flexBanner = document.querySelector('.flexscore-banner');
+  if (!flexBanner) return;
+  
+  // Reset any existing states
+  flexBanner.classList.remove('counting', 'celebration');
+  
+  // Add dramatic counting state
+  flexBanner.classList.add('counting');
+  
+  // Quick pulse sequence
+  setTimeout(() => {
+    flexBanner.classList.remove('counting');
+    flexBanner.classList.add('celebration');
+    
+    // Remove celebration state after animation
+    setTimeout(() => {
+      flexBanner.classList.remove('celebration');
+    }, 2000);
+  }, 500); // Half second of "charging up" then celebration
+}
+
+// ✨ Handle Name Container Glow
+function triggerNameGlow() {
+  const nameEl = document.querySelector('.name-container[data-role="handle"]');
+  if (!nameEl) return;
+  
+  nameEl.classList.add('glow');
+  setTimeout(() => nameEl.classList.remove('glow'), 6000);
+}
+
+// 🔆 Add glow on click to interactive zones
+function addClickPulse(selector, isImage = false) {
+  document.querySelectorAll(selector).forEach(el => {
+    el.addEventListener('click', () => {
+      const pulseClass = isImage ? 'star-pulse' : 'glow-pulse';
+      el.classList.remove(pulseClass);   // reset if active
+      void el.offsetWidth;               // force reflow
+      el.classList.add(pulseClass);
+    });
+  });
+}
+
+// Text-based glow effects
+function enableTextGlowEffects() {
+  addClickPulse('.name-container[data-role="handle"]');
+  addClickPulse('.flexscore-banner .value[data-role="score"]');
+}
+
+// Image-based glow effects for stars
+function enableStarGlowEffects() {
+  addClickPulse('.star-row[data-role="stars"] img', true);
+}
+
+// Enhanced fill bar pulse animation
+function enableFillPulse() {
+  document.querySelectorAll('.fill').forEach(bar => {
+    bar.addEventListener('click', () => {
+      // Reset any existing animation classes
+      bar.classList.remove('pulse-animate', 'fadeout-animate');
+      void bar.offsetWidth; // Force reflow
+      
+      // Start the pulse animation
+      bar.classList.add('pulse-animate');
+      
+      // When pulse ends (3s), trigger smooth fade out
+      setTimeout(() => {
+        bar.classList.remove('pulse-animate');
+        bar.classList.add('fadeout-animate');
+      }, 3000);
+      
+      // Cleanup after fadeout finishes
+      setTimeout(() => {
+        bar.classList.remove('fadeout-animate');
+      }, 4000); // pulse 3s + fadeout 1s
+    });
+  });
+}
+
+// Initialize all animations when DOM is ready
+function initializeLiveAnimations() {
+  // Run the flexscore count-up animation
+  animateFlexScore();
+  
+  // Trigger the initial name glow
+  triggerNameGlow();
+  
+  // Enable click interactions
+  enableTextGlowEffects();
+  enableFillPulse();
+}
+
+// Auto-initialize when DOM is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeLiveAnimations);
+} else {
+  initializeLiveAnimations();
+}
+
+// Export functions for manual triggering if needed
+window.FlexScoreAnimations = {
+  animateFlexScore,
+  triggerNameGlow,
+  enableTextGlowEffects,
+  enableStarGlowEffects,
+  enableFillPulse,
+  initializeLiveAnimations
+};
+</script>

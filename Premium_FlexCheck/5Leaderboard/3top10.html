@@ -1,0 +1,1374 @@
+<!-- ░░░ flexCHECK – TOP 10 LEADERBOARD BLOCK ░░░ -->
+<div class="leaderboard-container">
+  <!-- Small Logo Above Title -->
+  <div style="text-align:center; padding: 1rem 0;">
+    <img 
+      src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/GP_2024_logo300x223.webp" 
+      alt="GamePlan Fitness Logo" 
+      style="width: 40px; height: auto; opacity: 0.35;"
+    >
+  </div>
+
+  <h2 class="lb-title">🏆 Top 10 Leaderboard</h2>
+
+  <!-- Improved Controls -->
+  <div class="lb-controls">
+    <div class="tier-section">
+      <div class="tier-label">
+        <span>Tier Selection</span>
+        <button class="tooltip-btn" id="tier-tooltip">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="tier-selector">
+        <button class="tier-btn active" data-tier="top">TOP</button>
+        <button class="tier-btn" data-tier="mid">MID</button>
+        <button class="tier-btn" data-tier="low">BOT</button>
+      </div>
+    </div>
+    
+    <div class="division-section">
+      <select class="division-select" id="division-select">
+        <option value="score">🏆 Overall FlexScore</option>
+        <option value="Chest">💪 Chest</option>
+        <option value="Back">🔄 Back</option>
+        <option value="Shoulders">🤸 Shoulders</option>
+        <option value="Legs">🦵 Legs</option>
+        <option value="Arms">💪 Arms</option>
+        <option value="Midsection">⭕ Midsection</option>
+      </select>
+      <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M7 10l5 5 5-5z"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Tooltip Modal -->
+  <div id="tooltip-modal" class="tooltip-modal" hidden>
+    <div class="tooltip-content">
+      <h4>Tier Explanations</h4>
+      <div class="tooltip-item">
+        <strong>TOP:</strong> Highest to lowest scores
+      </div>
+      <div class="tooltip-item">
+        <strong>MID:</strong> Scores closest to median
+      </div>
+      <div class="tooltip-item">
+        <strong>LOW:</strong> Lowest to highest scores
+      </div>
+      <div class="tooltip-note">
+        <em>Note: Only Overall FlexScore is used for identifying the top 3 weekly winners.</em>
+      </div>
+      <button class="tooltip-close">Got it!</button>
+    </div>
+  </div>
+
+  <div class="lb-row lb-header">
+    <div class="lb-rank">Rank</div>
+    <div class="lb-name">Handle</div>
+    <div class="lb-score">Score</div>
+  </div>
+
+  <div class="leaderboard-rows" id="leaderboard-rows"></div>
+  
+  <!-- Status at bottom -->
+  <div class="lb-status" id="lb-status"></div>
+</div>
+
+<!-- 🔽 Player Card Preview Container -->
+<div id="player-card-preview" style="margin-top:2rem;">
+  <div id="preview-prompt" style="text-align:center; color:#94a3b8; font-size:0.9rem;">
+    Click an entry above to View
+  </div>
+</div>
+
+<style>
+/* Main Container */
+.leaderboard-container {
+  margin: 2rem auto;
+  max-width: 640px;
+  background: #0b1630;
+  border: 2px solid var(--accent, #27BEFA);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 0 14px rgba(39,190,250,0.2);
+  font-family: 'Inter', sans-serif;
+}
+
+.lb-title {
+  text-align: center;
+  color: var(--accent, #27BEFA);
+  font-size: 1.3rem;
+  margin-bottom: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Improved Controls */
+.lb-controls {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.tier-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tier-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.tooltip-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 50%;
+  transition: color 0.2s ease;
+}
+
+.tooltip-btn:hover {
+  color: var(--accent, #27BEFA);
+}
+
+.tier-selector {
+  display: flex;
+  background: #1e293b;
+  border-radius: 8px;
+  padding: 4px;
+  gap: 2px;
+}
+
+.tier-btn {
+  background: transparent;
+  color: #94a3b8;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 60px;
+}
+
+.tier-btn:hover {
+  color: #e2e8f0;
+  background: #334155;
+}
+
+.tier-btn.active {
+  background: var(--accent, #27BEFA);
+  color: #0b1630;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(39,190,250,0.3);
+}
+
+.division-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.division-select {
+  background: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 0.6rem 2rem 0.6rem 0.8rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 160px;
+  appearance: none;
+}
+
+.dropdown-arrow {
+  position: absolute;
+  right: 0.8rem;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.division-select:hover {
+  border-color: var(--accent, #27BEFA);
+  background: #334155;
+}
+
+.division-select:focus {
+  outline: none;
+  border-color: var(--accent, #27BEFA);
+  box-shadow: 0 0 0 2px rgba(39,190,250,0.2);
+}
+
+/* Tooltip Modal */
+.tooltip-modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,0.8);
+  z-index: 1000;
+}
+
+.tooltip-modal[hidden] {
+  display: none;
+}
+
+.tooltip-content {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 300px;
+  color: #e2e8f0;
+  text-align: left;
+}
+
+.tooltip-content h4 {
+  margin: 0 0 1rem 0;
+  color: var(--accent, #27BEFA);
+  text-align: center;
+}
+
+.tooltip-item {
+  margin: 0.8rem 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.tooltip-note {
+  margin: 1rem 0 0.5rem 0;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  text-align: center;
+  border-top: 1px solid #334155;
+  padding-top: 0.8rem;
+}
+
+.tooltip-close {
+  background: var(--accent, #27BEFA);
+  color: #0b1630;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* Leaderboard Entries */
+.lb-entry {
+  background: #1e293b;
+  border-radius: 12px;
+  margin-bottom: 0.8rem;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+
+.lb-entry:hover {
+  box-shadow: 0 0 10px var(--accent, #27BEFA);
+  transform: scale(1.01);
+}
+
+.lb-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+}
+
+.lb-header {
+  background: transparent;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.4rem;
+  padding: 0.4rem 1rem;
+}
+
+.lb-rank, .lb-name, .lb-score {
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 6px;
+}
+
+/* Bold white text for entries */
+.lb-entry .lb-rank,
+.lb-entry .lb-name {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.lb-score[data-score] {
+  font-weight: 700;
+  color: var(--accent, #27BEFA);
+}
+
+/* Status at bottom */
+.lb-status {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #334155;
+  font-style: italic;
+}
+
+/* UPDATED MODAL STYLES - Modern Design */
+.player-card-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.85);
+  backdrop-filter: blur(4px);
+}
+
+.player-card-popup {
+  position: relative;
+  width: min(95vw, 500px);
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 20px;
+  color: #e2e8f0;
+  background: linear-gradient(145deg, #0f1b33 0%, #0b1630 100%);
+  border: 1px solid rgba(39,190,250,.2);
+  box-shadow: 0 0 0 1px rgba(39,190,250,.1), 0 20px 40px rgba(0,0,0,.6);
+  font-family: Inter, sans-serif;
+}
+
+/* Close Button */
+.player-card-popup .close-popup {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  background: rgba(0,0,0,.6);
+  border: 1px solid rgba(255,255,255,.1);
+  color: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 8px 10px;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  transition: all .2s ease;
+}
+
+.player-card-popup .close-popup:hover {
+  background: rgba(0,0,0,.8);
+  transform: scale(1.05);
+}
+
+/* Modern Header - Floating Chips */
+.pc-header {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pc-rank-badge {
+  background: rgba(0,0,0,.7);
+  border: 1px solid rgba(39,190,250,.3);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #27BEFA;
+  backdrop-filter: blur(8px);
+  letter-spacing: .02em;
+}
+
+.pc-handle {
+  background: rgba(0,0,0,.7);
+  border: 1px solid rgba(255,255,255,.1);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #e2e8f0;
+  backdrop-filter: blur(8px);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Large Photo Carousel */
+.pc-photos {
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+}
+
+.pc-strip {
+  display: flex;
+  height: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+}
+
+.pc-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.pc-slide {
+  flex: 0 0 100%;
+  height: 100%;
+  scroll-snap-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pc-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  cursor: pointer;
+  transition: transform .2s ease;
+}
+
+.pc-slide img:hover {
+  transform: scale(1.02);
+}
+
+/* Navigation Arrows with Hide Logic */
+.pc-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 6;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.2);
+  background: rgba(0,0,0,.6);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  backdrop-filter: blur(8px);
+  transition: all .2s ease;
+}
+
+.pc-nav:hover {
+  background: rgba(0,0,0,.8);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.pc-nav.prev {
+  left: 16px;
+}
+
+.pc-nav.next {
+  right: 16px;
+}
+
+.pc-nav.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%) scale(0.8);
+}
+
+/* Dots Navigation */
+.pc-dots {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 6;
+}
+
+.pc-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.4);
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.pc-dot.active {
+  background: #27BEFA;
+  box-shadow: 0 0 8px rgba(39,190,250,.6);
+}
+
+/* Content Area Below Photos */
+.pc-content {
+  padding: 24px;
+}
+
+/* Score Display */
+.pc-score-wrap {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.pc-score-label {
+  font-size: 13px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.pc-score-big {
+  font-size: 32px;
+  font-weight: 900;
+  color: #27BEFA;
+  text-shadow: 0 0 20px rgba(39,190,250,.4);
+}
+
+/* Stats Grid */
+.pc-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.pc-stat {
+  background: rgba(15,27,51,.6);
+  border: 1px solid rgba(39,190,250,.1);
+  border-radius: 12px;
+  padding: 16px 12px;
+  text-align: center;
+  transition: all .2s ease;
+}
+
+.pc-stat:hover {
+  border-color: rgba(39,190,250,.3);
+  background: rgba(15,27,51,.8);
+}
+
+.pc-stat .k {
+  display: block;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  font-weight: 500;
+}
+
+.pc-stat .v {
+  display: block;
+  font-weight: 700;
+  color: #e2e8f0;
+  font-size: 15px;
+}
+
+/* Unit Toggle */
+.unit-toggle {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.unit-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  background: rgba(15,27,51,.6);
+  color: #94a3b8;
+  border: 1px solid rgba(39,190,250,.2);
+  font-weight: 600;
+  font-size: 12px;
+  transition: all .2s ease;
+}
+
+.unit-btn:hover {
+  background: rgba(15,27,51,.8);
+  transform: translateY(-1px);
+}
+
+.unit-btn.is-active {
+  background: linear-gradient(90deg, #27BEFA, #38bdf8);
+  color: #041324;
+  border-color: rgba(39,190,250,.6);
+  box-shadow: 0 0 12px rgba(39,190,250,.3);
+}
+
+.unit-btn .u-ic {
+  filter: grayscale(1);
+  transition: filter .2s ease;
+}
+
+.unit-btn.is-active .u-ic {
+  filter: none;
+}
+
+/* Muscle & Division Sections */
+.pc-muscle-section,
+.pc-division-section {
+  margin: 20px 0;
+  padding: 16px;
+  background: rgba(15,27,51,.4);
+  border: 1px solid rgba(39,190,250,.15);
+  border-radius: 12px;
+}
+
+.pc-section-title {
+  margin: 0 0 12px 0;
+  color: #27BEFA;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pc-muscle-grid,
+.pc-division-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.pc-muscle-item,
+.pc-division-item {
+  background: rgba(11,22,48,.6);
+  border: 1px solid rgba(39,190,250,.1);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.pc-muscle-item.active {
+  background: rgba(39,190,250,.1);
+  border-color: rgba(39,190,250,.3);
+  box-shadow: 0 0 8px rgba(39,190,250,.2);
+}
+
+.muscle-name,
+.division-name {
+  font-size: 12px;
+  color: #cbd5e1;
+  font-weight: 500;
+}
+
+.muscle-rating,
+.division-rating {
+  font-size: 13px;
+  font-weight: 700;
+  color: #27BEFA;
+}
+
+/* Fullscreen Image Overlay */
+.fullscreen-image-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0,0,0,.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+}
+
+.fullscreen-image-container {
+  position: relative;
+  max-width: 95vw;
+  max-height: 95vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fullscreen-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 0 40px rgba(39,190,250,.3);
+}
+
+.fullscreen-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0,0,0,.8);
+  border: 1px solid rgba(255,255,255,.2);
+  color: #fff;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+  padding: 12px 15px;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  transition: all .2s ease;
+}
+
+.fullscreen-close:hover {
+  background: rgba(0,0,0,.9);
+  transform: scale(1.05);
+}
+</style>
+
+<script>
+(function FC_DYNAMIC(){
+  const ENDPOINT = 'https://script.google.com/macros/s/AKfycbzgvbWWjQNPdUTJeGmq0-790Vm7enUQvHW2B3Dy6wYre3jp98gQdpNMcTm3YXvGnLXW7Q/exec';
+  const FORCE_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzIUhqVd6dAdmOmEiRsyF3xKApTOm2MESa0aR_DH_42QsZlEyBn6cN4HSclGwm4MXCC/exec';
+  const CACHE_KEY = 'fc_lb_cache_v1';
+  const TTL_ACTIVE_MS = 10 * 60 * 1000;  // 10 min
+  const TTL_FREEZE_MS = 30 * 60 * 1000;  // 30 min
+
+  let state = { 
+    tier: 'top', 
+    division: 'score',
+    data: null, 
+    timer: null, 
+    loading: false,
+    currentTierSlice: []
+  };
+
+  const statusEl = document.getElementById('lb-status');
+  const rowsContainer = document.getElementById('leaderboard-rows');
+
+  function saveCache(payload) {
+    const record = {
+      savedAt: Date.now(),
+      weekKey: payload.weekKey,
+      deadlineKey: payload.deadlineKey,
+      deadlineDisplay: payload.deadlineDisplay,
+      updating: payload.updating,
+      tiers: payload.tiers || {}
+    };
+
+    record.top3 = {
+      top: (payload.tiers?.top || []).slice(0, 3),
+      mid: (payload.tiers?.mid || []).slice(0, 3),
+      low: (payload.tiers?.low || []).slice(0, 3)
+    };
+
+    console.log('Saving to cache:', record);
+    localStorage.setItem(CACHE_KEY, JSON.stringify(record));
+    window.dispatchEvent(new CustomEvent('flexcheck:leaderboard-updated', { detail: record }));
+
+    window.FlexCache = {
+      key: CACHE_KEY,
+      get: () => {
+        try { return JSON.parse(localStorage.getItem(CACHE_KEY) || 'null'); }
+        catch { return null; }
+      }
+    };
+
+    return record;
+  }
+
+  function loadCache() {
+    try { return JSON.parse(localStorage.getItem(CACHE_KEY) || 'null'); }
+    catch { return null; }
+  }
+
+  function isStale(c) {
+    if (!c) return true;
+    const ttl = c.updating ? TTL_ACTIVE_MS : TTL_FREEZE_MS;
+    return (Date.now() - c.savedAt) > ttl;
+  }
+
+  function getDisplayScore(item, division) {
+    if (division === 'score') {
+      return parseFloat(item.score || 0);
+    }
+    
+    let muscleRatings = {};
+    try {
+      muscleRatings = JSON.parse(item.muscleRatings || '{}');
+    } catch (e) {
+      console.warn('Failed to parse muscleRatings for item:', item.entryId, e);
+      return 0;
+    }
+    
+    const muscleMap = {
+      'Chest': muscleRatings.major?.Chest,
+      'Back': muscleRatings.major?.Back,
+      'Shoulders': muscleRatings.major?.Shoulders,
+      'Legs': muscleRatings.major?.Legs,
+      'Arms': muscleRatings.major?.Arms,
+      'Midsection': muscleRatings.major?.Midsection
+    };
+    
+    const muscleScore = muscleMap[division];
+    
+    if (muscleScore !== undefined && muscleScore !== null) {
+      return parseFloat(muscleScore);
+    }
+    
+    console.warn(`Muscle rating not found for division: ${division}, item:`, item.entryId);
+    return parseFloat(item.score || 0);
+  }
+
+  function getAllPhotos(photosStr) {
+    try {
+      const arr = JSON.parse(photosStr || '[]');
+      return Array.isArray(arr) ? arr : [];
+    } catch { return []; }
+  }
+
+  // Fullscreen image functionality
+  function showFullscreenImage(imageSrc) {
+    const fullscreenOverlay = document.createElement('div');
+    fullscreenOverlay.className = 'fullscreen-image-overlay';
+    
+    fullscreenOverlay.innerHTML = `
+      <div class="fullscreen-image-container">
+        <img src="${imageSrc}" alt="Fullscreen view" class="fullscreen-image">
+        <button class="fullscreen-close" aria-label="Close fullscreen">×</button>
+      </div>
+    `;
+
+    const close = () => fullscreenOverlay.remove();
+    fullscreenOverlay.querySelector('.fullscreen-close').addEventListener('click', close);
+    fullscreenOverlay.addEventListener('click', (e) => {
+      if (e.target === fullscreenOverlay) close();
+    });
+    fullscreenOverlay.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') close();
+    });
+
+    document.body.appendChild(fullscreenOverlay);
+    fullscreenOverlay.tabIndex = -1;
+    fullscreenOverlay.focus();
+  }
+
+  function openModal(player) {
+    const photos = getAllPhotos(player.photos);
+    const handle = player.socialHandle || 'Unknown';
+    
+    const currentScore = getDisplayScore(player, state.division);
+    const currentRank = state.currentTierSlice.findIndex(p => p.entryId === player.entryId) + 1;
+    
+    let muscleRatings = {};
+    try {
+      muscleRatings = JSON.parse(player.muscleRatings || '{}');
+    } catch (e) {
+      console.warn('Failed to parse muscleRatings for modal:', player.entryId);
+    }
+    
+    let divisionRatings = {};
+    try {
+      divisionRatings = JSON.parse(player.divisionFit || '{}');
+    } catch (e) {
+      console.warn('Failed to parse divisionFit for modal:', player.entryId);
+    }
+    
+    // Helper functions for formatting
+    const toNum = (val) => {
+      const n = (typeof val === 'number') ? val : Number(val);
+      return Number.isFinite(n) ? n : null;
+    };
+
+    // Height formatting
+    const cm = toNum(player.heightCm);
+    let inches = toNum(player.heightIn);
+    if (!Number.isFinite(inches) && Number.isFinite(cm)) inches = cm / 2.54;
+
+    const fmtHeightMetric = (cmVal) => Number.isFinite(cmVal) ? `${cmVal.toFixed(1)} cm` : '—';
+    const fmtHeightImperial = (inVal) => {
+      if (!Number.isFinite(inVal)) return '—';
+      const ft = Math.floor(inVal/12);
+      const re = (inVal % 12).toFixed(1);
+      return `${ft}′ ${re}″`;
+    };
+
+    const heightMetric = fmtHeightMetric(cm);
+    const heightImperial = fmtHeightImperial(inches);
+
+    // Weight formatting
+    const kg = toNum(player.weightKg);
+    let lb = toNum(player.weightLb);
+    if (!Number.isFinite(lb) && Number.isFinite(kg)) lb = kg * 2.2046226218;
+
+    const weightMetric = Number.isFinite(kg) ? `${kg.toFixed(1)} kg` : '—';
+    const weightImperial = Number.isFinite(lb) ? `${lb.toFixed(1)} lb` : '—';
+
+    // Create dots for carousel
+    const dots = photos.map((_, i) => `<div class="pc-dot ${i === 0 ? 'active' : ''}" data-slide="${i}"></div>`).join('');
+
+    // Get current division name for display
+    const divisionNames = {
+      'score': 'Overall FlexScore',
+      'Chest': 'Chest',
+      'Back': 'Back', 
+      'Shoulders': 'Shoulders',
+      'Legs': 'Legs',
+      'Arms': 'Arms',
+      'Midsection': 'Midsection'
+    };
+    const currentDivisionName = divisionNames[state.division] || 'Score';
+
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'player-card-overlay';
+    
+    overlay.innerHTML = `
+      <div class="player-card-popup" role="dialog" aria-modal="true" aria-label="Player card">
+        <button class="close-popup" aria-label="Close">×</button>
+
+        <div class="pc-header">
+          <div class="pc-rank-badge">#${currentRank > 0 ? currentRank : '—'}</div>
+          <div class="pc-handle">@${handle.replace(/^@/,'')}</div>
+        </div>
+
+        <div class="pc-photos">
+          ${photos.length ? `
+            <button class="pc-nav prev" aria-label="Previous">‹</button>
+            <div class="pc-strip" tabindex="0">
+              ${photos.map(url => `
+                <div class="pc-slide"><img src="${url}" alt="Player photo" data-fullscreen="${url}"></div>
+              `).join('')}
+            </div>
+            <button class="pc-nav next" aria-label="Next">›</button>
+            <div class="pc-dots">${dots}</div>
+          ` : `
+            <div class="pc-strip">
+              <div class="pc-slide">
+                <img src="https://placehold.co/600x800?text=No+Photos" alt="No photos">
+              </div>
+            </div>
+          `}
+        </div>
+
+        <div class="pc-content">
+          <div class="pc-score-wrap">
+            <div class="pc-score-label">${currentDivisionName}</div>
+            <div class="pc-score-big">${currentScore.toFixed(1)}</div>
+          </div>
+
+          <div class="pc-stats">
+            <div class="pc-stat"><span class="k">Age</span><span class="v">${player.age ?? '—'}</span></div>
+            <div class="pc-stat"><span class="k">Training Years</span><span class="v">${player.trainingAgeYears ?? '—'}</span></div>
+            <div class="pc-stat">
+              <span class="k">Height</span>
+              <span class="v" id="pc-height"
+                data-metric="${heightMetric}"
+                data-imperial="${heightImperial}"
+              >${heightMetric}</span>
+            </div>
+            <div class="pc-stat">
+              <span class="k">Weight</span>
+              <span class="v" id="pc-weight"
+                data-metric="${weightMetric}"
+                data-imperial="${weightImperial}"
+              >${weightMetric}</span>
+            </div>
+          </div>
+
+          <!-- Units toggle -->
+          <div class="unit-toggle" role="group" aria-label="Units">
+            <button class="unit-btn is-active" data-unit="metric" aria-pressed="true" title="Show metric (cm, kg)">
+              <span class="u-ic" aria-hidden="true">📏</span><span class="u-txt">cm / kg</span>
+            </button>
+            <button class="unit-btn" data-unit="imperial" aria-pressed="false" title="Show imperial (ft·in, lb)">
+              <span class="u-ic" aria-hidden="true">⚖️</span><span class="u-txt">ft·in / lb</span>
+            </button>
+          </div>
+
+          <!-- Muscle Ratings Section -->
+          ${Object.keys(muscleRatings.major || {}).length > 0 ? `
+            <div class="pc-muscle-section">
+              <h4 class="pc-section-title">💪 Major Muscle Groups</h4>
+              <div class="pc-muscle-grid">
+                ${Object.entries(muscleRatings.major || {}).map(([muscle, rating]) => `
+                  <div class="pc-muscle-item ${muscle.toLowerCase() === state.division.toLowerCase() ? 'active' : ''}">
+                    <span class="muscle-name">${muscle}</span>
+                    <span class="muscle-rating">${rating}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Division Ratings Section -->
+          ${Object.keys(divisionRatings).length > 0 ? `
+            <div class="pc-division-section">
+              <h4 class="pc-section-title">🏅 Division Ratings</h4>
+              <div class="pc-division-grid">
+                ${Object.entries(divisionRatings).map(([division, rating]) => `
+                  <div class="pc-division-item">
+<span class="division-name">${formatDivisionName(division)}</span>
+                    <span class="division-rating">${rating}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+
+    // Close handlers
+    const close = () => overlay.remove();
+    overlay.querySelector('.close-popup').addEventListener('click', close);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+    overlay.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+
+    // Carousel logic with arrow hiding
+    const strip = overlay.querySelector('.pc-strip');
+    if (strip) {
+      const slides = Array.from(strip.querySelectorAll('.pc-slide'));
+      const prev = overlay.querySelector('.pc-nav.prev');
+      const next = overlay.querySelector('.pc-nav.next');
+      const dotEls = Array.from(overlay.querySelectorAll('.pc-dot'));
+      let idx = 0;
+      
+      const clamp = (n) => Math.max(0, Math.min(slides.length - 1, n));
+      
+      function updateArrowVisibility() {
+        if (prev) {
+          prev.classList.toggle('hidden', idx === 0);
+        }
+        if (next) {
+          next.classList.toggle('hidden', idx === slides.length - 1);
+        }
+      }
+      
+      function goTo(i) {
+        idx = clamp(i);
+        const slide = slides[idx];
+        if (!slide) return;
+        slide.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        dotEls.forEach((d, di) => d.classList.toggle('active', di === idx));
+        updateArrowVisibility();
+      }
+      
+      function currentIndexFromScroll() {
+        const a = strip.getBoundingClientRect().left;
+        const nearest = slides
+          .map(s => Math.abs(s.getBoundingClientRect().left - a))
+          .reduce((m, v, i) => v < m[0] ? [v, i] : m, [Infinity, 0])[1];
+        idx = nearest;
+        dotEls.forEach((d, di) => d.classList.toggle('active', di === idx));
+        updateArrowVisibility();
+      }
+      
+      prev?.addEventListener('click', () => goTo(idx - 1));
+      next?.addEventListener('click', () => goTo(idx + 1));
+      
+      // Dot click handlers
+      dotEls.forEach((dot, i) => {
+        dot.addEventListener('click', () => goTo(i));
+      });
+
+      strip.addEventListener('scroll', () => {
+        window.clearTimeout(strip._t);
+        strip._t = window.setTimeout(currentIndexFromScroll, 80);
+      }, { passive: true });
+      
+      strip.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(idx - 1); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); goTo(idx + 1); }
+      });
+
+      // Center first image on load and set initial arrow visibility
+      setTimeout(() => goTo(0), 50);
+
+      // Add fullscreen click handlers to images
+      slides.forEach(slide => {
+        const img = slide.querySelector('img[data-fullscreen]');
+        if (img) {
+          img.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showFullscreenImage(img.dataset.fullscreen);
+          });
+        }
+      });
+    }
+
+    // Focus for Esc handler
+    const popup = overlay.querySelector('.player-card-popup');
+    popup.tabIndex = -1;
+    popup.focus();
+
+    // Unit toggle behavior
+    const heightEl = overlay.querySelector('#pc-height');
+    const weightEl = overlay.querySelector('#pc-weight');
+    const btns = overlay.querySelectorAll('.unit-btn');
+
+    function setUnit(unit) {
+      btns.forEach(b => {
+        const isActive = b.dataset.unit === unit;
+        b.classList.toggle('is-active', isActive);
+        b.setAttribute('aria-pressed', String(isActive));
+      });
+      if (heightEl) heightEl.textContent = heightEl.dataset[unit] || '—';
+      if (weightEl) weightEl.textContent = weightEl.dataset[unit] || '—';
+    }
+
+    btns.forEach(b => b.addEventListener('click', () => setUnit(b.dataset.unit)));
+    setUnit('metric'); // default
+
+    document.body.appendChild(overlay);
+  }
+
+  function renderLeaderboard() {
+    const c = state.data;
+    if (!c) { 
+      rowsContainer.innerHTML = '<div style="text-align:center; padding:2rem; color:#94a3b8;">Loading...</div>';
+      return; 
+    }
+
+    // Update status
+    const statusText = c.updating ? 'Updating every 10 min' : 'Results Frozen Until Fri 8pm CT';
+    statusEl.textContent = statusText;
+
+    // Get current tier data
+    const tierData = c.tiers[state.tier] || [];
+    
+    if (!tierData.length) { 
+      rowsContainer.innerHTML = '<div style="text-align:center; padding:2rem; color:#94a3b8;">No entries yet.</div>';
+      return; 
+    }
+
+    // Process data for display scores based on selected division
+    const processedData = tierData.map(item => {
+      const displayScore = getDisplayScore(item, state.division);
+      return {
+        ...item,
+        displayScore: displayScore,
+        overallScore: parseFloat(item.score || 0)
+      };
+    }).filter(item => !isNaN(item.displayScore));
+
+    let sortedData;
+
+    if (state.tier === 'top') {
+      sortedData = processedData.sort((a, b) => {
+        const scoreDiff = b.displayScore - a.displayScore;
+        if (scoreDiff !== 0) return scoreDiff;
+        return b.overallScore - a.overallScore;
+      });
+    } else if (state.tier === 'low') {
+      sortedData = processedData.sort((a, b) => {
+        const scoreDiff = a.displayScore - b.displayScore;
+        if (scoreDiff !== 0) return scoreDiff;
+        return b.overallScore - a.overallScore;
+      });
+    } else if (state.tier === 'mid') {
+      const displayScores = processedData.map(item => item.displayScore).sort((a, b) => a - b);
+      const medianScore = displayScores.length % 2 === 0
+        ? (displayScores[Math.floor(displayScores.length / 2) - 1] + displayScores[Math.floor(displayScores.length / 2)]) / 2
+        : displayScores[Math.floor(displayScores.length / 2)];
+      
+      sortedData = processedData
+        .map(item => ({
+          ...item,
+          medianDifference: Math.abs(item.displayScore - medianScore)
+        }))
+        .sort((a, b) => {
+          const medianDiff = a.medianDifference - b.medianDifference;
+          if (medianDiff !== 0) return medianDiff;
+          return b.displayScore - a.displayScore;
+        });
+    }
+
+    // Take top 10
+    const top10 = sortedData.slice(0, 10);
+    state.currentTierSlice = top10;
+
+    // Render rows
+    rowsContainer.innerHTML = '';
+    top10.forEach((item, index) => {
+      const el = document.createElement('div');
+      el.className = "lb-entry";
+      el.innerHTML = `
+        <div class="lb-row">
+          <div class="lb-rank">${index + 1}</div>
+          <div class="lb-name">${item.socialHandle || 'Unknown'}</div>
+          <div class="lb-score" data-score="${item.displayScore.toFixed(1)}">0</div>
+        </div>
+      `;
+      
+      el.onclick = () => openModal(item);
+      rowsContainer.appendChild(el);
+    });
+
+    // Animate scores
+    animateScores();
+  }
+
+  function animateScores() {
+    document.querySelectorAll('.lb-score[data-score]').forEach(el => {
+      const target = parseFloat(el.dataset.score);
+      let current = 0;
+      const interval = setInterval(() => {
+        el.textContent = current.toFixed(1);
+        current += Math.max(1, target / 20);
+        if (current >= target) {
+          el.textContent = target.toFixed(1);
+          clearInterval(interval);
+        }
+      }, 50);
+    });
+  }
+
+  async function fetchAndCache() {
+    if (state.loading) return;
+    state.loading = true;
+    
+    try {
+      const url = `${ENDPOINT}?echo=1&v=${Date.now()}`;
+      const res = await fetch(url, { cache: 'no-store' });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      
+      const data = await res.json();
+      state.data = saveCache(data);
+      renderLeaderboard();
+    } catch (e) {
+      console.error('Fetch error:', e);
+      
+      const cached = loadCache();
+      if (cached) { 
+        state.data = cached; 
+        renderLeaderboard();
+      }
+    } finally {
+      state.loading = false;
+      scheduleNext();
+    }
+  }
+
+  function scheduleNext() {
+    if (state.timer) clearTimeout(state.timer);
+    const c = state.data || loadCache();
+    const ttl = c && c.updating ? TTL_ACTIVE_MS : TTL_FREEZE_MS;
+    const delay = c ? Math.max(1000, (c.savedAt + ttl) - Date.now()) : TTL_ACTIVE_MS;
+    state.timer = setTimeout(fetchAndCache, delay);
+  }
+
+  function init() {
+    const cached = loadCache();
+    if (cached) {
+      state.data = cached;
+      renderLeaderboard();
+      if (isStale(cached)) fetchAndCache(); 
+      else scheduleNext();
+    } else {
+      renderLeaderboard();
+      fetchAndCache();
+    }
+
+    // Tooltip handlers
+    const tooltipBtn = document.getElementById('tier-tooltip');
+    const tooltipModal = document.getElementById('tooltip-modal');
+    const tooltipClose = document.querySelector('.tooltip-close');
+    
+    tooltipBtn.addEventListener('click', () => {
+      tooltipModal.hidden = false;
+    });
+    
+    tooltipClose.addEventListener('click', () => {
+      tooltipModal.hidden = true;
+    });
+    
+    tooltipModal.addEventListener('click', (e) => {
+      if (e.target === tooltipModal) tooltipModal.hidden = true;
+    });
+
+    // Division dropdown handler
+    const divisionSelect = document.getElementById('division-select');
+    divisionSelect.addEventListener('change', () => {
+      state.division = divisionSelect.value;
+      renderLeaderboard();
+    });
+
+    // Tier button handlers
+    document.querySelectorAll('.tier-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelector('.tier-btn.active').classList.remove('active');
+        btn.classList.add('active');
+        state.tier = btn.dataset.tier;
+        renderLeaderboard();
+      });
+    });
+
+    // Refresh when tab becomes visible after being stale
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        const c = loadCache();
+        if (isStale(c)) fetchAndCache();
+      }
+    });
+  }
+
+  // Start the app
+  init();
+})();
+
+function resetPreviewCard() {
+  document.getElementById('player-card-preview').innerHTML = `
+    <div id="preview-prompt" style="text-align:center; color:#94a3b8; font-size:0.9rem;">
+      Click an entry above to View
+    </div>
+  `;
+}
+function formatDivisionName(key) {
+  return key
+    // Insert space before capitals that are not at the start
+    .replace(/(?!^)([A-Z])/g, ' $1')
+    // Insert space before digits
+    .replace(/([a-zA-Z])(\d+)/g, '$1 $2')
+    .trim();
+}
+</script>

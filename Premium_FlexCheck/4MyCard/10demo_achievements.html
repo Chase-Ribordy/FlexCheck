@@ -1,0 +1,252 @@
+<style>
+/* 🎖️ Achievements base */
+.achievements-wrapper{padding:1.25rem 1rem;font-family:'Inter',sans-serif;position:relative}
+.achievement-section{margin-bottom:2rem}
+.achievement-heading{font-size:1rem;color:#4ade80;font-weight:700;text-align:center;margin-bottom:.75rem}
+.achievement-row{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
+.achievement-item{position:relative;filter:grayscale(100%) brightness(.4);transition:.3s ease;cursor:pointer;font-size:2.25rem;user-select:none;outline:none;border:0;background:transparent}
+.achievement-item.unlocked{filter:none;transform:scale(1.1)}
+.achievement-emoji{width:64px;height:64px;display:flex;align-items:center;justify-content:center;font-size:2rem;background:#0f172a;border-radius:.75rem;box-shadow:0 0 10px rgba(74,222,128,.2)}
+.tooltip{position:absolute;bottom:-1.75rem;left:50%;transform:translateX(-50%);background:#111;color:#fff;font-size:.75rem;padding:.35rem .6rem;border-radius:.5rem;white-space:nowrap;opacity:0;pointer-events:none;transition:.2s ease;z-index:10}
+.achievement-item:hover .tooltip,.achievement-item:focus-within .tooltip{opacity:1;pointer-events:auto}
+
+/* 🌫️ Onboarding overlay (confined to the container) */
+#onboard-overlay{position:absolute;inset:0;background:rgba(15,23,42,.6);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;padding:2rem;pointer-events:auto}
+#onboard-popup{background:#1e293b;padding:1.5rem 2rem;border:1px solid #38bdf8;border-radius:1rem;color:#cbd5e1;max-width:460px;text-align:center;box-shadow:0 0 20px rgba(56,189,248,.2)}
+@keyframes pulse-button{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+#unlock-btn{background:#38bdf8;color:#0f172a;font-weight:700;border:none;border-radius:.5rem;padding:.5rem 1.25rem;cursor:pointer;animation:pulse-button 2s infinite;margin-top:1rem}
+
+/* 🧰 Demo visibility toggle (CSS-only once class is set) */
+:root:not(.demo-mode) .fc-block[data-fc-demo="owner"]{display:none!important}
+
+/* 🪟 Pretty modal */
+#achv-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:2000}
+#achv-modal{background:#0b1220;border:1px solid #38bdf8;border-radius:1rem;max-width:620px;width:calc(100% - 2rem);color:#cbd5e1;box-shadow:0 0 24px rgba(56,189,248,.25);padding:0;overflow:hidden}
+#achv-hero{width:100%;height:220px;object-fit:cover;display:block;filter:saturate(1.05) contrast(1.05)}
+#achv-inner{padding:1rem 1.25rem 1.25rem}
+#achv-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+#achv-title{color:#38bdf8;font-size:1.1rem;margin:0;display:flex;align-items:center;gap:.5rem}
+#achv-x{background:transparent;border:0;color:#9fb3c8;font-size:1.25rem;cursor:pointer;line-height:1}
+#achv-points{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:1rem 0 1rem}
+.achv-chip{background:#111827;border:1px solid #334155;border-radius:.65rem;padding:.6rem .7rem;font-size:.9rem;display:flex;align-items:center;gap:.5rem}
+.achv-chip .ico{font-size:1.1rem}
+#achv-actions{display:flex;gap:.5rem;justify-content:center}
+.btn{appearance:none;border:1px solid transparent;border-radius:.6rem;padding:.6rem .95rem;cursor:pointer;font-weight:700}
+.btn-secondary{background:#111827;color:#cbd5e1;border-color:#334155}
+.btn-primary{background:#38bdf8;color:#0f172a}
+</style>
+
+<div id="demoAchievements" class="fc-block" data-fc-demo="owner">
+  <div id="achievement-onboarding" style="position:relative;">
+    <!-- Overlay (always shows in demo until clicked this session) -->
+    <div id="onboard-overlay" aria-hidden="true">
+      <div id="onboard-popup" role="dialog" aria-modal="true" aria-labelledby="onboard-title">
+        <h3 id="onboard-title" style="color:#38bdf8;margin-bottom:.75rem">🏆 Track Your Progress</h3>
+        <p style="font-size:.95rem;margin:.25rem 0 .5rem">
+          This is demo data. Submit a FlexCheck to unlock your personal achievements.
+        </p>
+<button id="unlock-btn" type="button" onclick="window.fcUnlockAchievements()">Unlock Section</button>
+      </div>
+    </div>
+
+    <!-- Demo Achievements -->
+    <div class="achievements-wrapper" aria-live="polite">
+      <div class="achievement-section">
+        <h3 class="achievement-heading">🏆 FlexScore Total: <span id="flexscore-count">765</span></h3>
+        <div class="achievement-row" id="flexscore-row">
+          <button class="achievement-item" data-type="score" data-required="100" aria-label="Earn 100 FlexScore (demo)" type="button">
+            <div class="achievement-emoji">🥉</div><span class="tooltip">Earn 100 FlexScore</span>
+          </button>
+          <button class="achievement-item" data-type="score" data-required="500" aria-label="Earn 500 FlexScore (demo)" type="button">
+            <div class="achievement-emoji">🥈</div><span class="tooltip">Earn 500 FlexScore</span>
+          </button>
+          <button class="achievement-item" data-type="score" data-required="1000" aria-label="Earn 1000 FlexScore (demo)" type="button">
+            <div class="achievement-emoji">🥇</div><span class="tooltip">Earn 1000 FlexScore</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="achievement-section">
+        <h3 class="achievement-heading">🔥 Streak: <span id="streak-count">5</span> weeks</h3>
+        <div class="achievement-row" id="streak-row">
+          <button class="achievement-item" data-type="streak" data-required="2" aria-label="2-week streak (demo)" type="button">
+            <div class="achievement-emoji">🔥</div><span class="tooltip">2-week streak</span>
+          </button>
+          <button class="achievement-item" data-type="streak" data-required="6" aria-label="6-week streak (demo)" type="button">
+            <div class="achievement-emoji">💥</div><span class="tooltip">6-week streak</span>
+          </button>
+          <button class="achievement-item" data-type="streak" data-required="12" aria-label="12-week streak (demo)" type="button">
+            <div class="achievement-emoji">👑</div><span class="tooltip">12-week streak</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Aesthetic modal -->
+<div id="achv-modal-backdrop" aria-hidden="true">
+  <div id="achv-modal" role="dialog" aria-modal="true" aria-labelledby="achv-title">
+    <div id="achv-inner">
+      <div id="achv-header">
+        <h3 id="achv-title">FlexCheck Achievements</h3>
+        <button id="achv-x" aria-label="Close">✕</button>
+      </div>
+      <div id="achv-points">
+        <div class="achv-chip"><span class="ico">🏅</span>Grow Your FlexScore</div>
+        <div class="achv-chip"><span class="ico">🔥</span>Keep your Streak Alive</div>
+        <div class="achv-chip"><span class="ico">📈</span>Stay Consistent Each Week</div>
+        <div class="achv-chip"><span class="ico">🎥</span>Full Unlock Bonus</div>
+      </div>
+      <div id="achv-actions">
+        <a class="btn btn-primary" id="achv-cta"
+           href="https://www.gameplanfitness.com/flexcheck/premium-flexcheck/"
+           target="_self" rel="nofollow">Go to Premium FlexCheck</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ========= Robust owner detection ========= */
+  const EMAIL_KEYS = ['userEmail','email','ownerEmail'];
+  const isEmail = (v)=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v||'').trim());
+
+  function readLocalEmail(){
+    for (const k of EMAIL_KEYS){
+      const v = localStorage.getItem(k);
+      if (isEmail(v)) return v.trim();
+    }
+    return '';
+  }
+  function readWindowEmail(){
+    if (isEmail(window.flexcheckOwner)) return String(window.flexcheckOwner).trim();
+    const cache = window.flexcheckCache && window.flexcheckCache.ownerEmail;
+    if (isEmail(cache)) return String(cache).trim();
+    return '';
+  }
+  function getOwnerEmail(){
+    return readWindowEmail() || readLocalEmail();
+  }
+
+  const root = document.documentElement;
+  const demoBlock = document.getElementById('demoAchievements');
+  const overlay = document.getElementById('onboard-overlay');
+  const sessionDismissKey = 'achievementsOverlayDismissed_session';
+
+  function setDemoMode(on){
+    if (on) root.classList.add('demo-mode');
+    else root.classList.remove('demo-mode');
+  }
+
+  window.fcUnlockAchievements = function(){
+    try { sessionStorage.setItem('achievementsOverlayDismissed_session','1'); } catch(e) {}
+    var ov = document.getElementById('onboard-overlay');
+    if (ov){
+      ov.style.display = 'none';
+      ov.setAttribute('aria-hidden','true');
+    }
+  };
+
+
+  function ensureDemoVisibility(){
+  const hasOwnerStorage = !!localStorage.getItem('flexcheckOwner');
+  const hasCache = !!localStorage.getItem('flexcheckCacheV3');
+  const hasEitherData = hasOwnerStorage || hasCache;
+  const isFullDemo = !hasOwnerStorage && !hasCache;
+  
+  setDemoMode(isFullDemo);
+  
+  // Control the demo block visibility directly
+  if (demoBlock) {
+    if (hasEitherData) {
+      demoBlock.style.display = 'none';
+    } else {
+      demoBlock.style.display = '';
+    }
+  }
+  
+  // Show overlay only in full demo mode (both keys missing)
+  if (isFullDemo && overlay){
+    if (!sessionStorage.getItem(sessionDismissKey)){
+      overlay.style.display = 'flex';
+      overlay.setAttribute('aria-hidden','false');
+    } else {
+      overlay.style.display = 'none';
+      overlay.setAttribute('aria-hidden','true');
+    }
+  } else if (overlay) {
+    overlay.style.display = 'none';
+    overlay.setAttribute('aria-hidden','true');
+  }
+}
+
+  // Run when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    ensureDemoVisibility();
+
+    // Re-check shortly after load (handles late globals)
+    setTimeout(ensureDemoVisibility, 250);
+    setTimeout(ensureDemoVisibility, 1500);
+
+    // Listen for your custom event to re-check
+    document.addEventListener('flexcheck:owner', ensureDemoVisibility);
+
+    // Demo numbers (purely for visuals)
+    const flexScore = 765, currentStreak = 5;
+    const fsEl = document.getElementById('flexscore-count');
+    const stEl = document.getElementById('streak-count');
+    if (fsEl) fsEl.textContent = flexScore;
+    if (stEl) stEl.textContent = currentStreak;
+    document.querySelectorAll('.achievement-item').forEach(item=>{
+      const t = item.dataset.type, req = Number(item.dataset.required||0);
+      const unlocked = (t==='score' && flexScore>=req) || (t==='streak' && currentStreak>=req);
+      if (unlocked) item.classList.add('unlocked');
+    });
+
+    // Overlay unlock
+    const unlockBtn = document.getElementById('unlock-btn');
+    if (unlockBtn){
+      unlockBtn.addEventListener('click', ()=>{
+        sessionStorage.setItem(sessionDismissKey,'1');
+        if (overlay){
+          overlay.style.display = 'none';
+          overlay.setAttribute('aria-hidden','true');
+        }
+      });
+    }
+
+    // Modal wiring
+    const backdrop = document.getElementById('achv-modal-backdrop');
+    const btnClose  = document.getElementById('achv-close');
+    const btnX      = document.getElementById('achv-x');
+
+    function openModal(){
+      if (!backdrop) return;
+      backdrop.style.display = 'flex';
+      backdrop.setAttribute('aria-hidden','false');
+      (btnClose||btnX)?.focus();
+      document.addEventListener('keydown', escToClose);
+    }
+    function closeModal(){
+      if (!backdrop) return;
+      backdrop.style.display = 'none';
+      backdrop.setAttribute('aria-hidden','true');
+      document.removeEventListener('keydown', escToClose);
+    }
+    function escToClose(e){ if (e.key==='Escape') closeModal(); }
+
+    if (btnClose) btnClose.addEventListener('click', closeModal);
+    if (btnX) btnX.addEventListener('click', closeModal);
+    if (backdrop) backdrop.addEventListener('click', (e)=>{ if (e.target===backdrop) closeModal(); });
+
+    // Open modal when any demo achievement is clicked
+    document.querySelectorAll('.achievement-item').forEach(item=>{
+      item.addEventListener('click', openModal);
+      item.addEventListener('keydown',(e)=>{ if (e.key==='Enter'||e.key===' '){ e.preventDefault(); openModal(); }});
+    });
+  });
+})();
+  
+</script>

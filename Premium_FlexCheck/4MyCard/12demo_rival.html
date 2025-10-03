@@ -1,0 +1,321 @@
+<!-- ░░░ flexCHECK – RIVALS + MODAL (rewritten) ░░░ -->
+<div id="demoRivals" class="fc-block" data-fc-demo="entry" data-fc-timeout="3000">
+
+  <!-- Modal -->
+<div id="rivalDemo-modal-backdrop" aria-hidden="true">
+  <div id="rivalDemo-modal" role="dialog" aria-modal="true" aria-labelledby="rivalDemo-title" tabindex="-1">
+    <div id="rivalDemo-inner">
+      <div id="rivalDemo-header">
+        <h3 id="rivalDemo-title">Leaderboard Rivals</h3>
+        <button id="rivalDemo-x" aria-label="Close">✕</button>
+      </div>
+      <div id="rivalDemo-points">
+        <div class="rivalDemo-chip"><span class="ico">⚡</span>View Other's Card</div>
+        <div class="rivalDemo-chip"><span class="ico">🏃</span>Compare to Yourself</div>
+        <div class="rivalDemo-chip"><span class="ico">📈</span>Competitive Motivation</div>
+      </div>
+      <div id="rivalDemo-actions">
+        <button class="btn btn-primary" id="rivalDemo-cta">Start FlexCheck➝</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- leaderboardDemo -->
+  <div class="leaderboardDemo-container">
+
+    <div style="text-align:center; padding: 1rem 0;">
+      <img 
+        src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/GP_2024_logo300x223.webp" 
+        alt="GamePlan Fitness Logo" 
+        style="width: 40px; height: auto; opacity: 0.35;"
+      >
+    </div>
+
+    <h2 class="lbDemo-title">📈 Your Rivals</h2>
+
+    <div class="lbDemo-row lbDemo-header">
+      <div class="lbDemo-rank">Rank</div>
+      <div class="lbDemo-name">Name</div>
+      <div class="lbDemo-score">Score</div>
+    </div>
+
+    <div class="leaderboardDemo-rows">
+      <div class="lbDemo-entry">
+        <div class="lbDemo-row">
+          <div class="lbDemo-rank">117</div>
+          <div class="lbDemo-name">@trapzilla_was_here_lifting</div>
+          <div class="lbDemo-score" data-score="84">0</div>
+        </div>
+        <div class="lbDemo-view-row">
+          <button class="rivalDemo-btn">View Rival</button>
+        </div>
+      </div>
+
+      <div class="lbDemo-entry">
+        <div class="lbDemo-row">
+          <div class="lbDemo-rank">118</div>
+          <div class="lbDemo-name">Anonymous</div>
+          <div class="lbDemo-score" data-score="73">0</div>
+        </div>
+        <div class="lbDemo-view-row">
+          <button class="rivalDemo-btn">View Rival</button>
+        </div>
+      </div>
+
+      <div class="lbDemo-entry you">
+        <div class="lbDemo-row">
+          <div class="lbDemo-rank">120</div>
+          <div class="lbDemo-name">YOU</div>
+          <div class="lbDemo-score" data-score="71">0</div>
+        </div>
+        <div class="lbDemo-view-row">—</div>
+      </div>
+
+      <div class="lbDemo-entry">
+        <div class="lbDemo-row">
+          <div class="lbDemo-rank">121</div>
+          <div class="lbDemo-name">@ronnielite</div>
+          <div class="lbDemo-score" data-score="70">0</div>
+        </div>
+        <div class="lbDemo-view-row">
+          <button class="rivalDemo-btn">View Rival</button>
+        </div>
+      </div>
+
+      <div class="lbDemo-entry">
+        <div class="lbDemo-row">
+          <div class="lbDemo-rank">122</div>
+          <div class="lbDemo-name">@shruglord</div>
+          <div class="lbDemo-score" data-score="69">0</div>
+        </div>
+        <div class="lbDemo-view-row">
+          <button class="rivalDemo-btn">View Rival</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* leaderboardDemo */
+.leaderboardDemo-container {
+  margin: 5rem auto 0;
+  max-width: 640px;
+  background: #0b1630;
+  border: 2px solid var(--accent, #27BEFA);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 0 14px rgba(39,190,250,0.2);
+  font-family: 'Inter', sans-serif;
+}
+.lbDemo-title {
+  text-align: center;
+  color: var(--accent, #27BEFA);
+  font-size: 1.3rem;
+  margin-bottom: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.lbDemo-entry {
+  background: #1e293b;
+  border-radius: 12px;
+  margin-bottom: 0.8rem;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+.lbDemo-entry:hover { box-shadow: 0 0 10px var(--accent, #27BEFA); transform: scale(1.01); }
+.lbDemo-entry.you { background: rgba(39,190,250,0.2); border: 1px solid var(--accent, #27BEFA); }
+.lbDemo-row { display: flex; justify-content: space-between; padding: 0.6rem 1rem; font-size: 0.95rem; }
+.lbDemo-header {
+  background: transparent; font-weight: 600; color: #94a3b8; text-transform: uppercase;
+  font-size: 0.85rem; letter-spacing: 0.04em; margin-bottom: 0.4rem; padding: 0.4rem 1rem;
+}
+.lbDemo-rank, .lbDemo-name, .lbDemo-score {
+  flex: 1; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 6px;
+}
+.lbDemo-score[data-score] { font-weight: 700; color: var(--accent, #27BEFA); }
+.lbDemo-view-row { text-align: center; padding: 0.4rem 1rem 0.7rem; border-top: 1px solid #334155; }
+
+/* Button replaces anchor */
+.lbDemo-view-row .rivalDemo-btn {
+  font-size: 0.75rem; color: #0b1630; background: var(--accent, #27BEFA);
+  padding: 0.35rem 0.9rem; border-radius: 6px; font-weight: 600; border: 0; cursor: pointer;
+  transition: background 0.2s ease, transform 0.08s ease;
+}
+.lbDemo-view-row .rivalDemo-btn:hover { background: #3dd6ff; }
+.lbDemo-view-row .rivalDemo-btn:active { transform: translateY(1px); }
+
+/* Modal shell (lightweight; reuse your Achievements styles if present) */
+#rivalDemo-modal-backdrop[aria-hidden="true"] { display: none; }
+#rivalDemo-modal-backdrop[aria-hidden="false"] {
+  position: fixed; inset: 0; background: rgba(2,6,23,0.6); display: grid; place-items: center; z-index: 9999;
+}
+#rivalDemo-inner {
+  background: #0b1630; border: 2px solid var(--accent, #27BEFA); border-radius: 12px;
+  width: min(520px, 92vw); padding: 1rem;
+  box-shadow: 0 0 18px rgba(39,190,250,0.25);
+}
+#rivalDemo-header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .6rem; }
+#rivalDemo-title { color: var(--accent, #27BEFA); font-size: 1.1rem; margin: 0; }
+#rivalDemo-x { background: transparent; border: 0; color: #94a3b8; font-size: 1.1rem; cursor: pointer; }
+#rivalDemo-points { display: flex; flex-wrap: wrap; gap: .5rem; margin: .25rem 0 .8rem; }
+.rivalDemo-chip { background: #1e293b; border: 1px solid #334155; border-radius: 999px; padding: .4rem .7rem; font-size: .85rem; color: #cbd5e1; }
+.rivalDemo-chip .ico { margin-right: .35rem; }
+#rivalDemo-actions { text-align: center; }
+#rivalDemo-cta { background: var(--accent, #27BEFA); border: 0; padding: .55rem 1rem; border-radius: 8px; font-weight: 700; cursor: pointer; }
+#rivalDemo-cta:hover { background: #3dd6ff; }
+
+/* Reduced motion fade */
+@media (prefers-reduced-motion: no-preference) {
+  #rivalDemo-inner { animation: rv-fade .18s ease-out both; }
+  @keyframes rv-fade { from { transform: translateY(6px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+}
+/* Mobile-responsive modal improvements */
+#rivalDemo-modal-backdrop[aria-hidden="false"] {
+  padding: 1rem;
+}
+
+#rivalDemo-inner {
+  width: min(520px, 100%); 
+  max-width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+#rivalDemo-x { 
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+#rivalDemo-x:hover {
+  background: rgba(148, 163, 184, 0.1);
+}
+
+/* Mobile-first responsive chips */
+#rivalDemo-points { 
+  flex-direction: column;
+  gap: 0.6rem; 
+  margin: 0 0 1.2rem; 
+}
+
+@media (min-width: 640px) {
+  #rivalDemo-points {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.25rem 0 0.8rem;
+  }
+}
+
+.rivalDemo-chip { 
+  padding: 0.6rem 0.9rem; 
+  font-size: 0.9rem; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .rivalDemo-chip {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.85rem;
+    justify-content: flex-start;
+  }
+}
+
+.rivalDemo-chip .ico { 
+  margin-right: 0.5rem; 
+}
+
+@media (min-width: 640px) {
+  .rivalDemo-chip .ico {
+    margin-right: 0.35rem;
+  }
+}
+
+#rivalDemo-cta { 
+  padding: 0.7rem 1.5rem; 
+  font-size: 0.95rem;
+  width: 100%;
+}
+
+@media (min-width: 480px) {
+  #rivalDemo-cta {
+    width: auto;
+    padding: 0.55rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  #rivalDemo-title {
+    font-size: 1rem;
+  }
+}
+</style>
+
+<script>
+(() => {
+  const $ = (s, r=document) => r.querySelector(s);
+  const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+
+  const backdrop = $('#rivalDemo-modal-backdrop');
+  const modal = $('#rivalDemo-modal');
+  const closeBtn = $('#rivalDemo-x');
+  const ctaBtn = $('#rivalDemo-cta');
+  const rows = $('.leaderboardDemo-rows');
+  let lastFocus;
+
+  const open = () => {
+    lastFocus = document.activeElement;
+    backdrop.setAttribute('aria-hidden','false');
+    modal?.focus({preventScroll:true});
+    document.addEventListener('keydown', onKey);
+    backdrop.addEventListener('click', onBackdrop);
+  };
+  const close = () => {
+    backdrop.setAttribute('aria-hidden','true');
+    document.removeEventListener('keydown', onKey);
+    backdrop.removeEventListener('click', onBackdrop);
+    lastFocus?.focus({preventScroll:true});
+  };
+  const onKey = (e) => { if (e.key === 'Escape') close(); };
+  const onBackdrop = (e) => { if (e.target === backdrop) close(); };
+
+  rows?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.rivalDemo-btn');
+    if (btn) { e.preventDefault(); open(); }
+  });
+  closeBtn?.addEventListener('click', close);
+  ctaBtn?.addEventListener('click', close);
+
+  // Count-up animation with reduced-motion respect
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const animate = (el, target) => {
+    if (reduce) { el.textContent = target; return; }
+    const dur = 600, start = performance.now(), from = 0;
+    const tick = (t) => {
+      const p = Math.min(1, (t - start) / dur);
+      el.textContent = Math.round(from + (target - from) * p);
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+
+  // If DOM already ready, run immediately; else wait.
+  const initCounts = () => $$('.lbDemo-score[data-score]').forEach(el => {
+    const target = parseInt(el.dataset.score, 10) || 0;
+    animate(el, target);
+  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCounts);
+  } else {
+    initCounts();
+  }
+})();
+  document.getElementById("rivalDemo-cta").addEventListener("click", function() {
+    window.location.href = "https://www.gameplanfitness.com/flexcheck/premium-flexcheck/";
+  });
+</script>

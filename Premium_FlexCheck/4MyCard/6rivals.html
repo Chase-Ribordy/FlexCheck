@@ -1,0 +1,957 @@
+<!-- ░░░ flexCHECK – RIVALS (2 above / YOU / 2 below) ░░░ -->
+
+<style>
+.leaderboard-container {
+  margin: 5rem auto 0;
+  max-width: 640px;
+  background: #0b1630;
+  border: 2px solid var(--accent, #27BEFA);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 0 14px rgba(39,190,250,0.2);
+  font-family: 'Inter', sans-serif;
+}
+
+.lb-title {
+  text-align: center;
+  color: var(--accent, #27BEFA);
+  font-size: 1.3rem;
+  margin-bottom: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lb-entry {
+  background: #1e293b;
+  border-radius: 12px;
+  margin-bottom: 0.8rem;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.lb-entry:hover {
+  box-shadow: 0 0 10px var(--accent, #27BEFA);
+  transform: scale(1.01);
+}
+
+.lb-entry.you {
+  background: rgba(39,190,250,0.2);
+  border: 1px solid var(--accent, #27BEFA);
+}
+
+.lb-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+}
+
+.lb-header {
+  background: transparent;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.4rem;
+  padding: 0.4rem 1rem;
+}
+
+.lb-rank,
+.lb-name,
+.lb-score {
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 6px;
+}
+
+.lb-score[data-score] {
+  font-weight: 700;
+  color: var(--accent, #27BEFA);
+}
+
+.lb-view-row {
+  text-align: center;
+  padding: 0.4rem 1rem 0.7rem;
+  border-top: 1px solid #334155;
+}
+
+.lb-view-row a {
+  font-size: 0.75rem;
+  color: #0b1630;
+  background: var(--accent, #27BEFA);
+  padding: 0.35rem 0.9rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.lb-view-row a:hover {
+  background: #3dd6ff;
+}
+
+.lb-skel { 
+  background:#0f172a; 
+  border-radius:12px; 
+  margin-bottom:.8rem; 
+  overflow:hidden; 
+}
+
+.lb-skel .sk-wrap { 
+  display:flex; 
+  justify-content:space-between; 
+  align-items:center; 
+  padding:.6rem 1rem; 
+}
+
+.lb-skel .sk-rank, 
+.lb-skel .sk-name, 
+.lb-skel .sk-score { 
+  flex:1; 
+  display:flex; 
+  justify-content:center; 
+}
+
+.lb-skel .sk-bar { 
+  width:100%; 
+  max-width:160px; 
+  height:14px; 
+  border-radius:8px; 
+  background:linear-gradient(90deg,#0f172a,#1f2937,#0f172a); 
+  animation:skShimmer 1.2s infinite; 
+}
+
+.lb-skel .sk-pill { 
+  width:44px; 
+  height:18px; 
+  border-radius:999px; 
+  background:linear-gradient(90deg,#0f172a,#1f2937,#0f172a); 
+  animation:skShimmer 1.2s infinite; 
+}
+
+.lb-skel .sk-btn { 
+  height:28px; 
+  width:110px; 
+  border-radius:8px; 
+  margin:.3rem auto .8rem; 
+  background:linear-gradient(90deg,#0f172a,#1f2937,#0f172a); 
+  animation:skShimmer 1.2s infinite; 
+}
+
+@keyframes skShimmer{
+  0%{background-position:-200px 0}
+  100%{background-position:200px 0}
+}
+
+/* Units toggle */
+.unit-toggle{
+  display:flex; 
+  gap:.5rem; 
+  justify-content:center; 
+  align-items:center;
+  margin: 2rem 0 .15rem;
+}
+
+.unit-btn{
+  display:inline-flex; 
+  align-items:center; 
+  gap:.4rem;
+  padding:.35rem .6rem; 
+  border-radius:999px; 
+  cursor:pointer;
+  background:#0f1b33; 
+  color:#e2e8f0; 
+  border:1px solid rgba(39,190,250,.25);
+  font-weight:700; 
+  font-size:.8rem;
+  transition:transform .15s, background .2s, border-color .2s, box-shadow .2s;
+}
+
+.unit-btn .u-ic{ 
+  filter:drop-shadow(0 0 6px rgba(56,189,248,.45)); 
+}
+
+.unit-btn:hover{ 
+  transform:translateY(-1px); 
+  background:#0e223f; 
+}
+
+.unit-btn.is-active{
+  background:linear-gradient(90deg,#27BEFA,#38bdf8);
+  color:#041324; 
+  border-color:rgba(39,190,250,.6);
+  box-shadow:0 0 12px rgba(39,190,250,.35);
+}
+</style>
+
+<div id="FC_LIVE_RIVALS" class="fc-block" style="display:none" data-email="" data-week="" data-gas="">
+  <div class="leaderboard-container">
+    <div style="text-align:center; padding: 1rem 0;">
+      <img src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/GP_2024_logo300x223.webp" alt="GamePlan Fitness Logo" style="width: 40px; height: auto; opacity: 0.35;">
+    </div>
+    <h2 class="lb-title">📈 Your Rivals</h2>
+
+    <!-- Headers -->
+    <div class="lb-row lb-header">
+      <div class="lb-rank">Rank</div>
+      <div class="lb-name">Name</div>
+      <div class="lb-score">Score</div>
+    </div>
+
+    <!-- Rows will be injected here -->
+    <div class="leaderboard-rows" id="rivalsRows"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const WRAP = document.getElementById('FC_LIVE_RIVALS');
+  if (!WRAP) return;
+
+  const GAS_BASE = 'https://script.google.com/macros/s/AKfycbyo90wmB5BYtMIzrozQ1sqLAOHxlxZJw6sow_l2iCuP_lRpBNP7hHbe-1O9cHxQllG2Lw/exec';
+  const rowsHost = WRAP.querySelector('#rivalsRows');
+  let IN_FLIGHT = false;
+  let DATA_RENDERED = false;
+  let LAST_PARAMS = null;
+
+  // ---------- CSS first (prevents unstyled flashes)
+  // Replace your entire ensureStyles function with this:
+(function ensureStyles(){
+  if (document.getElementById('rivals-core-styles')) return;
+  const css = `
+    #FC_LIVE_RIVALS .lb-entry{background:#1e293b;border-radius:12px;margin-bottom:.8rem;overflow:hidden;transition:box-shadow .3s,transform .2s}
+    #FC_LIVE_RIVALS .lb-entry:hover{box-shadow:0 0 10px var(--accent,#27BEFA);transform:scale(1.01)}
+    #FC_LIVE_RIVALS .lb-entry.you{background:rgba(39,190,250,.2);border:1px solid var(--accent,#27BEFA)}
+    #FC_LIVE_RIVALS .lb-row{display:flex;justify-content:space-between;padding:.6rem 1rem;font-size:.95rem}
+    #FC_LIVE_RIVALS .lb-rank,#FC_LIVE_RIVALS .lb-name,#FC_LIVE_RIVALS .lb-score{flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 6px}
+    #FC_LIVE_RIVALS .lb-score[data-score]{font-weight:700;color:var(--accent,#27BEFA)}
+    #FC_LIVE_RIVALS .lb-view-row{text-align:center;padding:.4rem 1rem .7rem;border-top:1px solid #334155}
+    #FC_LIVE_RIVALS .view-rival-btn{background:#38bdf8;color:#0f172a;border:none;padding:.4rem .8rem;border-radius:.5rem;font-size:.8rem;font-weight:600;cursor:pointer;transition:background .2s}
+    #FC_LIVE_RIVALS .view-rival-btn:hover{background:#0ea5e9}
+    #FC_LIVE_RIVALS .lb-skel{background:#0f172a;border-radius:12px;margin-bottom:.8rem;overflow:hidden}
+    #FC_LIVE_RIVALS .lb-skel .sk-wrap{display:flex;justify-content:space-between;align-items:center;padding:.6rem 1rem}
+    #FC_LIVE_RIVALS .lb-skel .sk-rank,#FC_LIVE_RIVALS .lb-skel .sk-name,#FC_LIVE_RIVALS .lb-skel .sk-score{flex:1;display:flex;justify-content:center}
+    #FC_LIVE_RIVALS .lb-skel .sk-bar,#FC_LIVE_RIVALS .lb-skel .sk-pill,#FC_LIVE_RIVALS .lb-skel .sk-btn{background:linear-gradient(90deg,#0f172a,#1f2937,#0f172a);background-size:200px 100%;animation:skShimmer 1.2s infinite}
+    #FC_LIVE_RIVALS .lb-skel .sk-bar{width:100%;max-width:160px;height:14px;border-radius:8px}
+    #FC_LIVE_RIVALS .lb-skel .sk-pill{width:44px;height:18px;border-radius:999px}
+    #FC_LIVE_RIVALS .lb-skel .sk-btn{height:28px;width:110px;border-radius:8px;margin:.3rem auto .8rem}
+    @keyframes skShimmer{0%{background-position:-200px 0}100%{background-position:200px 0}}
+
+    /* Modal Overlay */
+    .player-card-overlay{
+      position:fixed; inset:0; z-index:9999;
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(0,0,0,.85);
+      backdrop-filter: blur(4px);
+    }
+
+    /* Main Modal Container */
+    .player-card-popup{
+      position:relative;
+      width:min(95vw, 500px);
+      max-height:90vh;
+      border-radius:20px;
+      overflow:hidden;
+      color:#e2e8f0;
+      background:linear-gradient(145deg, #0f1b33 0%, #0b1630 100%);
+      border:1px solid rgba(39,190,250,.2);
+      box-shadow:0 0 0 1px rgba(39,190,250,.1), 0 20px 40px rgba(0,0,0,.6);
+    }
+
+    /* Close Button */
+    .player-card-popup .close-popup{
+      position:absolute; top:16px; right:16px; z-index:10;
+      background:rgba(0,0,0,.6);
+      border:1px solid rgba(255,255,255,.1);
+      color:#fff; cursor:pointer;
+      font-size:18px; line-height:1;
+      padding:8px 10px; border-radius:50%;
+      width:36px; height:36px;
+      display:flex; align-items:center; justify-content:center;
+      backdrop-filter:blur(8px);
+      transition:all .2s ease;
+    }
+    .player-card-popup .close-popup:hover{
+      background:rgba(0,0,0,.8);
+      transform:scale(1.05);
+    }
+
+    /* Header - Floating Chips */
+    .pc-header{
+      position:absolute; top:16px; left:20px; z-index:5;
+      display:flex; align-items:center; gap:8px;
+    }
+    .pc-rank-badge{
+      background:rgba(0,0,0,.7);
+      border:1px solid rgba(39,190,250,.3);
+      padding:4px 8px; border-radius:12px;
+      font-size:12px; font-weight:700;
+      color:#27BEFA;
+      backdrop-filter:blur(8px);
+      letter-spacing:.02em;
+    }
+    .pc-handle{
+      background:rgba(0,0,0,.7);
+      border:1px solid rgba(255,255,255,.1);
+      padding:4px 10px; border-radius:12px;
+      font-size:12px; font-weight:500;
+      color:#e2e8f0;
+      backdrop-filter:blur(8px);
+      max-width:120px;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+
+    /* Large Photo Carousel */
+    .pc-photos{
+      position:relative; height:400px; overflow:hidden;
+    }
+    .pc-strip{
+      display:flex; height:100%; overflow-x:auto; scroll-snap-type:x mandatory;
+      scrollbar-width:none; scroll-behavior:smooth;
+    }
+    .pc-strip::-webkit-scrollbar{ display:none; }
+    .pc-slide{
+      flex:0 0 100%; height:100%; scroll-snap-align:center;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .pc-slide img{
+      width:100%; height:100%; object-fit:cover; object-position:center;
+      cursor:pointer; transition:transform .2s ease;
+    }
+    .pc-slide img:hover{
+      transform:scale(1.02);
+    }
+
+    /* Navigation Arrows */
+    .pc-nav{
+      position:absolute; top:50%; transform:translateY(-50%); z-index:6;
+      width:44px; height:44px; border-radius:50%;
+      border:1px solid rgba(255,255,255,.2);
+      background:rgba(0,0,0,.6); color:#fff; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px;
+      backdrop-filter:blur(8px);
+      transition:all .2s ease;
+    }
+    .pc-nav:hover{
+      background:rgba(0,0,0,.8);
+      transform:translateY(-50%) scale(1.05);
+    }
+    .pc-nav.prev{ left:16px; }
+    .pc-nav.next{ right:16px; }
+    
+    /* Arrow visibility */
+    .pc-nav.hidden { 
+      opacity: 0; 
+      pointer-events: none; 
+      transform: translateY(-50%) scale(0.8); 
+    }
+
+    /* Dots Navigation */
+    .pc-dots{
+      position:absolute; bottom:16px; left:50%; transform:translateX(-50%);
+      display:flex; gap:6px; z-index:6;
+    }
+    .pc-dot{
+      width:8px; height:8px; border-radius:50%;
+      background:rgba(255,255,255,.4); cursor:pointer;
+      transition:all .2s ease;
+    }
+    .pc-dot.active{
+      background:#27BEFA;
+      box-shadow:0 0 8px rgba(39,190,250,.6);
+    }
+
+    /* Content Area */
+    .pc-content{ padding:24px; }
+
+    /* FlexScore Display */
+    .pc-score-wrap{
+      text-align:center; margin-bottom:5px;
+    }
+    .pc-score-label{
+      font-size:14px; color:#94a3b8;
+      text-transform:uppercase; letter-spacing:.1em;
+      margin-bottom:5px; font-weight:500;
+    }
+    .pc-score-big{
+      font-size:32px; font-weight:900; color:#27BEFA;
+      text-shadow:0 0 20px rgba(39,190,250,.4);
+    }
+
+    /* Stats Grid */
+    .pc-stats{
+      display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:10px;
+    }
+    .pc-stat{
+      background:rgba(15,27,51,.6); border:1px solid rgba(39,190,250,.1); border-radius:12px;
+      padding: 8px 10px; text-align:center;
+      transition:all .2s ease;
+    }
+    .pc-stat:hover{
+      border-color:rgba(39,190,250,.3);
+      background:rgba(15,27,51,.8);
+    }
+    .pc-stat .k{
+      display:block; font-size:11px; color:#94a3b8; margin-bottom:6px;
+      text-transform:uppercase; letter-spacing:.05em; font-weight:500;
+    }
+    .pc-stat .v{ display:block; font-weight:700; color:#e2e8f0; font-size:15px; }
+
+    /* Fullscreen Image Overlay */
+    .fullscreen-image-overlay{
+      position:fixed; inset:0; z-index:10000;
+      background:rgba(0,0,0,.95);
+      display:flex; align-items:center; justify-content:center;
+      backdrop-filter:blur(8px);
+    }
+    .fullscreen-image-container{
+      position:relative;
+      max-width:95vw; max-height:95vh;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .fullscreen-image{
+      max-width:100%; max-height:100%;
+      object-fit:contain;
+      border-radius:12px;
+      box-shadow:0 0 40px rgba(39,190,250,.3);
+    }
+    .fullscreen-close{
+      position:absolute; top:20px; right:20px;
+      background:rgba(0,0,0,.8);
+      border:1px solid rgba(255,255,255,.2);
+      color:#fff; cursor:pointer;
+      font-size:24px; line-height:1;
+      padding:12px 15px; border-radius:50%;
+      width:50px; height:50px;
+      display:flex; align-items:center; justify-content:center;
+      backdrop-filter:blur(8px);
+      transition:all .2s ease;
+    }
+    .fullscreen-close:hover{
+      background:rgba(0,0,0,.9);
+      transform:scale(1.05);
+    }
+  `;
+  
+  const el = document.createElement('style');
+  el.id = 'rivals-core-styles';
+  el.textContent = css;
+  document.head.appendChild(el);
+})();
+
+  // ---------- helpers
+  const show = ()=> (WRAP.style.display = '');
+  const hide = ()=> (WRAP.style.display = 'none');
+
+  function getParamInsensitive(name){
+    try{
+      const u = new URL(location.href);
+      let v = u.searchParams.get(name);
+      if (v != null) return v;
+      for (const [k,val] of u.searchParams.entries()){
+        if (k.toLowerCase() === name.toLowerCase()) return val;
+      }
+    }catch{}
+    return '';
+  }
+
+  function peekOwnerLocal(){
+    try{
+      const raw = localStorage.getItem('flexcheckOwner');
+      if (!raw) return null;
+      const j = JSON.parse(raw);
+      return j?.email || '';
+    }catch{ return null; }
+  }
+
+  function getCache(){
+    try{
+      const raw = localStorage.getItem('flexcheckCacheV3');
+      return raw ? JSON.parse(raw) : null;
+    }catch{ return null; }
+  }
+
+  // Normalize ANY weekKey-ish value to YYYY-MM-DD (UTC based)
+  function normalizeWeekKey(wk){
+    if (!wk) return '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(wk)) return wk;
+    // ISO date or anything parsable
+    const d = new Date(wk);
+    if (!isNaN(d)) {
+      const y = d.getUTCFullYear();
+      const m = String(d.getUTCMonth()+1).padStart(2,'0');
+      const day = String(d.getUTCDate()).padStart(2,'0');
+      return `${y}-${m}-${day}`;
+    }
+    // last-gasp: slice first 10 if it looks like YYYY-MM-DD...
+    if (/^\d{4}-\d{2}-\d{2}/.test(wk)) return wk.slice(0,10);
+    return '';
+  }
+
+  // Your rule: ALWAYS derive weekKey from entriesById[entryId]
+  function resolveWeekKeyFromCache(entryId){
+    const c = getCache();
+    if (!c) return '';
+    const byId = c.entriesById && c.entriesById[String(entryId)];
+    if (byId && byId.weekKey) return normalizeWeekKey(byId.weekKey);
+    // fallback if only dates exist
+    if (byId && (byId.createdAtISO || byId.cachedAt)) {
+      return normalizeWeekKey(byId.createdAtISO || byId.cachedAt);
+    }
+    // final chance: scan entries
+    const arr = Array.isArray(c.entries) ? c.entries : [];
+    const hit = arr.find(e => String(e.entryId) === String(entryId));
+    if (!hit) return '';
+    if (hit.weekKey) return normalizeWeekKey(hit.weekKey);
+    if (hit.createdAtISO || hit.cachedAt) return normalizeWeekKey(hit.createdAtISO || hit.cachedAt);
+    return '';
+  }
+
+  // Sometimes cache arrives a tick later—poll briefly
+  async function waitForEntryResolution(entryId, maxMs=5000){
+    const t0 = Date.now();
+    while (Date.now() - t0 <= maxMs){
+      const wk = resolveWeekKeyFromCache(entryId);
+      if (wk) return wk;
+      await new Promise(r=>setTimeout(r, 150));
+    }
+    return '';
+  }
+
+  function skeletonHTML(n=5){
+    return Array.from({length:n}).map(()=>`
+      <div class="lb-skel">
+        <div class="sk-wrap">
+          <div class="sk-rank"><div class="sk-pill"></div></div>
+          <div class="sk-name"><div class="sk-bar"></div></div>
+          <div class="sk-score"><div class="sk-pill"></div></div>
+        </div>
+        <div class="lb-view-row"><div class="sk-btn"></div></div>
+      </div>
+    `).join('');
+  }
+
+  function showSkeleton(n=5){ rowsHost.innerHTML = skeletonHTML(n); }
+
+  async function fetchRivalsFromGAS({weekKey, entryId, email}){
+    const url = new URL(GAS_BASE);
+    url.searchParams.set('fn','rivals');
+    url.searchParams.set('weekKey', weekKey); // normalized YYYY-MM-DD only
+    url.searchParams.set('entryId', entryId);
+    url.searchParams.set('email', email);
+    const res = await fetch(url.toString(), {credentials:'omit'});
+    if (!res.ok) return null;
+    const j = await res.json().catch(()=>null);
+    if (!j || !j.ok || !Array.isArray(j.rivals)) return null;
+    return j.rivals;
+  }
+
+  function rowHTML(r){
+    const youCls = r.you ? ' you' : '';
+    const name = r.you ? 'YOU' : (r.socialHandle || 'Anonymous');
+    const scoreVal = Number.isFinite(+r.score) ? +r.score : NaN;
+    const scoreAttr = Number.isFinite(scoreVal) ? String(scoreVal) : '';
+    const rivalPayload = encodeURIComponent(JSON.stringify({
+      entryId: r.entryId, rank: r.rank, socialHandle: r.socialHandle, score: r.score, you: r.you,
+      age: r.age, heightCm: r.heightCm, heightIn: r.heightIn, weightKg: r.weightKg, weightLb: r.weightLb,
+      trainingAgeYears: r.trainingAgeYears, photos: r.photos, divisionFit: r.divisionFit,
+      muscleRatings: r.muscleRatings, bestExercises: r.bestExercises, biomechanics: r.biomechanics, summary: r.summary
+    }));
+    const viewBtn = (!r.you && r.entryId)
+      ? `<button class="view-rival-btn" data-entry-id="${r.entryId}" data-rival="${rivalPayload}">View Rival</button>`
+      : '';
+    return `
+      <div class="lb-entry${youCls}">
+        <div class="lb-row">
+          <div class="lb-rank">${r.rank ?? '—'}</div>
+          <div class="lb-name">${name}</div>
+          <div class="lb-score" data-score="${scoreAttr}">0</div>
+        </div>
+        <div class="lb-view-row">${viewBtn}</div>
+      </div>`;
+  }
+
+  function renderSlice(slice){
+    rowsHost.innerHTML = slice.map(rowHTML).join('');
+    animateScores(rowsHost);
+    attachViewRivalHandlers();
+  }
+
+  function animateScores(root){
+    root.querySelectorAll('.lb-score[data-score]').forEach(el=>{
+      const target = parseInt(el.dataset.score,10);
+      if(!isFinite(target)){ el.textContent = '—'; return; }
+      let val = 0;
+      const step = Math.max(1, Math.round(target/30));
+      const t = setInterval(()=>{
+        val += step;
+        if(val >= target){ el.textContent = String(target); clearInterval(t); }
+        else { el.textContent = String(val); }
+      }, 20);
+    });
+  }
+
+  function attachViewRivalHandlers(){
+    rowsHost.querySelectorAll('.view-rival-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        try {
+          const rivalData = JSON.parse(decodeURIComponent(btn.dataset.rival));
+          showPlayerCardPopup(rivalData);
+        } catch(e){ console.warn('Error parsing rival data:', e); }
+      });
+    });
+  }
+
+  // Fullscreen image functionality
+  function showFullscreenImage(imageSrc) {
+    const fullscreenOverlay = document.createElement('div');
+    fullscreenOverlay.className = 'fullscreen-image-overlay';
+    
+    fullscreenOverlay.innerHTML = `
+      <div class="fullscreen-image-container">
+        <img src="${imageSrc}" alt="Fullscreen view" class="fullscreen-image">
+        <button class="fullscreen-close" aria-label="Close fullscreen">×</button>
+      </div>
+    `;
+
+    // Close handlers
+    const close = () => fullscreenOverlay.remove();
+    fullscreenOverlay.querySelector('.fullscreen-close').addEventListener('click', close);
+    fullscreenOverlay.addEventListener('click', (e) => {
+      if (e.target === fullscreenOverlay) close();
+    });
+    fullscreenOverlay.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') close();
+    });
+
+    document.body.appendChild(fullscreenOverlay);
+    
+    // Focus for keyboard navigation
+    fullscreenOverlay.tabIndex = -1;
+    fullscreenOverlay.focus();
+  }
+
+  function showPlayerCardPopup(rival){
+    const overlay = document.createElement('div');
+    overlay.className = 'player-card-overlay';
+
+    // --- photos / dots ---
+    const photos = Array.isArray(rival.photos) && rival.photos.length ? rival.photos : [];
+    const dots = photos.map((_,i)=>`<span class="pc-dot${i===0?' active':''}"></span>`).join('');
+
+    // --- unit prep + helpers ---
+    const toNum = v => Number.isFinite(+v) ? +v : NaN;
+
+    // Height
+    const cm = toNum(rival.heightCm);
+    let inches = toNum(rival.heightIn);
+    if (!Number.isFinite(inches) && Number.isFinite(cm)) inches = cm / 2.54;
+
+    function fmtHeightMetric(cmVal){
+      return Number.isFinite(cmVal) ? `${cmVal.toFixed(1)} cm` : '—';
+    }
+    function fmtHeightImperial(inVal){
+      if (!Number.isFinite(inVal)) return '—';
+      const ft = Math.floor(inVal/12);
+      const re = (inVal % 12).toFixed(1);
+      return `${ft}′ ${re}″`;
+    }
+
+    const heightMetric   = fmtHeightMetric(cm);
+    const heightImperial = fmtHeightImperial(inches);
+
+    // Weight
+    const kg = toNum(rival.weightKg);
+    let lb  = toNum(rival.weightLb);
+    if (!Number.isFinite(lb) && Number.isFinite(kg)) lb = kg * 2.2046226218;
+
+    const weightMetric   = Number.isFinite(kg) ? `${kg.toFixed(1)} kg` : '—';
+    const weightImperial = Number.isFinite(lb) ? `${lb.toFixed(1)} lb` : '—';
+
+    overlay.innerHTML = `
+      <div class="player-card-popup" role="dialog" aria-modal="true" aria-label="Rival card">
+        <button class="close-popup" aria-label="Close">×</button>
+
+        <div class="pc-header">
+          <div class="pc-rank-badge">#${rival.rank ?? '—'}</div>
+          <div class="pc-handle">@${(rival.socialHandle||'Anonymous').replace(/^@/,'')}</div>
+        </div>
+
+        <div class="pc-photos">
+          ${photos.length ? `
+            <button class="pc-nav prev" aria-label="Previous">‹</button>
+            <div class="pc-strip" tabindex="0">
+              ${photos.map(url => `
+                <div class="pc-slide"><img src="${url}" alt="Rival photo" data-fullscreen="${url}"></div>
+              `).join('')}
+            </div>
+            <button class="pc-nav next" aria-label="Next">›</button>
+            <div class="pc-dots">${dots}</div>
+          ` : `
+            <div class="pc-strip">
+              <div class="pc-slide">
+                <img src="https://placehold.co/600x800?text=No+Photos" alt="No photos">
+              </div>
+            </div>
+          `}
+        </div>
+
+        <div class="pc-content">
+          <div class="pc-score-wrap">
+            <div class="pc-score-label">FlexScore</div>
+            <div class="pc-score-big">${rival.score ?? '—'}</div>
+          </div>
+
+          <div class="pc-stats">
+            <div class="pc-stat"><span class="k">Age</span><span class="v">${rival.age ?? '—'}</span></div>
+            <div class="pc-stat">
+              <span class="k">Height</span>
+              <span class="v" id="pc-height"
+                data-metric="${heightMetric}"
+                data-imperial="${heightImperial}"
+              >${heightMetric}</span>
+            </div>
+            <div class="pc-stat">
+              <span class="k">Weight</span>
+              <span class="v" id="pc-weight"
+                data-metric="${weightMetric}"
+                data-imperial="${weightImperial}"
+              >${weightMetric}</span>
+            </div>
+          </div>
+
+          <div class="unit-toggle" role="group" aria-label="Units">
+            <button class="unit-btn is-active" data-unit="metric" aria-pressed="true" title="Show metric (cm, kg)">
+              <span class="u-ic" aria-hidden="true">📏</span><span class="u-txt">cm / kg</span>
+            </button>
+            <button class="unit-btn" data-unit="imperial" aria-pressed="false" title="Show imperial (ft·in, lb)">
+              <span class="u-ic" aria-hidden="true">⚖️</span><span class="u-txt">ft·in / lb</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Close handlers
+    const close = () => overlay.remove();
+    overlay.querySelector('.close-popup').addEventListener('click', close);
+    overlay.addEventListener('click', (e)=>{ if (e.target === overlay) close(); });
+    overlay.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') close(); });
+
+    // Carousel logic
+    const strip = overlay.querySelector('.pc-strip');
+    if (strip){
+      const slides = Array.from(strip.querySelectorAll('.pc-slide'));
+      const prev = overlay.querySelector('.pc-nav.prev');
+      const next = overlay.querySelector('.pc-nav.next');
+      const dotEls = Array.from(overlay.querySelectorAll('.pc-dot'));
+      let idx = 0;
+      const clamp = (n)=> Math.max(0, Math.min(slides.length-1, n));
+      
+      function goTo(i){
+  idx = clamp(i);
+  const slide = slides[idx];
+  if (!slide) return;
+  slide.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+  dotEls.forEach((d,di)=> d.classList.toggle('active', di===idx));
+  
+  // Update arrow visibility
+  updateArrowVisibility();
+}
+function updateArrowVisibility(){
+  if (prev) {
+    prev.classList.toggle('hidden', idx === 0);
+  }
+  if (next) {
+    next.classList.toggle('hidden', idx === slides.length - 1);
+  }
+}
+      
+      function currentIndexFromScroll(){
+  const a = strip.getBoundingClientRect().left;
+  const nearest = slides
+    .map(s => Math.abs(s.getBoundingClientRect().left - a))
+    .reduce((m,v,i)=> v<m[0]?[v,i]:m, [Infinity,0])[1];
+  idx = nearest;
+  dotEls.forEach((d,di)=> d.classList.toggle('active', di===idx));
+  
+  // Update arrow visibility
+  updateArrowVisibility();
+}
+      
+      prev?.addEventListener('click', ()=> goTo(idx-1));
+      next?.addEventListener('click', ()=> goTo(idx+1));
+      
+      // Dot click handlers
+      dotEls.forEach((dot, i) => {
+        dot.addEventListener('click', () => goTo(i));
+      });
+
+      strip.addEventListener('scroll', ()=>{
+        window.clearTimeout(strip._t);
+        strip._t = window.setTimeout(currentIndexFromScroll, 80);
+      }, {passive:true});
+      
+      strip.addEventListener('keydown', (e)=>{
+        if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(idx-1); }
+        if (e.key === 'ArrowRight'){ e.preventDefault(); goTo(idx+1); }
+      });
+
+      // Center first image on load
+      setTimeout(() => goTo(0), 50);
+
+      // Add fullscreen click handlers to images
+      slides.forEach(slide => {
+        const img = slide.querySelector('img[data-fullscreen]');
+        if (img) {
+          img.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showFullscreenImage(img.dataset.fullscreen);
+          });
+        }
+      });
+    }
+
+    // Focus for Esc handler
+    const popup = overlay.querySelector('.player-card-popup');
+    popup.tabIndex = -1;
+    popup.focus();
+
+    // --- unit toggle behavior ---
+    const heightEl = overlay.querySelector('#pc-height');
+    const weightEl = overlay.querySelector('#pc-weight');
+    const btns = overlay.querySelectorAll('.unit-btn');
+
+    function setUnit(unit){
+      btns.forEach(b=>{
+        const isActive = b.dataset.unit === unit;
+        b.classList.toggle('is-active', isActive);
+        b.setAttribute('aria-pressed', String(isActive));
+      });
+      if (heightEl) heightEl.textContent = heightEl.dataset[unit] || '—';
+      if (weightEl) weightEl.textContent = weightEl.dataset[unit] || '—';
+    }
+
+    btns.forEach(b=> b.addEventListener('click', ()=> setUnit(b.dataset.unit)));
+    setUnit('metric'); // default
+
+    document.body.appendChild(overlay);
+  }
+
+  // helper: completely hide + clear the leaderboard
+  function vanish(reason){
+    // console.info('[RIVALS] vanish:', reason);
+    WRAP.style.display = 'none';
+    rowsHost.innerHTML = '';
+    DATA_RENDERED = false;
+    LAST_PARAMS = null;
+  }
+
+  async function loadRivals(){
+    if (IN_FLIGHT) return;
+    IN_FLIGHT = true;
+
+    // Get email; if there isn't one, hide and exit
+    const ownerEmail = window.flexcheck?.getOwner?.()?.email || peekOwnerLocal();
+    if (!ownerEmail) {
+      vanish('no owner email');
+      IN_FLIGHT = false;
+      return;
+    }
+
+    // Need an entryId in URL; otherwise hide
+    const entryId = String(getParamInsensitive('entryId') || '');
+    if (!entryId) {
+      console.warn('[RIVALS] missing entryId in URL');
+      vanish('no entryId');
+      IN_FLIGHT = false;
+      return;
+    }
+
+    // ALWAYS derive weekKey from local cache
+    let weekKey = resolveWeekKeyFromCache(entryId);
+    if (!weekKey) weekKey = await waitForEntryResolution(entryId, 5000);
+    weekKey = normalizeWeekKey(weekKey);
+
+    if (!weekKey) {
+      console.warn('[RIVALS] could not resolve weekKey from cache for entryId', entryId);
+      vanish('no weekKey');
+      IN_FLIGHT = false;
+      return;
+    }
+
+    const params = { entryId, weekKey };
+
+    // Avoid flicker: don't re-render same params
+    if (LAST_PARAMS && LAST_PARAMS.entryId === params.entryId && LAST_PARAMS.weekKey === params.weekKey) {
+      IN_FLIGHT = false;
+      return;
+    }
+    LAST_PARAMS = params;
+
+    try{
+      // We're actually going to try to render -> show + skeleton now
+      show();
+      if (!DATA_RENDERED) showSkeleton(5);
+
+      const rivals = await fetchRivalsFromGAS({
+        weekKey: params.weekKey,
+        entryId: params.entryId,
+        email: ownerEmail
+      });
+
+      if (Array.isArray(rivals) && rivals.length){
+        renderSlice(rivals);
+        DATA_RENDERED = true;
+      } else {
+        console.warn('[RIVALS] empty payload', params);
+        vanish('empty rivals');
+      }
+    } catch(e){
+      console.warn('[RIVALS] fetch error', e);
+      vanish('fetch error');
+    } finally {
+      IN_FLIGHT = false;
+    }
+  }
+
+  // ---------- init & listeners (debounced re-eval)
+  const reEval = (()=>{ let t; return ()=>{ clearTimeout(t); t=setTimeout(loadRivals,150); }; })();
+
+  (async function boot(){
+    hide();
+
+    // expose debug helper
+    window.__rivalsDebug = function(){
+      const entryId = String(getParamInsensitive('entryId')||'');
+      const c = getCache();
+      const byId = c?.entriesById?.[entryId];
+      const wk = resolveWeekKeyFromCache(entryId);
+      console.log('[RIVALS DEBUG]', {
+        entryId,
+        byIdExists: !!byId,
+        byIdWeekKeyRaw: byId?.weekKey,
+        normalizedWeekKey: wk,
+        entriesCount: Array.isArray(c?.entries) ? c.entries.length : 0
+      });
+    };
+
+    show();          // show block immediately
+    showSkeleton(5); // reserve space
+    await loadRivals();
+
+    window.addEventListener('flexcheck:viewerChanged', reEval);
+    window.addEventListener('flexcheck:ownerChanged',  reEval);
+    window.addEventListener('flexcheck:cacheUpdated',  reEval);
+    document.addEventListener('flexcheck:viewerChanged', reEval);
+    document.addEventListener('flexcheck:ownerChanged',  reEval);
+    document.addEventListener('flexcheck:cacheUpdated',  reEval);
+  })();
+
+})();
+</script>

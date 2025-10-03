@@ -1,0 +1,227 @@
+<!-- 🔽 Rewards — Final Purple Glow Dropdown (Fully Isolated) 🔽 -->
+<style>
+  .fc-rewards-header {
+    background: linear-gradient(to bottom right, #1c1123, #200e27);
+    border: 1px solid #a855f7;
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.15);
+    cursor: pointer;
+    transition: background 0.3s ease;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .fc-rewards-header:hover {
+    background: linear-gradient(to bottom right, #25142d, #291132);
+  }
+
+  .fc-rewards-subheading {
+    font-size: 0.9rem;
+    color: #d8b4fe;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .fc-rewards-heading {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #a855f7, #9333ea);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.2;
+  }
+
+.fc-rewards-content {
+  display: none;
+  padding: 1.5rem;
+  background: linear-gradient(145deg, #291436, #1a0f24);
+  border: 1px solid #a855f7;
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.2);
+}
+
+
+  .fc-rewards-content.open {
+    display: block;
+  }
+   .fc-rewards-wrapper {
+    display: grid;
+    gap: 2rem;
+    padding: 2rem 1rem;
+    background: #0f172a;
+    font-family: 'Inter', sans-serif;
+    max-width: 820px;
+    margin: auto;
+  }
+
+  .fc-reward-card {
+    background: linear-gradient(to bottom right, #1e1b2e, #181827);
+    border: 1px solid #6d28d9;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    color: #e2e8f0;
+    position: relative;
+    box-shadow: 0 0 12px rgba(109, 40, 217, 0.25);
+margin-bottom: 1rem;
+  }
+
+ .fc-reward-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #c084fc;
+    margin-bottom: 0.5rem;
+  }
+
+  .fc-reward-desc {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  .fc-reward-benefits {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.25rem 0;
+  }
+
+  .fc-reward-benefits li {
+    margin-bottom: 0.5rem;
+    font-size: 0.92rem;
+    color: #e2e8f0;
+    padding-left: 1.2rem;
+    position: relative;
+    font-weight: 600;
+  }
+
+  .fc-reward-benefits li::before {
+    content: "✔";
+    position: absolute;
+    left: 0;
+    color: #a78bfa;
+    font-weight: bold;
+  }
+
+  .clout-meter-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+  }
+
+  .clout-meter-bar {
+    width: 100%;
+    height: 10px;
+    background: #1e293b;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .clout-meter-fill {
+    height: 100%;
+    background: linear-gradient(to right, #7c3aed, #a78bfa);
+    transition: width 0.4s ease-in-out;
+  }
+</style>
+
+<div class="fc-rewards-header" style="--gp-arrow:#a78bfa;" onclick="toggleSection('fc-rewards-content')">
+  <div class="fc-rewards-subheading">GamePlan Fitness</div>
+  <div class="fc-rewards-heading">🎁 Rewards</div>
+  <span class="gp-expand-arrow">
+    <svg width="20" height="9" viewBox="0 0 18 8" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="2,2 9,6 16,2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </span>
+</div>
+
+<div id="fc-rewards-content" class="fc-rewards-content">
+  <!-- 1. Top 3 -->
+  <div class="fc-reward-card">
+    <div class="fc-reward-title">Top 3 of the Week</div>
+    <div class="fc-reward-desc">
+      Have one of the highest-rated FlexChecks of the week and earn your spot in the spotlight.
+    </div>
+    <ul class="fc-reward-benefits">
+      <li>Instagram Story Feature (Top 3 Lineup)</li>
+      <li>Public Leaderboard Feature</li>
+    </ul>
+    <div class="clout-meter-label">
+      <span>Clout Meter: </span>
+      <span>Starting to Cook 🔥</span>
+    </div>
+    <div class="clout-meter-bar">
+      <div class="clout-meter-fill" style="width: 25%;"></div>
+    </div>
+  </div>
+
+  <!-- 2. Weekly Winner -->
+  <div class="fc-reward-card">
+    <div class="fc-reward-title">Weekly Winner</div>
+    <div class="fc-reward-desc">
+      One winner per tier gets a personal spotlight in front of the community.
+    </div>
+    <ul class="fc-reward-benefits">
+      <li>Instagram Story Feature (Winner Spotlight)</li>
+    </ul>
+    <div class="clout-meter-label">
+      <span>Clout Meter: </span>
+      <span>Certified 🔮</span>
+    </div>
+    <div class="clout-meter-bar">
+      <div class="clout-meter-fill" style="width: 50%;"></div>
+    </div>
+  </div>
+
+  <!-- 3. Monthly Finalist -->
+  <div class="fc-reward-card">
+    <div class="fc-reward-title">Monthly Finalist</div>
+    <div class="fc-reward-desc">
+      Finalists emerge from the toughest battles and level up their clout.
+    </div>
+    <ul class="fc-reward-benefits">
+      <li>Instagram Story Feature (Finalist Highlight)</li>
+    </ul>
+    <div class="clout-meter-label">
+      <span>Clout Meter: </span>
+      <span>Flex Famous ⚡</span>
+    </div>
+    <div class="clout-meter-bar">
+      <div class="clout-meter-fill" style="width: 75%;"></div>
+    </div>
+  </div>
+
+  <!-- 4. FlexCheck Champion -->
+  <div class="fc-reward-card">
+    <div class="fc-reward-title">FlexCheck Champion</div>
+    <div class="fc-reward-desc">
+      The ultimate crown — earned live, forever remembered.
+    </div>
+    <ul class="fc-reward-benefits">
+      <li>📜 FlexCheck Hall of Fame Status</li>
+      <li>📢 Champion Story Feature</li>
+      <li>💪 FREE Priority Physique Check ($50 Value)</li>
+      <li>🏆 Exclusive Digital Trophy (Downloadable)</li>
+    </ul>
+    <div class="clout-meter-label">
+      <span>Clout Meter: </span>
+      <span>MAXIMUM CLOUT 👑</span>
+    </div>
+    <div class="clout-meter-bar">
+      <div class="clout-meter-fill" style="width: 100%;"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function toggleSection(id) {
+    const section = document.getElementById(id);
+    section.classList.toggle('open');
+  }
+</script>

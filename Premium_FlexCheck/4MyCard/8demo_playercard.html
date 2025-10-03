@@ -1,0 +1,588 @@
+<!-- Demo Player Card – Renamed Version -->
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Hemi+Head:wght@700&display=swap">
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+body {
+  position: relative;
+}
+
+/* ───────────  DEMO MASTER PALETTE  ──────────────────────────────── */
+:root{
+  --demo-accent:#27BEFA;       /* default = BLUE                     */
+  --demo-rail:#212830;         /* dark grey bar background           */
+  --demo-text2:#8b909b;        /* secondary text (values / footer)   */
+}
+
+/* demo podium swap-outs (just add the class to .demo-player-wrapper) */
+.demo-theme-gold   {--demo-accent:#d4a427;}   /* 1st */
+.demo-theme-silver {--demo-accent:#c0c0c8;}   /* 2nd */
+.demo-theme-bronze {--demo-accent:#cd7f32;}   /* 3rd */
+
+/* ───────────  DEMO BASE LAYOUT  ─────────────────────────────────── */
+.demo-player-wrapper {
+  position: relative;
+  margin: auto;
+  width: 100%;                   
+
+  max-width: 416px;                          
+  aspect-ratio: 1365 / 2048;                
+  
+  background-color: #0b1630;                
+  background-image: url('https://www.gameplanfitness.com/wp-content/uploads/2025/07/Final_playercard_bluev2.webp');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  border-radius: 20px;                       
+  overflow: hidden;                          
+
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);    
+}
+
+.demo-player-box {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font: 700 12px/1 'Inter', sans-serif;
+}
+
+.demo-image-mask {
+  pointer-events: auto; 
+}
+
+/* ───────────  DEMO COORDINATE MAP (all % of wrapper)  ───────────── */
+.demo-name-container    {top:  8%; left:50%; width:70%; height:10%;transform:translateX(-50%);}
+.demo-image-mask        {top:22.5%; left:13%; width:45%; height:46.5%;}
+.demo-flexscore-banner  {top:22.7%; left:63.5%; width:29%; height:15%;}
+.demo-stats-container   {top:41.5%; left:60.5%; width:34%; height:28%;}
+.demo-star-zone         {top:70%;  left:7%;  width:84%; height:14%;}
+.demo-bottom-footer     {top:89%;  left:50%; width:70%; height:4%; transform:translateX(-50%);}
+
+/* ───────────  DEMO NAME / HANDLE  ───────────────────────────────── */
+.demo-name-container {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  width: 70%;
+  height: 10%;
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;       
+  justify-content: center;   
+  text-align: center;
+
+  font-family: 'Hemi Head', sans-serif;
+  font-size: clamp(14px, 4.5vw, 22px);  
+  letter-spacing: 1px;
+  line-height: 1;
+
+  background: rgba(0, 0, 0, 0.3);
+  clip-path: inset(0 round 6px);
+  padding: 0 6%;
+
+  white-space: nowrap;         
+  overflow: hidden;            
+  text-overflow: ellipsis;     
+}
+
+/* ───────────  DEMO IMAGE MASK  ──────────── */
+.demo-image-mask{
+  position:absolute;
+  overflow:hidden;           
+  cursor:pointer;
+
+  border-radius:0 0 0 10%;
+  clip-path:polygon(0 0,87% 0,100% 7.5%,100% 100%,0 100%);
+}
+
+/* decorative blue outline */
+.demo-image-mask::after{
+  content:'';
+  position:absolute;inset:0;
+  border:4px solid var(--demo-accent);
+  border-radius:inherit;
+  clip-path:inherit;
+  pointer-events:none;
+}
+
+/* ───────────  DEMO CAROUSEL SIZING  ───────── */
+.demo-carousel{
+  display:flex;
+  height:100%;
+  width:100%;                
+  transition:transform .4s ease;
+}
+
+.demo-slide{
+  flex:0 0 100%;             
+  position:relative;
+}
+
+.demo-slide img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+
+  /* start out dark, blurry, and highly desaturated */
+  filter: blur(15px) grayscale(1) brightness(0.3) contrast(0.8) saturate(0.5);
+  transition: filter 1s ease-out; 
+}
+
+.demo-slide img.demo-clear { /* final state */
+  filter: blur(0) grayscale(0) brightness(1) contrast(1) saturate(1);
+}
+
+.demo-dots {
+  position: absolute;
+  bottom: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.demo-dot {
+  width: 6px;
+  height: 6px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 50%;
+  transition: background 0.3s;
+}
+
+.demo-dot.active {
+  background: var(--demo-accent);
+}
+
+/* ───────────  DEMO image corner logo  ─────────── */
+.demo-logo-overlay{
+  position:absolute;
+  bottom:6%;                  
+  right:6%;
+  width:clamp(32px,14%,60px); 
+  height:auto;
+  opacity:.3;                 
+  pointer-events:none;        
+}
+
+/* ───────────  DEMO FLEX-SCORE  ──────────────────────────────────── */
+.demo-flexscore-banner {
+  flex-direction: column;
+  gap: 0.5em;
+  background: rgba(0, 0, 0, 0.25);
+  clip-path: inset(0 round 8px);
+}
+
+.demo-flexscore-banner .demo-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--demo-accent);
+}
+
+.demo-flexscore-banner .demo-value {
+  font-weight: 800;
+  font-size: 58px;
+  line-height: 0.9;
+  color: var(--demo-accent);
+}
+
+/* ───── Responsive Adjustment for Mobile ───── */
+@media (max-width: 480px) {
+  .demo-flexscore-banner .demo-label {
+    font-size: 12px;
+  }
+
+  .demo-flexscore-banner .demo-value {
+    font-size: 42px;
+  }
+}
+
+/* ───────────  DEMO STATS PANEL  ─────────────────────────────────── */
+.demo-stats-container{
+  flex-direction:column;justify-content:space-between;align-items:stretch;
+  padding:2% 2.5%;gap:6%;background:rgba(0,0,0,.28);clip-path:inset(0 round 10px);
+}
+
+.demo-stat-row   {display:flex;flex-direction:column;gap:4px;}
+.demo-stat-head  {display:flex;justify-content:space-between;align-items:center;}
+.demo-stat-label {font:500 12px/1 'Inter',sans-serif;color:var(--demo-accent);}
+.demo-stat-value {font:350 10px/1 'Inter',sans-serif;color:var(--demo-text2);}
+.demo-rail       {position:relative;height:9px;border-radius:5px;background:var(--demo-rail);}
+
+.demo-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--demo-accent);
+  width: 0; /* Start at 0 for animation */
+  transition: width 1s ease;
+}
+
+/* ───────────  DEMO STARS & TRAINING AGE  ────────────────────────── */
+.demo-star-zone{display:flex;flex-direction:column;align-items:center;gap:.6em;}
+
+.demo-star-row img{
+  width:25px;
+  height:auto;
+  opacity:0;                 
+}
+
+.demo-train-label{
+  font:600 14px/1 'Inter',sans-serif;
+  color:var(--demo-accent);
+}
+
+/* ───────────  DEMO FOOTER  ──────────────────────────────────────── */
+.demo-bottom-footer{
+  font-family:'Hemi Head',sans-serif;font-style:italic;font-size:22px;color:var(--demo-text2);
+}
+
+@keyframes demoGlowFadeInOut {
+  0%   {
+    opacity: 0;
+    text-shadow: none;
+  }
+  20% {
+    opacity: 1;
+    text-shadow: 0 0 5px transparent;
+  }
+  40% {
+    text-shadow: 0 0 15px var(--demo-accent);
+  }
+  70% {
+    text-shadow: 0 0 25px var(--demo-accent);
+  }
+  100% {
+    text-shadow: 0 0 0px rgba(30, 144, 255, 0); 
+  }
+}
+
+.demo-name-container.demo-glow {
+  animation: demoGlowFadeInOut 5s ease-in-out forwards;
+}
+
+/* ───────── DEMO iris‑reveal (no flash) ───────── */
+@keyframes demoIrisReveal{
+  0%   {clip-path:circle(0 at 50% 50%);   opacity:1;}  
+  65%  {clip-path:circle(45% at 50% 50%); opacity:1;}  
+  100% {clip-path:circle(140% at 50% 50%);opacity:0;}  
+}
+
+.demo-image-preloader{
+  position:absolute; inset:0;
+  display:flex; justify-content:center; align-items:center;
+  background:#000;
+  z-index:4;
+  animation:demoIrisReveal 2s cubic-bezier(.22,.61,.36,1) forwards; 
+  pointer-events:none;
+}
+
+@keyframes demoFadeLogoIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.demo-image-preloader img {
+  width: 40%; height: auto;
+  opacity: 0;
+  animation: demoFadeLogoIn 1.2s ease-in forwards 0.3s;
+}
+
+@keyframes demoGlowPulse {
+  0%   { text-shadow: none; }
+  50%  { text-shadow: 0 0 20px var(--demo-accent); }
+  100% { text-shadow: none; }
+}
+
+.demo-glow-pulse {
+  animation: demoGlowPulse 3s ease-out;
+}
+
+@keyframes demoStarPulse {
+  0%   { filter: drop-shadow(0 0 0px var(--demo-accent)); }
+  50%  { filter: drop-shadow(0 0 10px var(--demo-accent)); }
+  100% { filter: drop-shadow(0 0 0px var(--demo-accent)); }
+}
+
+.demo-star-pulse {
+  animation: demoStarPulse 0.6s ease-out;
+}
+
+@keyframes demoFillPulse {
+  0% {
+    background-image: linear-gradient(90deg, var(--demo-accent-start), var(--demo-accent-start));
+    background-size: 100% 100%;
+    background-position: 0% 50%;
+  }
+  10% {
+    background-image: linear-gradient(90deg, var(--demo-accent-start), var(--demo-accent-mid), var(--demo-accent-end));
+    background-size: 200% 100%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  90% {
+    background-image: linear-gradient(90deg, var(--demo-accent-start), var(--demo-accent-mid), var(--demo-accent-end));
+  }
+  100% {
+    background-image: linear-gradient(90deg, var(--demo-accent-start), var(--demo-accent-start));
+    background-size: 100% 100%;
+    background-position: 0% 50%;
+  }
+}
+
+.demo-fill {
+  --demo-accent-start: var(--demo-accent);
+  --demo-accent-mid: #ffffff;
+  --demo-accent-end: var(--demo-accent);
+}
+
+@keyframes demoPulseAnimate {
+  0%   { transform: scale(1); background-color: var(--demo-accent); }
+  50%  { transform: scale(1.05); background-color: #fff; }
+  100% { transform: scale(1); background-color: var(--demo-accent); }
+}
+
+.demo-pulse-animate {
+  animation: demoPulseAnimate 0.6s ease-out;
+}
+
+.demo-player-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  max-width: 480px;
+  margin: auto;
+  padding: 1rem;
+  background: transparent;
+}
+</style>
+
+<div id="demoPlayerCardMain" class="fc-block" data-fc-demo="entry" data-fc-timeout="3000">
+
+<!-- ▸▸  BLUE = default  (remove demo-theme-* class)  ◂◂ -->
+<!--  add class="demo-theme-gold" / "demo-theme-silver" / "demo-theme-bronze" when needed -->
+<div class="demo-player-section">
+<div class="demo-player-wrapper">
+  <!-- SOCIAL / NAME -->
+  <div class="demo-player-box demo-name-container">@chase_ribordy</div>
+
+  <!-- PLAYER PHOTO -->
+<div class="demo-player-box demo-image-mask">
+<div class="demo-image-preloader">
+  <img src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/GP_2024_logo300x223.webp"
+       alt="GamePlan logo">
+</div>
+ <div class="demo-carousel">
+  <div class="demo-slide"><img src="https://www.gameplanfitness.com/wp-content/uploads/2025/03/arnold-pose_optimized.webp" /></div>
+  <div class="demo-slide"><img src="https://www.gameplanfitness.com/wp-content/uploads/2025/03/fat-pic.webp" /></div>
+  <div class="demo-slide"><img src="https://www.gameplanfitness.com/wp-content/uploads/2025/03/back-pic.webp" /></div>
+</div>
+  <div class="demo-dots">
+    <span class="demo-dot active"></span>
+    <span class="demo-dot"></span>
+  </div>
+  <img class="demo-logo-overlay"
+       src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/GP_2024_logo300x223.webp"
+       alt="GamePlan logo">
+</div>
+
+  <!-- flex-SCORE -->
+  <div class="demo-player-box demo-flexscore-banner">
+    <div class="demo-label">FLEXSCORE</div>
+    <div class="demo-value">71</div>
+  </div>
+
+  <!-- AGE • HEIGHT • WEIGHT -->
+  <div class="demo-player-box demo-stats-container">
+    <div class="demo-stat-row">
+      <div class="demo-stat-head"><span class="demo-stat-label">AGE</span><span class="demo-stat-value">26</span></div>
+      <div class="demo-rail"><div class="demo-fill"></div></div>
+    </div>
+    <div class="demo-stat-row">
+      <div class="demo-stat-head"><span class="demo-stat-label">HEIGHT</span><span class="demo-stat-value">5&nbsp;ft&nbsp;6&nbsp;in</span></div>
+      <div class="demo-rail"><div class="demo-fill"></div></div>
+    </div>
+    <div class="demo-stat-row">
+      <div class="demo-stat-head"><span class="demo-stat-label">WEIGHT</span><span class="demo-stat-value">150&nbsp;lb</span></div>
+      <div class="demo-rail"><div class="demo-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- STARS + TRAINING AGE -->
+  <div class="demo-player-box demo-star-zone">
+    <div class="demo-star-row">
+      <!-- duplicate / delete up to 10 -->
+      <img src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/blue_star.png">
+      <img src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/blue_star.png">
+      <img src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/blue_star.png">
+      <img src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/blue_star.png">
+      <img src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/blue_star.png">
+    </div>
+    <div class="demo-train-label">Training&nbsp;Age:&nbsp;10+&nbsp;Yrs</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="demo-player-box demo-bottom-footer">GamePlan&nbsp;Player&nbsp;Card</div>
+</div>
+</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // 🖼️ Demo Carousel Setup (Dynamic)
+  const demoCarousel = document.querySelector('.demo-carousel');
+  const demoImageMask = document.querySelector('.demo-image-mask');
+  const demoSlides = demoCarousel.querySelectorAll('.demo-slide');
+  const demoDotsContainer = document.querySelector('.demo-dots');
+  let demoIndex = 0;
+  const demoNumSlides = demoSlides.length;
+
+  // Dynamically set carousel width
+  demoCarousel.style.width = `${demoNumSlides * 100}%`;
+
+  // Dynamically generate dots
+  demoDotsContainer.innerHTML = ''; // Clear hardcoded ones
+  demoSlides.forEach((_, i) => {
+    const demoDot = document.createElement('span');
+    demoDot.className = 'demo-dot';
+    if (i === 0) demoDot.classList.add('active');
+    demoDot.addEventListener('click', () => updateDemoCarousel(i));
+    demoDotsContainer.appendChild(demoDot);
+  });
+  const demoDots = demoDotsContainer.querySelectorAll('.demo-dot');
+
+  function updateDemoCarousel(newIndex) {
+    demoIndex = newIndex;
+    demoCarousel.style.transform = `translateX(-${demoIndex * 100}%)`;
+    demoDots.forEach(dot => dot.classList.remove('active'));
+    demoDots[demoIndex].classList.add('active');
+  }
+
+  // Swipe support
+  let demoStartX = 0;
+  demoCarousel.addEventListener('touchstart', e => {
+    demoStartX = e.touches[0].clientX;
+  }, { passive: true });
+
+  demoCarousel.addEventListener('touchend', e => {
+    const demoEndX = e.changedTouches[0].clientX;
+    const demoDeltaX = demoEndX - demoStartX;
+    if (Math.abs(demoDeltaX) > 50) {
+      const demoNewIndex = demoIndex + (demoDeltaX < 0 ? 1 : -1);
+      if (demoNewIndex >= 0 && demoNewIndex < demoNumSlides) {
+        updateDemoCarousel(demoNewIndex);
+      }
+    }
+  });
+
+  // Click to go to next slide
+  demoImageMask.addEventListener('click', () => {
+    const demoNewIndex = (demoIndex + 1) % demoNumSlides;
+    updateDemoCarousel(demoNewIndex);
+  });
+
+  // 📊 Demo Stat Bars Animation
+  document.querySelectorAll('.demo-fill').forEach(el => {
+    const targetWidth = (55 + Math.random() * 45).toFixed() + '%';
+    setTimeout(() => {
+      el.style.width = targetWidth;
+    }, 300);
+  });
+
+  /* 1  prep photos under the overlay */
+  document.querySelectorAll('.demo-slide img')
+          .forEach(img => img.classList.add('demo-clear'));
+
+  /* 2  fade stars shortly after flash‑in (0.8 s) */
+  setTimeout(()=>{
+    document.querySelectorAll('.demo-star-row img')
+            .forEach((star,i)=>{
+              setTimeout(()=>{
+                star.style.transition='opacity 0.4s ease';
+                star.style.opacity=1;
+              }, i*200);            // faster stagger: 0.2 s
+            });
+  },800);
+
+  /* 3  remove overlay when iris animation ends */
+  document.querySelector('.demo-image-preloader')
+          .addEventListener('animationend',e=>{
+    if(e.animationName==='demoIrisReveal') e.currentTarget.remove();
+          });
+
+  // 🔢 Demo flexscore Count-Up
+  const demoFlexValue = document.querySelector('.demo-flexscore-banner .demo-value');
+  const demoTarget = parseInt(demoFlexValue.textContent, 10);
+  let demoCount = 0;
+
+  const demoFlexInterval = setInterval(() => {
+    demoCount += 1;
+    demoFlexValue.textContent = demoCount;
+    if (demoCount >= demoTarget) clearInterval(demoFlexInterval);
+  }, 30);
+
+  // ✨ Handle Demo Glow
+  const demoNameEl = document.querySelector('.demo-name-container');
+  demoNameEl.classList.add('demo-glow');
+  setTimeout(() => demoNameEl.classList.remove('demo-glow'), 6000);
+});
+
+// 🔆 Add glow on click to demo interactive zones
+function addDemoClickPulse(selector, isImage = false) {
+  document.querySelectorAll(selector).forEach(el => {
+    el.addEventListener('click', () => {
+      const demoPulseClass = isImage ? 'demo-star-pulse' : 'demo-glow-pulse';
+
+      el.classList.remove(demoPulseClass);   // reset if active
+      void el.offsetWidth;               // force reflow
+      el.classList.add(demoPulseClass);
+    });
+  });
+}
+
+// Text-based glow
+addDemoClickPulse('.demo-name-container');
+addDemoClickPulse('.demo-flexscore-banner .demo-value');
+
+// Image-based glow
+addDemoClickPulse('.demo-star-row img', true);
+
+function enableDemoFillPulse() {
+  document.querySelectorAll('.demo-fill').forEach(bar => {
+    bar.addEventListener('click', () => {
+      // Reset any existing animation classes
+      bar.classList.remove('demo-pulse-animate', 'demo-fadeout-animate');
+      void bar.offsetWidth; // Force reflow
+
+      // Start the pulse animation
+      bar.classList.add('demo-pulse-animate');
+
+      // When pulse ends (3s), trigger smooth fade out
+      setTimeout(() => {
+        bar.classList.remove('demo-pulse-animate');
+        bar.classList.add('demo-fadeout-animate');
+      }, 3000);
+
+      // Cleanup after fadeout finishes
+      setTimeout(() => {
+        bar.classList.remove('demo-fadeout-animate');
+      }, 4000); // pulse 3s + fadeout 1s
+    });
+  });
+}
+
+enableDemoFillPulse();  // Run after DOM is ready
+</script>

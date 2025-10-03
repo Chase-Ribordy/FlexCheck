@@ -1,0 +1,146 @@
+<style>
+/* ░░░ RED GLOW HEADER ░░░ */
+#challengesHeader {
+  position: relative; /* Required for fire particles to be correctly placed */
+  z-index: 1;
+  cursor: pointer;
+}
+.red-glow-header-container {
+  text-align: center;
+position: relative;
+z-index: 1;
+  padding: 2.5rem 1.25rem 2rem;
+  margin-top: 3.5rem;
+  margin-bottom: 3rem;
+  border: 2px solid #f87171;
+  border-radius: 1rem;
+  background: linear-gradient(270deg,
+    rgba(153, 27, 27, 0.5),
+    rgba(239, 68, 68, 0.5),
+    rgba(220, 38, 38, 0.5),
+    rgba(248, 113, 113, 0.5)
+  );
+  background-size: 600% 600%;
+  animation: animatedRedGradient 45s ease infinite;
+  box-shadow:
+    0 0 12px #f87171,
+    0 0 24px rgba(239, 68, 68, 0.5),
+    0 0 28px rgba(255, 0, 0, 0.2),
+    0 0 36px rgba(220, 38, 38, 0.18);
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+/* Text Styling */
+.red-glow-main-heading {
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #f87171, #facc15);
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.6),
+    0 0 8px rgba(255, 255, 255, 0.1);
+}
+
+/* 🔥 Animated Red Gradient Loop */
+@keyframes animatedRedGradient {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 🔥 Fire Zoom Pulse Animation */
+@keyframes firePulse {
+  0%   { transform: scale(.25); box-shadow: 0 0 0px #f87171, 0 0 0px #fb923c; }
+  25%  { transform: scale(0.55); box-shadow: 0 0 30px #f87171, 0 0 50px #fb923c, 0 0 60px #facc15; }
+  50%  { transform: scale(0.7); box-shadow: 0 0 40px #f87171, 0 0 70px #facc15, 0 0 100px #f87171; }
+  75%  { transform: scale(1.03); box-shadow: 0 0 20px #f87171, 0 0 40px #fb7185; }
+  100% { transform: scale(1); box-shadow: 0 0 12px #f87171, 0 0 24px rgba(239, 68, 68, 0.5), 0 0 28px rgba(255, 0, 0, 0.2), 0 0 36px rgba(220, 38, 38, 0.18); }
+}
+
+.red-glow-header-container.pulse-active {
+  animation: firePulse 0.6s ease-out;
+}
+
+/* 🔥 Fire Particle Style */
+.fire-particle {
+  position: absolute;
+  font-size: 1.5rem;
+  animation: fireRise 1s ease-out forwards;
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* 🔥 Fire Rise Animation */
+@keyframes fireRise {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-80px) scale(0.5) rotate(15deg); }
+}
+</style>
+
+<!-- ░░░ CHALLENGES SECTION ░░░ -->
+<a id="Jomama"></a>
+<div class="red-glow-header-container" id="challengesHeader">
+  <h2 class="red-glow-main-heading">🔥Challenges🔥</h2>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const target = document.querySelector("#challengesHeader");
+  let hasPulsedOnce = false;
+
+  if (!target) return;
+
+  // 🔁 Scroll-based animation (pulse once only, fire every time)
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        if (!hasPulsedOnce) {
+          target.classList.add("pulse-active");
+          hasPulsedOnce = true;
+          setTimeout(() => {
+            target.classList.remove("pulse-active");
+          }, 600);
+        }
+        spawnFireEmojis(target, 12);
+      }
+    });
+  }, { threshold: 0.6 });
+
+  observer.observe(target);
+
+  // 🔥 Click to burst fire again
+  target.addEventListener("click", () => {
+    spawnFireEmojis(target, 12);
+    target.classList.add("pulse-active");
+    setTimeout(() => {
+      target.classList.remove("pulse-active");
+    }, 600);
+  });
+
+  // 🔥 Fire Emoji Spawner
+  function spawnFireEmojis(container, count) {
+    const rect = container.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    for (let i = 0; i < count; i++) {
+      const fire = document.createElement("div");
+      fire.className = "fire-particle";
+      fire.textContent = "🔥";
+
+      // Random position around center
+      const offsetX = (Math.random() - 0.5) * 140;
+      const offsetY = (Math.random() - 0.5) * 60;
+
+      fire.style.left = `${centerX + offsetX}px`;
+      fire.style.top = `${centerY + offsetY}px`;
+
+      container.appendChild(fire);
+
+      setTimeout(() => fire.remove(), 1000);
+    }
+  }
+});
+</script>

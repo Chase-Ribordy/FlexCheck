@@ -1,0 +1,313 @@
+<!-- ░░░ MONTHLY FLEXCHECK TIMELINE ░░░ -->
+
+<style>
+.calendar-title {
+  color: #facc15;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.calendar-funnel-wrapper {
+  background: #0f172a;
+  border-radius: 1.25rem;
+  padding: 2rem 1.5rem;
+  max-width: 480px;
+  margin: 2.5rem auto;
+  font-family: 'Inter', sans-serif;
+  text-align: center;
+  color: #e2e8f0;
+  box-shadow: 0 0 28px rgba(0,0,0,0.4);
+}
+
+.calendar-stage {
+  background: #1e293b;
+  border: 2px solid #334155;
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  animation: pulseGlow 3s infinite ease-in-out;
+  transition: transform 0.2s;
+  position: relative;
+}
+.calendar-stage:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+}
+
+.calendar-stage.active {
+  border: 2px solid #38fca1;
+  box-shadow: 0 0 18px rgba(34, 197, 94, 0.5);
+}
+
+.calendar-stage.active::after {
+  content: "🟢 Upcoming";
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  background: #22c55e;
+  color: #0f172a;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+}
+
+.calendar-stage.calendar-final {
+  border-color: #facc15;
+  animation: pulseGlowGold 2.5s infinite ease-in-out;
+  background: linear-gradient(135deg, #facc15 10%, #f59e0b 90%);
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.calendar-icon {
+  font-size: 1.6rem;
+  margin-bottom: 0.4rem;
+}
+
+.calendar-label {
+  font-size: 0.95rem;
+  line-height: 1.3rem;
+}
+
+.calendar-arrow {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #475569;
+  animation: bounceArrow 2s infinite;
+}
+
+/* Animation keyframes */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 6px #334155; }
+  50% { box-shadow: 0 0 12px #38bdf8; }
+}
+
+@keyframes pulseGlowGold {
+  0%, 100% { box-shadow: 0 0 6px #facc15; }
+  50% { box-shadow: 0 0 14px #facc15; }
+}
+
+@keyframes bounceArrow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+</style>
+
+
+
+<div class="calendar-funnel-wrapper">
+
+  <h3 class="calendar-title">📅 Monthly FlexCheck Timeline</h3>
+
+  <!-- Week 1 -->
+  <div class="calendar-stage" id="week-1">
+    <div class="calendar-icon">🗳️</div>
+    <div class="calendar-label">"1st Friday"<br><b>FlexCheck Friday Vote</b></div>
+  </div>
+  <div class="calendar-arrow">↓</div>
+
+  <!-- Week 2 -->
+  <div class="calendar-stage" id="week-2">
+    <div class="calendar-icon">🗳️ + ⚔️</div>
+    <div class="calendar-label">"2nd Friday"<br><b>FlexCheck Friday Vote + Semifinal 1</b></div>
+  </div>
+  <div class="calendar-arrow">↓</div>
+
+  <!-- Week 3 -->
+  <div class="calendar-stage" id="week-3">
+    <div class="calendar-icon">🗳️</div>
+    <div class="calendar-label">"3rd Friday"<br><b>FlexCheck Friday Vote</b></div>
+  </div>
+  <div class="calendar-arrow">↓</div>
+
+  <!-- Week 4 -->
+  <div class="calendar-stage calendar-final" id="week-4">
+    <div class="calendar-icon">🗳️ + ⚔️ + 👑</div>
+    <div class="calendar-label">"4th Friday"<br><b>FlexCheck Friday Vote + Semifinal 2 + Championship</b></div>
+  </div>
+
+</div>
+
+
+
+<script>
+/* Always create a namespace so the console can find it */
+window.FC_TL = window.FC_TL || {};
+
+(function () {
+  'use strict';
+
+  /* =========================
+     Instant-safe CT utilities
+     ========================= */
+
+  // Dev override: <html data-now="..."> OR FC_TL.setNow("...")
+  function fc_now() {
+    try {
+      const attr = document.documentElement.getAttribute('data-now') || '';
+      if (attr && !isNaN(Date.parse(attr))) return new Date(attr);
+    } catch (e) {}
+    return new Date();
+  }
+
+  // Convert a CT wall time (y,m,d,hh:mm:ss) to the correct UTC instant (DST-safe)
+  function fc_ctInstant(y, m /*0-11*/, d, hh=0, mm=0, ss=0) {
+    const temp = new Date(y, m, d, hh, mm, ss); // local wall time (arbitrary zone)
+    const ctStr = temp.toLocaleString('en-US', { timeZone: 'America/Chicago' });
+    const ctLocal = new Date(ctStr);
+    const offset = temp.getTime() - ctLocal.getTime();
+    return new Date(temp.getTime() - offset);
+  }
+
+  // Extract CT calendar parts from an instant
+  function fc_getCTParts(instant) {
+    const fmt = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Chicago',
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hour12: false
+    });
+    const parts = Object.fromEntries(fmt.formatToParts(instant).map(p => [p.type, p.value]));
+    return {
+      year:   +parts.year,
+      month:  +parts.month, // 1..12
+      day:    +parts.day,
+      hour:   +parts.hour,
+      minute: +parts.minute,
+      second: +parts.second
+    };
+  }
+
+  function fc_sameCTMonth(instant, y, m /*0-11*/) {
+    const p = fc_getCTParts(instant);
+    return p.year === y && (p.month - 1) === m;
+  }
+
+  function fc_ctWeekdayName(instant) {
+    return new Intl.DateTimeFormat('en-US', { weekday:'short', timeZone:'America/Chicago' }).format(instant); // Sun..Sat
+  }
+
+  /* =========================
+     Program anchors
+     ========================= */
+  const FC_TL_EVENT_HOUR = 19; // 7:00 PM CT (show)
+  const FC_TL_BOUND_HOUR = 20; // 8:00 PM CT (cycle boundary)
+
+  /* =========================
+     Fridays enumeration (CT)
+     ========================= */
+
+  // All Friday 7:00 PM CT instants for a CT month
+  function fc_fridaysAt19(y, m /*0-11*/) {
+    const out = [];
+    for (let dom = 1; dom <= 31; dom++) {
+      const probeNoon = fc_ctInstant(y, m, dom, 12, 0, 0); // avoid DST edges
+      if (!fc_sameCTMonth(probeNoon, y, m)) continue;
+      if (fc_ctWeekdayName(probeNoon) === 'Fri') {
+        const p = fc_getCTParts(probeNoon);
+        out.push(fc_ctInstant(p.year, p.month - 1, p.day, FC_TL_EVENT_HOUR, 0, 0)); // 7 PM CT that Friday
+      }
+    }
+    return out;
+  }
+
+  // All Friday 8:00 PM CT boundary instants for a CT month
+  function fc_fridaysAt20(y, m /*0-11*/) {
+    const out = [];
+    for (let dom = 1; dom <= 31; dom++) {
+      const probeNoon = fc_ctInstant(y, m, dom, 12, 0, 0);
+      if (!fc_sameCTMonth(probeNoon, y, m)) continue;
+      if (fc_ctWeekdayName(probeNoon) === 'Fri') {
+        const p = fc_getCTParts(probeNoon);
+        out.push(fc_ctInstant(p.year, p.month - 1, p.day, FC_TL_BOUND_HOUR, 0, 0)); // 8 PM CT boundary
+      }
+    }
+    return out;
+  }
+
+  // Find the first Friday 8:00 PM CT boundary strictly > now.
+  // Searches current month; if none, searches next month (and so on, max 2 months).
+  function fc_nextBoundaryAfter(now) {
+    let { year, month } = (function(){ const p = fc_getCTParts(now); return { year: p.year, month: p.month - 1 }; })();
+    for (let hop = 0; hop < 3; hop++) {
+      const bounds = fc_fridaysAt20(year, month).filter(b => b > now);
+      if (bounds.length) return { boundary: bounds[0], year, month };
+      // move to next month
+      month++; if (month > 11) { month = 0; year++; }
+    }
+    return null;
+  }
+
+  // Given a CT month/year and a CT day (Friday), return its "week index" (1..5).
+  // Then map 5 -> 1; clamp to 1..4 for UI.
+  function fc_weekIndexForFriday(y, m /*0-11*/, day /*1..31*/) {
+    const fridays19 = fc_fridaysAt19(y, m); // 7pm events
+    const idx1 = fridays19.findIndex(inst => fc_getCTParts(inst).day === day) + 1; // 1-based
+    if (idx1 <= 0) return 1; // safety
+    return Math.min(idx1 === 5 ? 1 : idx1, 4);
+  }
+
+  /* =========================
+     Stage selection (boundary-based)
+     ========================= */
+
+  // Return 1..4 DOM id suffix.
+  // Logic: choose the next Friday **boundary** (8:00 PM CT) strictly after now,
+  // then take that boundary's Friday (its CT day) and compute its week index in that month,
+  // mapping 5th → 1.
+  function fc_tl_currentStageIndex() {
+    const now = fc_now();
+    const nb = fc_nextBoundaryAfter(now);
+    if (!nb) return 1;
+
+    const parts = fc_getCTParts(nb.boundary); // this is Fri 20:00 CT
+    return fc_weekIndexForFriday(parts.year, parts.month - 1, parts.day);
+  }
+
+  /* =========================
+     Apply highlight
+     ========================= */
+
+  function fc_tl_applyHighlight() {
+    const idx = fc_tl_currentStageIndex(); // 1..4
+
+    // Clear any prior highlight
+    for (let i = 1; i <= 4; i++) {
+      const el = document.getElementById(`week-${i}`);
+      if (el) el.classList.remove('active');
+    }
+
+    const el = document.getElementById(`week-${idx}`);
+    if (el) el.classList.add('active');
+  }
+
+  function fc_tl_boot() {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', fc_tl_applyHighlight, { once: true });
+    } else {
+      fc_tl_applyHighlight();
+    }
+  }
+
+  // Boot now
+  fc_tl_boot();
+
+  // ---- Export debug API to window (for console testing) ----
+  window.FC_TL.setNow = function (isoLike) {
+    const iso = isoLike instanceof Date ? isoLike.toISOString() : String(isoLike);
+    document.documentElement.setAttribute('data-now', iso);
+    fc_tl_applyHighlight();
+  };
+  window.FC_TL.clearNow = function () {
+    document.documentElement.removeAttribute('data-now');
+    fc_tl_applyHighlight();
+  };
+  window.FC_TL.apply = function () { fc_tl_applyHighlight(); };
+  window.FC_TL.currentWeek = function () { return fc_tl_currentStageIndex(); };
+
+})(); // end IIFE
+</script>

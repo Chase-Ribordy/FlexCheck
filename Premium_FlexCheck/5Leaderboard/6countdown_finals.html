@@ -1,0 +1,158 @@
+<div style="display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; padding: 2rem 1rem; background:#0f172a; border-radius: 1rem; border:1px solid #facc15; max-width: 700px; margin: 2rem auto;">
+
+  <div style="flex: 1; min-width: 280px; text-align: center;">
+    <h4 style="color:#facc15; margin-bottom: 0.5rem;">⚔️ Next Semifinal</h4>
+    <div id="semi-timer" style="font-size: 1.5rem; font-weight: bold; color:#808080; white-space: nowrap;">Loading...</div>
+  </div>
+
+  <div style="flex: 1; min-width: 280px; text-align: center;">
+    <h4 style="color:#facc15; margin-bottom: 0.5rem;">👑 Championship</h4>
+    <div id="champ-timer" style="font-size: 1.5rem; font-weight: bold; color:#facc15; white-space: nowrap;">Loading...</div>
+  </div>
+
+</div>
+
+<script>
+/* ============================
+   2nd/4th Friday Countdowns (7–8 PM America/Chicago)
+   All comparisons done in real time (UTC instants)
+   ============================ */
+
+const EVENT_HOUR = 19;        // 7 PM CT
+const EVENT_WINDOW_MIN = 60;  // 7–8 PM window
+
+// Real "now" instant
+function nowUTC() {
+  return new Date();
+}
+
+// Create a specific date/time in Chicago timezone -> return the correct instant (UTC)
+function createCTDate(year, month, day, hour = 0, minute = 0, second = 0) {
+  // tempDate is local; chicagoString is the same wall time formatted in CT
+  const tempDate = new Date(year, month, day, hour, minute, second);
+  const chicagoString = tempDate.toLocaleString("en-US", { timeZone: "America/Chicago" });
+  const chicagoDateLocal = new Date(chicagoString);
+
+  // The offset between local interpretation and CT interpretation at that date
+  const offset = tempDate.getTime() - chicagoDateLocal.getTime();
+
+  // Shift tempDate by the offset so the instant matches 7:00 PM CT (DST-safe)
+  return new Date(tempDate.getTime() - offset);
+}
+
+// Get the Nth Friday of a month (returns an instant corresponding to 7 PM CT that day)
+function getNthFriday(year, month, n) {
+  const firstDay = new Date(year, month, 1).getDay(); // 0=Sun ... 5=Fri
+  const firstFridayDate = 1 + ((5 - firstDay + 7) % 7);
+  const nthFridayDate = firstFridayDate + (n - 1) * 7;
+
+  const testDate = new Date(year, month, nthFridayDate);
+  if (testDate.getMonth() !== month) return null;
+
+  return createCTDate(year, month, nthFridayDate, EVENT_HOUR, 0, 0);
+}
+
+// Count Fridays in a month (1..5)
+function countFridaysInMonth(year, month) {
+  let count = 0;
+  for (let n = 1; n <= 5; n++) {
+    if (getNthFriday(year, month, n)) count++;
+  }
+  return count;
+}
+
+// Next semifinal: 2nd Friday at 7 PM CT, but skip months that have 5 Fridays
+function getNextSemifinal() {
+  const now = nowUTC();
+  let year = now.getFullYear();
+  let month = now.getMonth();
+
+  // If current month has 5 Fridays, skip to next month's 2nd Friday
+  if (countFridaysInMonth(year, month) === 5) {
+    month++;
+    if (month > 11) { month = 0; year++; }
+    return { date: getNthFriday(year, month, 2), inWindow: false };
+  }
+
+  // Otherwise, 2nd Friday (upcoming or live)
+  const friday2nd = getNthFriday(year, month, 2);
+  if (friday2nd) {
+    if (now < friday2nd) return { date: friday2nd, inWindow: false };
+    const windowEnd = new Date(friday2nd.getTime() + EVENT_WINDOW_MIN * 60000);
+    if (now >= friday2nd && now < windowEnd) return { date: friday2nd, inWindow: true };
+  }
+
+  // Then 4th Friday (upcoming or live)
+  const friday4th = getNthFriday(year, month, 4);
+  if (friday4th) {
+    if (now < friday4th) return { date: friday4th, inWindow: false };
+    const windowEnd = new Date(friday4th.getTime() + EVENT_WINDOW_MIN * 60000);
+    if (now >= friday4th && now < windowEnd) return { date: friday4th, inWindow: true };
+  }
+
+  // Otherwise, move forward. If next month has 5 Fridays, skip to the month after next.
+  month++;
+  if (month > 11) { month = 0; year++; }
+  if (countFridaysInMonth(year, month) === 5) {
+    month++;
+    if (month > 11) { month = 0; year++; }
+  }
+  return { date: getNthFriday(year, month, 2), inWindow: false };
+}
+
+// Next championship: 4th Friday at 7 PM CT, skipping months with 5 Fridays
+function getNextChampionship() {
+  const now = nowUTC();
+  let year = now.getFullYear();
+  let month = now.getMonth();
+
+  while (true) {
+    if (countFridaysInMonth(year, month) !== 5) {
+      const friday4th = getNthFriday(year, month, 4);
+      if (friday4th) {
+        if (now < friday4th) return { date: friday4th, inWindow: false };
+        const windowEnd = new Date(friday4th.getTime() + EVENT_WINDOW_MIN * 60000);
+        if (now >= friday4th && now < windowEnd) return { date: friday4th, inWindow: true };
+      }
+    }
+    month++;
+    if (month > 11) { month = 0; year++; }
+  }
+}
+
+// Format remaining time
+function formatDiffCT(target, inWindow) {
+  if (inWindow) return "LIVE NOW";
+  const now = nowUTC();
+  const diff = target.getTime() - now.getTime();
+  if (diff <= 0) return "00:00:00";
+
+  const totalSeconds = Math.floor(diff / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = String(Math.floor((totalSeconds % 86400) / 3600)).padStart(2, "0");
+  const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+  const seconds = String(totalSeconds % 60).padStart(2, "0");
+
+  return days > 0 ? `${days}d ${hours}:${minutes}:${seconds}` : `${hours}:${minutes}:${seconds}`;
+}
+
+// Update DOM
+function updateCountdowns() {
+  try {
+    const semi = getNextSemifinal();
+    const champ = getNextChampionship();
+
+    const semiEl = document.getElementById("semi-timer");
+    const champEl = document.getElementById("champ-timer");
+
+    if (semiEl && semi && semi.date) semiEl.innerText = formatDiffCT(semi.date, semi.inWindow);
+    if (champEl && champ && champ.date) champEl.innerText = formatDiffCT(champ.date, champ.inWindow);
+  } catch (error) {
+    console.error("Error updating countdowns:", error);
+  }
+}
+
+// Initial draw + tick every second
+updateCountdowns();
+const _eventTimerInterval = setInterval(updateCountdowns, 1000);
+</script>

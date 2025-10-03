@@ -1,0 +1,103 @@
+<p style="font-size:0.85rem;color:#94a3b8;margin-bottom:1.5rem;text-align:center;">
+<b>So what will it be?</b><br>
+  </p>
+
+<!-- 🔥 Dual CTA: Compete or Skip -->
+<div style="background:linear-gradient(135deg, #0f172a, #1e293b); border-left:4px solid #38bdf8; padding:1.5rem; border-radius:1rem; max-width:720px; margin:2rem auto; display:flex; flex-direction:column; align-items:center; font-family:'Inter', sans-serif; box-shadow:0 0 16px rgba(56,189,248,0.12);">
+
+  <!-- Motivational Header -->
+  <p style="margin:0 0 1rem 0; font-size:1.05rem; font-weight:600; text-align:center; line-height:1.5;">
+    <span style="color:#64748b;">Physique.</span><br>
+    <span style="color:#cbd5e1;">Compete.</span><br>
+    <span style="color:#f8fafc;">Each <span style="color:#f8fafc;">Week.</span></span>
+  </p>
+
+  <!-- CTA Buttons -->
+  <div style="display:flex; flex-wrap:wrap; gap:1rem; justify-content:center;">
+
+    <!-- FlexCheck CTA -->
+  <a href="#" onclick="goToFormWithData(event)"
+   style="text-decoration:none; background:linear-gradient(135deg, #38bdf8, #0ea5e9); color:#0f172a; font-weight:700; font-size:0.95rem; padding:0.75rem 1.25rem; border-radius:0.6rem; box-shadow:0 0 10px rgba(56,189,248,0.3); animation:popPulse 2s ease-in-out infinite; transition:transform 0.2s;">
+  🚀 Submit FlexCheck →
+</a>
+  </div>
+
+
+  <!-- 🛒 Alt CTA -->
+  <hr style="border:none;height:1px;background:#1e293b;margin:2rem 0;">
+  <p style="font-size:0.85rem;color:#94a3b8;margin-bottom:0.5rem;text-align:center;">
+<br>    
+<b>💥Don’t want to compete?💥</b><br>
+<br>
+    ⚡Get Accurate Human Feedback with a <b>Physique Check</b>
+  </p>
+  <div style="text-align:center;">
+    <a href="https://www.gameplanfitness.com/services/physique-check/"
+       style="display:inline-block;margin-top:0.3rem;font-size:0.85rem;background:#16a34a;color:#f0fdf4;
+              font-weight:700;padding:0.55rem 1rem;border-radius:0.65rem;text-decoration:none;">
+      Submit Priority Check →
+    </a>
+  </div>
+</div>
+</div>
+
+
+
+<style>
+@keyframes popPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+</style>
+
+<script>
+function goToFormWithData(event) {
+    event.preventDefault();
+    
+    // Get cached data from flexcheckCacheV3
+    const cachedDataString = localStorage.getItem('flexcheckCacheV3');
+    if (!cachedDataString) {
+        // No cached data, go to form normally
+        window.open('https://www.gameplanfitness.com/flexcheck/premium-flexcheck/', '_blank');
+        return;
+    }
+    
+    try {
+        const cachedData = JSON.parse(cachedDataString);
+        const firstEntry = Object.values(cachedData.entriesById)[0];
+        
+        if (!firstEntry) {
+            // No entry data, go to form normally
+            window.open('https://www.gameplanfitness.com/flexcheck/premium-flexcheck/', '_blank');
+            return;
+        }
+        
+        // Build URL with parameters
+        const baseUrl = 'https://www.gameplanfitness.com/flexcheck/premium-flexcheck/';
+        const params = new URLSearchParams();
+        
+        // Add all parameters based on field mapping
+        if (firstEntry.email) {
+            params.append('email', firstEntry.email);
+        }
+        if (firstEntry.result) {
+            const result = firstEntry.result;
+            if (result.age) params.append('numeric_field_4', result.age);
+            if (result.heightCm) params.append('numeric_field_2', result.heightCm);
+            if (result.heightIn) params.append('numeric_field', result.heightIn);
+            if (result.socialHandle) params.append('input_text', result.socialHandle);
+            if (result.weightKg) params.append('numeric_field_1', result.weightKg);
+            if (result.weightLb) params.append('numeric_field_3', result.weightLb);
+            if (result.trainingAgeYears) params.append('numeric_field_5', result.trainingAgeYears);
+        }
+        
+        // Navigate to form page with parameters
+        window.open(baseUrl + '?' + params.toString(), '_blank');
+        
+    } catch (error) {
+        console.error('Error processing cached data:', error);
+        // Fallback to normal form
+        window.open('https://www.gameplanfitness.com/flexcheck/premium-flexcheck/', '_blank');
+    }
+}
+</script>

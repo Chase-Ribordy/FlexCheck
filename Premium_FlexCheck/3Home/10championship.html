@@ -1,0 +1,235 @@
+<!-- 🟥 Championship — Red Glow Theme -->
+<style>
+  /* 🟥 HEADER STYLING */
+  .fc-championship-header {
+    background: linear-gradient(to bottom right, #231111, #270e0e);
+    border: 1px solid #ef4444;
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
+    cursor: pointer;
+    transition: background 0.3s ease;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .fc-championship-header:hover {
+    background: linear-gradient(to bottom right, #2d1414, #321111);
+  }
+
+  .fc-championship-subheading {
+    font-size: 0.9rem;
+    color: #fca5a5;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .fc-championship-heading {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.2;
+  }
+
+  /* 🟥 EXPANDABLE SECTION BASE */
+  .expandable-content {
+    display: none;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .expandable-content.open {
+    display: block;
+  }
+
+  /* ✅ RED THEME WRAPPER */
+.expandable-content.fc-red {
+  background: linear-gradient(145deg, #2a1515, #1a0f0f);
+  border: 1px solid #ef4444;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.2);
+}
+
+
+
+
+
+.mobile-bracket {
+  max-width: 400px;
+  margin: 2rem auto;
+  background: #0f172a;
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  font-family: 'Inter', sans-serif;
+  color: #e2e8f0;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+.bracket-title {
+  text-align: center;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  font-weight: 800;
+  color: #facc15;
+}
+
+.bracket-stage {
+  margin-bottom: 2rem;
+  padding-left: 1rem;
+  border-left: 2px solid #334155;
+  position: relative;
+}
+
+.bracket-card {
+  background: #1e293b;
+  margin-bottom: 0.3rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.bracket-vs {
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #94a3b8;
+  margin: 0.2rem 0 0.4rem;
+}
+
+.bracket-arrow {
+  font-family: monospace;
+  color: #facc15;
+  font-size: 0.85rem;
+  margin-top: 0.4rem;
+  margin-left: 0.5rem;
+  font-weight: 700;
+}
+
+.final-glow {
+  color: #fde047;
+  font-weight: 800;
+  text-shadow: 0 0 3px #facc15, 0 0 5px #fde047;
+}
+
+
+</style>
+
+<!-- ✅ Championship Block -->
+<div class="fc-championship-header" style="--gp-arrow:#ef4444;" onclick="toggleSection('fc-championship-content')">
+  <div class="fc-championship-subheading">GamePlan Fitness</div>
+  <div class="fc-championship-heading">🎥 Championship</div>
+  <span class="gp-expand-arrow">
+    <svg width="20" height="9" viewBox="0 0 18 8" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="2,2 9,6 16,2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </span>
+</div>
+
+<div id="fc-championship-content" class="expandable-content fc-red">
+  <!-- 🔹 SECTION: How to Win -->
+  <h3 style="font-size:1.05rem; color:#22c55e; margin:2rem 0 0.5rem;">
+    🏁 How to Win (End of Month)
+  </h3>
+
+
+<!-- ░░░ FLEXCHECK CHAMPIONSHIP OVERVIEW WIDGET ░░░ -->
+<div style="background:#1e293b; border:1px solid #334155; border-radius:0.75rem; padding:1rem 1.25rem; font-size:0.9rem; color:#cbd5e1; margin-bottom:1.5rem; line-height:1.65;">
+  <p style="margin:0;">
+    <span style="color:#ffffff; font-weight:600;">🗳️ One winner per tier is selected each week by vote.</span><br>
+    <span style="color:#cbd5e1;">Those weekly winners enter head-to-head judged battles.</span><br>
+    <span style="color:#ffffff; font-weight:600;">🏆 The final showdown crowns <span style="color:#facc15;">Three Monthly Champions</span>.</span>
+  </p>
+</div>
+
+
+
+<ul style="list-style:disc; margin-left:0.25rem; font-size:0.85rem; color:#e2e8f0; margin-bottom:1.5rem;">
+  <li>
+    Each week, one winner per tier (Top, Mid, Bot) is chosen by community vote and advances to that tier’s monthly bracket.
+  </li>
+
+  <li>
+    The bracket follows a <b>single-elimination format</b>:
+    <ul style="list-style:circle; margin-top:0.4rem; margin-left:1.25rem;">
+      <li><b>Week 1 Winner vs Week 2 Winner</b> → Semifinal 1</li>
+      <li><b>Week 3 Winner vs Week 4 Winner</b> → Semifinal 2</li>
+      <li>Winners of each semifinal face off in the Championship Final</li>
+    </ul>
+  </li>
+
+  <li>
+    Semifinals and Championship are <b>LIVE judged battles</b> (7pm CT) during FlexCheck Friday livestreams.
+    <ul style="list-style:circle; margin-top:0.4rem; margin-left:1.25rem;">
+      <li>Judged directly by me — no polls, no audience vote</li>
+      <li>Winners are chosen based on physique, effort, presentation, and improvement</li>
+    </ul>
+  </li>
+
+  <li>
+    The <b>Championship Final</b> takes place on the last Friday of the month and crowns one winner per tier.
+  </li>
+
+  <li>
+    <b>3 Total Monthly Champions</b> are selected — one from Top, Mid, and Bot Tier.
+  </li>
+
+  <li>
+    Monthly Champions earn:
+    <ul style="list-style:circle; margin-top:0.4rem; margin-left:1.25rem;">
+      <li>
+        A 
+        <a href="https://www.gameplanfitness.com/services/physique-check/" target="_blank" style="color:#38bdf8; font-weight:600; text-decoration:none;">
+          FREE Priority Physique Check
+        </a>
+      </li>
+      <li>A permanent spot in the <span style="color:#facc15; font-weight:600;">FlexCheck Hall of Fame</span></li>
+    </ul>
+  </li>
+</ul>
+
+
+<!--INSERT-->
+<div class="mobile-bracket">
+  <h3 class="bracket-title">🏆 FlexCheck Championship Bracket</h3>
+
+  <!-- Semi A Matchup -->
+  <div class="bracket-stage">
+    <div class="bracket-card">📸 Wk 1 Winner</div>
+    <div class="bracket-vs">vs</div>
+    <div class="bracket-card">📸 Wk 2 Winner</div>
+    <div class="bracket-arrow">→ 🔥 Semi-Final 1</div>
+  </div>
+
+  <!-- Semi B Matchup -->
+  <div class="bracket-stage">
+    <div class="bracket-card">📸 Wk 3 Winner</div>
+    <div class="bracket-vs">vs</div>
+    <div class="bracket-card">📸 Wk 4 Winner</div>
+    <div class="bracket-arrow">→ 🔥 Semi-Final 2</div>
+  </div>
+
+  <!-- Final Matchup -->
+  <div class="bracket-stage">
+    <div class="bracket-card">🔥 Semi-Final 1</div>
+    <div class="bracket-vs">vs</div>
+    <div class="bracket-card">🔥 Semi-Final 2</div>
+    <div class="bracket-arrow final-glow">→ 🏆 FlexCheck Champion</div>
+  </div>
+</div>
+
+
+<!--INSERT-->
+</div>
+
+
+<script>
+  function toggleSection(id) {
+    const section = document.getElementById(id);
+    if (section) section.classList.toggle('open');
+  }
+</script>

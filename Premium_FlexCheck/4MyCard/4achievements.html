@@ -1,0 +1,299 @@
+<style>
+/* 🎖️ Core Achievements Styles (unchanged) */
+.achievements-wrapper {
+  padding: 1.25rem 1rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.achievement-section {
+  margin-bottom: 2rem;
+}
+
+.achievement-heading {
+  font-size: 1rem;
+  color: #4ade80;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.achievement-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.achievement-item-live {
+  position: relative;
+  filter: grayscale(100%) brightness(0.4);
+  transition: 0.3s ease;
+  cursor: pointer;
+  font-size: 2.25rem;
+  user-select: none;
+}
+
+.achievement-item-live.unlocked {
+  filter: none;
+  transform: scale(1.1);
+}
+
+.achievement-emoji {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  background: #0f172a;
+  border-radius: 0.75rem;
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.2);
+}
+
+.tooltip {
+  position: absolute;
+  bottom: -1.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111;
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.5rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.2s ease;
+  z-index: 10;
+}
+
+.achievement-item-live:hover .tooltip,
+.achievement-item-live:focus-within .tooltip {
+  opacity: 1;
+  pointer-events: auto;
+}
+#achievements-skeleton{
+  display:flex; align-items:center; justify-content:center;
+  gap:1rem; min-height: 280px; /* holds space so layout doesn't jump */
+  background: #0b1220; border:1px solid #1f2a44; border-radius: 0.75rem;
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.10);
+}
+
+/* spinner */
+.achv-spinner {
+  width:28px; height:28px; border-radius:50%;
+  border:3px solid rgba(255,255,255,0.25);
+  border-top-color: #4ade80;
+  animation: achv-spin 0.8s linear infinite;
+}
+@keyframes achv-spin { to { transform: rotate(360deg); } }
+
+/* shimmering lines/pills */
+.achv-shimmer { position: relative; overflow: hidden; }
+.achv-line { height: 12px; width: 220px; border-radius: 999px; background:#15213a; margin:6px 0; }
+.achv-line.lg { width: 260px; height: 14px; }
+.achv-row { display:flex; gap:10px; margin-top:10px; }
+.achv-pill { width:64px; height:64px; border-radius: 12px; background:#15213a; }
+.achv-shimmer::after{
+  content:""; position:absolute; inset:0;
+  background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.08) 40%, transparent 80%);
+  animation: achv-shine 1.2s infinite;
+}
+@keyframes achv-shine { from { transform: translateX(-100%);} to { transform: translateX(100%);} }
+</style>
+
+
+<!-- ✅ Fixed/cleaned markup (just the missing closing DIV and tidy) -->
+<div id="FC_LIVE_ACHIEVEMENTS" class="fc-block" style="display:none" data-email="">
+ <!-- ⏳ Skeleton -->
+  <div id="achievements-skeleton" aria-busy="true" role="status">
+    <div class="achv-spinner"></div>
+    <div class="achv-shimmer">
+      <div class="achv-line lg"></div>
+      <div class="achv-row"><div class="achv-pill"></div><div class="achv-pill"></div><div class="achv-pill"></div></div>
+      <div class="achv-line" style="margin-top:16px;width:200px;"></div>
+      <div class="achv-row"><div class="achv-pill"></div><div class="achv-pill"></div><div class="achv-pill"></div></div>
+    </div>
+  </div>
+   <!-- 📊 Achievements -->
+  <div class="achievements-wrapper">
+    <div class="achievement-section">
+      <h3 class="achievement-heading">🏆 FlexScore Total: <span id="flexscore-count">0</span></h3>
+      <div class="achievement-row" id="flexscore-row">
+        <div class="achievement-item-live" data-type="score" data-required="100">
+          <div class="achievement-emoji">🥉</div>
+          <span class="tooltip">Earn 100 FlexScore</span>
+        </div>
+        <div class="achievement-item-live" data-type="score" data-required="500">
+          <div class="achievement-emoji">🥈</div>
+          <span class="tooltip">Earn 500 FlexScore</span>
+        </div>
+        <div class="achievement-item-live" data-type="score" data-required="1000">
+          <div class="achievement-emoji">🥇</div>
+          <span class="tooltip">Earn 1000 FlexScore</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="achievement-section">
+      <h3 class="achievement-heading">🔥 Streak: <span id="streak-count">0</span> weeks</h3>
+      <div class="achievement-row" id="streak-row">
+        <div class="achievement-item-live" data-type="streak" data-required="2">
+          <div class="achievement-emoji">🔥</div>
+          <span class="tooltip">2-week streak</span>
+        </div>
+        <div class="achievement-item-live" data-type="streak" data-required="6">
+          <div class="achievement-emoji">💥</div>
+          <span class="tooltip">6-week streak</span>
+        </div>
+        <div class="achievement-item-live" data-type="streak" data-required="12">
+          <div class="achievement-emoji">👑</div>
+          <span class="tooltip">12-week streak</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var WRAP = document.getElementById("FC_LIVE_ACHIEVEMENTS");
+  if (!WRAP) return;
+
+  var CONTENT  = WRAP.querySelector(".achievements-wrapper");
+  var SKELETON = WRAP.querySelector("#achievements-skeleton");
+  var ACH_URL  = "https://script.google.com/macros/s/AKfycbxy8i4LPu7-__E5vwrm9YTo_3KnhC2LtshWFNBeur-Dd-XiNfhUF1sEoBy6Lkc4ZG10ow/exec";
+
+  var loaded = false, iv = null, mo = null;
+
+  function showSkeleton(){
+    WRAP.style.display = "";
+    if (SKELETON) SKELETON.style.display = "flex";
+    if (CONTENT)  CONTENT.style.display  = "none";
+  }
+  function showContent(){
+    if (SKELETON) SKELETON.style.display = "none";
+    if (CONTENT)  CONTENT.style.display  = "";
+  }
+
+  function pickEmail(){
+    if (window.flexcheckCache && window.flexcheckCache.ownerEmail)
+      return String(window.flexcheckCache.ownerEmail).trim().toLowerCase();
+    if (window.flexcheckOwner)
+      return String(window.flexcheckOwner).trim().toLowerCase();
+
+    var fromAttr = (WRAP.getAttribute("data-email") || "").trim();
+    if (fromAttr) return fromAttr.toLowerCase();
+
+    var fromLS = (localStorage.getItem("userEmail") || "").trim();
+    if (fromLS) return fromLS.toLowerCase();
+
+    try {
+      if (window.flexcheckCache && typeof window.flexcheckCache.getAllEntries === "function"){
+        var arr = window.flexcheckCache.getAllEntries() || [];
+        if (arr.length && arr[0].email) return String(arr[0].email).trim().toLowerCase();
+      }
+    } catch(e){}
+
+    return "";
+  }
+
+function pickEmailFromFlexCheck(){
+  // Check your login system's format first
+  try {
+    var raw = localStorage.getItem('flexcheckOwner');
+    if (raw) {
+      var owner = JSON.parse(raw);
+      if (owner && owner.email) return owner.email.trim().toLowerCase();
+    }
+  } catch(e){}
+  
+  // Check window.flexcheck global
+  try {
+    if (window.flexcheck && window.flexcheck.getOwner) {
+      var owner = window.flexcheck.getOwner();
+      if (owner && owner.email) return owner.email.trim().toLowerCase();
+    }
+  } catch(e){}
+  
+  return "";
+}
+
+  function normalizeTotals(raw){
+    raw = raw || {};
+    var src = raw.data || raw.totals || raw;
+    return {
+      totalFlexScore: Number(src.totalFlexScore ?? src.flexscore ?? src.flexScore ?? src.totalScore ?? src.flex_score ?? 0),
+      weeksBought:   Number(src.weeksBought   ?? src.streakWeeks ?? src.weeksActive ?? src.weeks ?? src.streak ?? 0)
+    };
+  }
+
+  function render(t){
+    showContent();
+    var fs = WRAP.querySelector("#flexscore-count");
+    var st = WRAP.querySelector("#streak-count");
+    if (fs) fs.textContent = t.totalFlexScore || 0;
+    if (st) st.textContent = t.weeksBought || 0;
+
+    WRAP.querySelectorAll(".achievement-item-live").forEach(function(el){
+      var req  = parseInt(el.getAttribute("data-required"), 10);
+      var type = el.getAttribute("data-type");
+      var pass = type === "score" ? (t.totalFlexScore >= req) : (t.weeksBought >= req);
+      el.classList.toggle("unlocked", !!pass);
+    });
+  }
+
+  function fetchAndRender(email){
+    if (loaded) return;
+    showSkeleton();
+    fetch(ACH_URL + "?fn=achievements&email=" + encodeURIComponent(email), { credentials: "omit" })
+      .then(function(r){ return r.json(); })
+      .then(function(j){ render(normalizeTotals(j)); })
+      .catch(function(){ render({ totalFlexScore: 0, weeksBought: 0 }); })
+      .finally(done);
+  }
+
+  function done(){
+    loaded = true;
+    if (iv) { clearInterval(iv); iv = null; }
+    if (mo) { mo.disconnect(); mo = null; }
+  }
+
+  function bootOnce(){
+  if (loaded) return true;
+  
+  // Try the FlexCheck login system first
+  var e = pickEmailFromFlexCheck();
+  if (!e) e = pickEmail(); // Fallback to original method
+  
+  if (e) { 
+    fetchAndRender(e); 
+    return true; 
+  }
+  return false;
+}
+
+  document.addEventListener("DOMContentLoaded", function(){
+    if (bootOnce()) return;
+
+    document.addEventListener("flexcheck:owner", function(ev){
+      var email = (ev.detail && ev.detail.email || "").toString().trim().toLowerCase();
+      if (email) fetchAndRender(email);
+    }, { once: true });
+
+    var tries = 0, max = 40;
+    iv = setInterval(function(){
+      if (bootOnce() || ++tries >= max) { clearInterval(iv); iv = null; }
+    }, 50);
+
+    mo = new MutationObserver(function(muts){
+      for (var m of muts){
+        if (m.type === "attributes" && m.attributeName === "data-email"){
+          if (bootOnce()) { mo.disconnect(); mo = null; break; }
+        }
+      }
+    });
+    mo.observe(WRAP, { attributes: true, attributeFilter: ["data-email"] });
+  });
+})();
+</script>

@@ -1,0 +1,848 @@
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  .spotlight-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 480px;
+    margin: auto;
+  }
+
+  .card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.25rem;
+    font-weight: 800;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  /* Add tier borders for mini cards */
+  .mini-card.theme-gold    { border: 2px solid #d4a427; }
+  .mini-card.theme-silver  { border: 2px solid #c0c0c8; }
+  .mini-card.theme-bronze  { border: 2px solid #cd7f32; }
+
+  .spotlight-card {
+    width: 100%;
+    aspect-ratio: 3 / 5;
+    background-color: rgba(39, 190, 250, 0.1);
+  }
+
+  .inactive-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(45%, 1fr));
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .mini-card {
+    flex: 1;
+    aspect-ratio: 3 / 5;
+    opacity: 0.85;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+
+  @media (min-width: 600px) {
+    .inactive-row {
+      flex-direction: row;
+    }
+  }
+
+  :root {
+    --accent: #27BEFA;
+    --rail: #212830;
+    --text2: #8b909b;
+  }
+
+  .spotlight-card {
+    position: relative;
+    border: none !important;
+    aspect-ratio: 1365 / 2048;
+    width: 100%;
+    max-width: 420px;
+    margin: auto;
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+    background: #0b1630 url('https://www.gameplanfitness.com/wp-content/uploads/2025/07/Final_playercard_bluev2.webp') center/contain no-repeat;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.45);
+  }
+
+  .spotlight-card .gp-box {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* NAME BAR */
+  .spotlight-card .name-container {
+    top: 8%; left: 50%;
+    width: 70%; height: 10%;
+    transform: translateX(-50%);
+    font-family: 'Hemi Head', sans-serif;
+    font-size: clamp(14px, 4.5vw, 22px);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0 6%;
+    clip-path: inset(0 round 6px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* CAROUSEL IMAGE MASK */
+  .spotlight-card .image-mask {
+    top: 22.5%; left: 13%;
+    width: 45%; height: 46.5%;
+    overflow: hidden;
+    cursor: pointer;
+    border-radius: 0 0 0 10%;
+    clip-path: polygon(0 0, 87% 0, 100% 7.5%, 100% 100%, 0 100%);
+  }
+  .spotlight-card .image-mask::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 4px solid var(--accent);
+    border-radius: inherit;
+    clip-path: inherit;
+    pointer-events: none;
+  }
+  .spotlight-card .carousel {
+    display: flex;
+    height: 100%;
+    transition: transform 0.3s ease;
+  }
+  .spotlight-card .slide {
+    flex: 0 0 100%;
+  }
+  .spotlight-card .slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* DOT NAV */
+  .spotlight-card .dots {
+    position: absolute;
+    bottom: 6%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+  }
+  .spotlight-card .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.4);
+    cursor: pointer;
+  }
+  .spotlight-card .dot.active {
+    background: var(--accent);
+  }
+
+  /* STATS PANEL */
+.spotlight-card .stats-container {
+  position: absolute;
+  top: 41.5%; left: 60.5%;
+  width: 34%; height: 28%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 2% 2.5%;
+  gap: 10%;
+  background: rgba(0, 0, 0, 0.28);
+  clip-path: inset(0 round 10px);
+  box-sizing: border-box;
+}
+.spotlight-card .stat-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.spotlight-card .stat-head {
+  display: flex;
+  justify-content: space-between;
+}
+.spotlight-card .stat-label {
+  font: 500 12px/1 'Inter';
+  color: var(--accent);
+}
+.spotlight-card .stat-value {
+  font: 350 10px/1 'Inter';
+  color: var(--text2);
+}
+.spotlight-card .rail {
+  position: relative;
+  height: 9px;
+  border-radius: 5px;
+  background: var(--rail);
+}
+.spotlight-card .fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 1s ease;
+}
+  .spotlight-card .flexscore-banner {
+    top: 22.7%; left: 63.5%;
+    width: 29%; height: 15%;
+    flex-direction: column;
+    gap: .4em;
+  }
+  .spotlight-card .flexscore-banner .label {
+    font: 500 14px/1 'Inter';
+    color: var(--accent);
+  }
+  .spotlight-card .flexscore-banner .value {
+    font: 700 44px/1 'Inter';
+    color: var(--accent);
+  }
+  @media (max-width: 480px) {
+    .spotlight-card .flexscore-banner .value {
+      font-size: 30px;
+    }
+  }
+
+  /* STAR + FOOTER */
+  .spotlight-card .star-zone {
+    top: 70%;
+    left: 7%;
+    width: 84%;
+    height: 14%;
+    flex-direction: column;
+    gap: .6em;
+  }
+  .spotlight-card .star-row img {
+    width: 25px;
+    height: auto;
+  }
+  .spotlight-card .bottom-footer {
+    top: 89%;
+    left: 50%;
+    width: 70%;
+    height: 4%;
+    transform: translateX(-50%);
+    font-family: 'Hemi Head', sans-serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--text2);
+  }
+
+  .mini-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    font-family: 'Inter', sans-serif;
+    padding: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background: #0b1630;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .mini-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: rgba(255,255,255,0.05);
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    color: var(--accent);
+    margin-bottom: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mini-image {
+    width: 80%;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    border-radius: 8px;
+    margin: 0.3rem 0;
+  }
+
+  .mini-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mini-score {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin-top: 0.2rem;
+  }
+
+  .mini-stars {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0.2rem;
+  }
+
+  .mini-stars img {
+    width: 18px;
+    height: auto;
+  }
+
+  .theme-gold {
+    --accent: #d4a427;
+    background-image: url('https://www.gameplanfitness.com/wp-content/uploads/2025/07/Final_playercard_gold.svg');
+  }
+  .theme-silver {
+    --accent: #c0c0c8;
+    background-image: url('https://www.gameplanfitness.com/wp-content/uploads/2025/07/Final_playercard_silver.svg');
+  }
+  .theme-bronze {
+    --accent: #cd7f32;
+    background-image: url('https://www.gameplanfitness.com/wp-content/uploads/2025/07/Final_playercard_bronze.webp');
+  }
+
+  .mini-rank-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-top: 0.4rem;
+    text-align: center;
+  }
+
+  .mini-wrapper {
+    --accent: inherit;
+  }
+
+  .spotlight-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .spotlight-wrapper.first-place::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140%;
+    height: 140%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 224, 102, 0.3), transparent 70%);
+    z-index: 0;
+    pointer-events: none;
+    animation: glow-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+  }
+
+  .spotlight-rank-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #facc15;
+    background: rgba(255, 255, 0, 0.1);
+    border: 1px solid #facc15;
+    padding: 1rem 2rem;
+    margin: 2rem auto 1.5rem auto;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    z-index: 1;
+  }
+
+  .spotlight-wrapper.first-place .spotlight-card {
+    box-shadow:
+      0 0 0px 3px #facc15,
+      0 0 12px 6px #facc15,
+      0 0 24px 12px #facc15;
+    transition: box-shadow 0.3s ease-in-out;
+    z-index: 1;
+  }
+
+  .logo-overlay {
+    position: absolute;
+    bottom: 6%;
+    right: 6%;
+    width: clamp(32px, 14%, 60px);
+    height: auto;
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .img-preloader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+    z-index: 4;
+    animation: irisReveal 2s cubic-bezier(.22, .61, .36, 1) forwards;
+    pointer-events: none;
+  }
+
+  .img-preloader img {
+    width: 40%;
+    height: auto;
+    opacity: 0;
+    animation: fadeLogoIn 1.2s ease-in forwards 0.3s;
+  }
+
+  @keyframes irisReveal {
+    0%   { clip-path: circle(0 at 50% 50%); opacity: 1; }
+    65%  { clip-path: circle(45% at 50% 50%); opacity: 1; }
+    100% { clip-path: circle(140% at 50% 50%); opacity: 0; }
+  }
+
+  @keyframes fadeLogoIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  .tier-switch {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.tier-switch button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 1rem 0.8rem;
+  margin: 0 0.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 80px;
+}
+
+.tier-switch button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.tier-switch button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+  box-shadow: 0 4px 12px rgba(39, 190, 250, 0.3);
+}
+
+.tier-emoji {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.tier-text {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+  #lb-meta {
+    opacity: 0.7;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    color: var(--text2);
+  }
+</style>
+
+<div class="spotlight-section">
+  <div id="spotlight"></div>
+  <div class="inactive-row" id="inactive-row"></div>
+
+  <!-- Tier selector -->
+<div class="tier-switch" id="tier-switch">
+  <button data-tier="top" class="active">
+    <span class="tier-emoji">🔥</span>
+    <span class="tier-text">Top Tier</span>
+  </button>
+  <button data-tier="mid">
+    <span class="tier-emoji">📈</span>
+    <span class="tier-text">Mid Tier</span>
+  </button>
+  <button data-tier="low">
+    <span class="tier-emoji">💀</span>
+    <span class="tier-text">Bot Tier</span>
+  </button>
+</div>
+
+  <div id="lb-meta"></div>
+</div>
+
+<script>
+(function FC_TOP3_VIEWER(){
+  const CACHE_KEY = 'fc_lb_cache_v1';
+  const REFRESH_MS = 11 * 60 * 1000; // ~11min fallback check
+
+  // Sample data from your document for testing
+  const SAMPLE_DATA = {
+    "top": [
+      {"rank": 1, "score": 93, "entryId": 1014, "createdAtISO": "2025-08-09T14:15:00-05:00", "socialHandle": "@t14", "photos": "[\"https://placehold.co/300x450?text=T14a\",\"https://placehold.co/300x450?text=T14b\"]", "age": 32, "heightCm": 183, "heightIn": 72, "weightKg": 95, "weightLb": 209.4, "trainingAgeYears": 10},
+      {"rank": 2, "score": 91, "entryId": 1004, "createdAtISO": "2025-08-09T14:15:00-05:00", "socialHandle": "@t4", "photos": "[\"https://placehold.co/300x450?text=T4a\",\"https://placehold.co/300x450?text=T4b\"]", "age": 31, "heightCm": 181.61, "heightIn": 71.5, "weightKg": 88, "weightLb": 194, "trainingAgeYears": 6},
+      {"rank": 3, "score": 88, "entryId": 1009, "createdAtISO": "2025-08-09T14:15:00-05:00", "socialHandle": "@t9sadfasdfasf", "photos": "[\"https://placehold.co/300x450?text=T9a\",\"https://placehold.co/300x450?text=T9b\"]", "age": 29, "heightCm": 182, "heightIn": 71.7, "weightKg": 86, "weightLb": 189.6, "trainingAgeYears": 6}
+    ],
+    "mid": [
+      {"rank": 1, "score": 77.5, "entryId": 1005, "createdAtISO": "2025-08-09T14:15:00-05:00", "socialHandle": "@t5", "photos": "[\"https://placehold.co/300x450?text=T5a\",\"https://placehold.co/300x450?text=T5b\"]", "age": 27, "heightCm": 182, "heightIn": 71.7, "weightKg": 86, "weightLb": 189.6, "trainingAgeYears": 5},
+      {"rank": 2, "score": 74.4, "entryId": 1011, "createdAtISO": "2025-08-09T14:15:00-05:00", "socialHandle": "@t11543t6345t4", "photos": "[\"https://placehold.co/300x450?text=T11a\",\"https://placehold.co/300x450?text=T11b\"]", "age": 26, "heightCm": 181, "heightIn": 71.3, "weightKg": 85, "weightLb": 187.4, "trainingAgeYears": 4},
+      {"rank": 3, "score": 72.1, "entryId": 1002, "createdAtISO": "2025-08-09T14:15:00-05:00", "socialHandle": "@t2", "photos": "[\"https://placehold.co/300x450?text=T2\"]", "age": 22, "heightCm": 180.09, "heightIn": 70.9, "weightKg": 85, "weightLb": 187.4, "trainingAgeYears": 2}
+    ],
+    "low": [
+      {"rank": 1, "score": 55, "entryId": 1010, "createdAtISO": "2025-08-09T14:15:00-05:00", "socialHandle": "@t10", "photos": "[\"https://placehold.co/300x450?text=T10\"]", "age": 20, "heightCm": 175, "heightIn": 68.9, "weightKg": 70, "weightLb": 154.3, "trainingAgeYears": 1},
+      {"rank": 2, "score": 59, "entryId": 1003, "createdAtISO": "2025-08-09T14:15:00-05:00", "socialHandle": "@t3", "photos": "[\"https://placehold.co/300x450?text=T3\"]", "age": 28, "heightCm": 176, "heightIn": 69.3, "weightKg": 84, "weightLb": 185.2, "trainingAgeYears": 4},
+      {"rank": 3, "score": 64, "entryId": 1006, "createdAtISO": "2025-08-09T14:15:00-05:00", "socialHandle": "@t6", "photos": "[\"https://placehold.co/300x450?text=T6\"]", "age": 24, "heightCm": 178, "heightIn": 70.1, "weightKg": 90, "weightLb": 198.4, "trainingAgeYears": 3}
+    ]
+  };
+
+  // DOM
+  const spotlightEl = document.getElementById('spotlight');
+  const inactiveEl  = document.getElementById('inactive-row');
+  const tierSwitch  = document.getElementById('tier-switch');
+  const metaEl      = document.getElementById('lb-meta');
+
+  const STATE = { tier: 'top', players: [], spotlightIndex: 0, timer: null, cache: null };
+
+  function loadCache() {
+    // Prefer provider helper if present
+    if (window.FlexCache?.get) return window.FlexCache.get();
+    try { 
+      const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      // Use cached data if available, otherwise fall back to sample data
+      return cached || { top3: SAMPLE_DATA };
+    }
+    catch { return { top3: SAMPLE_DATA }; }
+  }
+
+  function getAllPhotos(photosStr) {
+  try {
+    const arr = JSON.parse(photosStr || '[]');
+    return arr.filter(Boolean); // Return all valid photos
+  } catch { return []; }
+}
+
+function firstTwoPhotos(photosStr) {
+  try {
+    const arr = JSON.parse(photosStr || '[]');
+    return [arr?.[0] || '', arr?.[1] || ''];
+  } catch { return ['', '']; }
+}
+
+  // FIXED: Theme should be based on rank within tier, not tier itself
+  function themeFromRank(rank) { 
+    return rank === 1 ? 'gold' : rank === 2 ? 'silver' : 'bronze'; 
+  }
+  
+  function starsFromTrainingAge(trainingAge) {
+    const years = Number(trainingAge) || 0;
+    if (years >= 10) return 10;
+    return Math.max(1, years);
+  }
+
+  function formatTrainingAge(years) {
+    const numYears = Number(years) || 0;
+    return numYears >= 10 ? '10+ Years' : `${numYears} Year${numYears === 1 ? '' : 's'}`;
+  }
+
+  function formatHeight(heightCm, heightIn) {
+    if (heightIn) {
+      const feet = Math.floor(heightIn / 12);
+      const inches = Math.round(heightIn % 12);
+      return `${feet} ft ${inches} in`;
+    }
+    if (heightCm) {
+      const totalInches = heightCm / 2.54;
+      const feet = Math.floor(totalInches / 12);
+      const inches = Math.round(totalInches % 12);
+      return `${feet} ft ${inches} in`;
+    }
+    return 'N/A';
+  }
+
+  function formatWeight(weightKg, weightLb) {
+    if (weightLb) return `${Math.round(weightLb)} lb`;
+    if (weightKg) return `${Math.round(weightKg * 2.205)} lb`;
+    return 'N/A';
+  }
+
+  function getAgeBarWidth(age) {
+    // Scale age 18-50 to 0-100%
+    const minAge = 18, maxAge = 50;
+    const clampedAge = Math.min(Math.max(age, minAge), maxAge);
+    return Math.round(((clampedAge - minAge) / (maxAge - minAge)) * 100);
+  }
+
+  function getHeightBarWidth(heightCm, heightIn) {
+    // Convert to inches for calculation
+    let inches = heightIn;
+    if (!inches && heightCm) inches = heightCm / 2.54;
+    if (!inches) return 50;
+    
+    // Scale height 60-78 inches (5'0" - 6'6") to 0-100%
+    const minHeight = 60, maxHeight = 78;
+    const clampedHeight = Math.min(Math.max(inches, minHeight), maxHeight);
+    return Math.round(((clampedHeight - minHeight) / (maxHeight - minHeight)) * 100);
+  }
+
+  function getWeightBarWidth(weightKg, weightLb) {
+    // Convert to pounds for calculation
+    let pounds = weightLb;
+    if (!pounds && weightKg) pounds = weightKg * 2.205;
+    if (!pounds) return 50;
+    
+    // Scale weight 120-250 lbs to 0-100%
+    const minWeight = 120, maxWeight = 250;
+    const clampedWeight = Math.min(Math.max(pounds, minWeight), maxWeight);
+    return Math.round(((clampedWeight - minWeight) / (maxWeight - minWeight)) * 100);
+  }
+
+  function buildFromCache() {
+    const c = loadCache();
+    STATE.cache = c;
+
+    if (!c || (!c.top3 && !c.tiers)) {
+      metaEl.textContent = 'No data yet.';
+      spotlightEl.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text2);">Loading leaderboard data...</div>';
+      inactiveEl.innerHTML = '';
+      return;
+    }
+
+    // Update meta text to be more descriptive
+    const tierName = STATE.tier === 'top' ? 'Top' : STATE.tier === 'mid' ? 'Mid' : 'Low';
+    metaEl.textContent = `Viewing the top 3 for the ${tierName} tier • Week ${c.weekKey || 'Current'} • Deadline ${c.deadlineDisplay || 'TBD'} • ${c.updating ? 'Updating every 10 min' : 'Frozen'}`;
+
+    // Support both formats: top3 (pre-sliced) or tiers (full data)
+    const tierData = c.top3 || c.tiers;
+    const list = (tierData[STATE.tier] || []).slice(0, 3); // Take top 3 if using full tiers data
+    STATE.players = list.map((it, idx) => {
+  const [imgA, imgB] = firstTwoPhotos(it.photos);
+  const photos = getAllPhotos(it.photos);
+  const score = Number(it.score) || 0;
+  return {
+    name: it.socialHandle || `@user${idx+1}`,
+    tierTheme: themeFromRank(it.rank), // FIXED: Use rank-based theme
+    imgA, imgB,
+    photos: photos, // Store all photos
+    flexscore: score,
+    stars: starsFromTrainingAge(it.trainingAgeYears),
+    entryId: it.entryId,
+    createdAtISO: it.createdAtISO,
+    rank: it.rank,
+    age: it.age || 25,
+    heightCm: it.heightCm,
+    heightIn: it.heightIn,
+    weightKg: it.weightKg,
+    weightLb: it.weightLb,
+    trainingAgeYears: it.trainingAgeYears || 1
+  };
+});
+
+    STATE.spotlightIndex = 0;
+    renderSpotlight();
+    renderInactiveCards();
+  }
+
+  function renderInactiveCards() {
+    const players = STATE.players;
+    inactiveEl.innerHTML = '';
+    if (!players.length) return;
+    const label = (r)=> r===1?'🥇 1st Place': r===2?'🥈 2nd Place': r===3?'🥉 3rd Place':'';
+
+    players.forEach((p,i)=>{
+      if (i===STATE.spotlightIndex) return;
+      const card = document.createElement('div');
+      card.className = `card mini-card theme-${p.tierTheme}`;
+      card.dataset.index = i;
+      card.innerHTML = `
+        <div class="mini-wrapper">
+          <div class="mini-name">${p.name}</div>
+          <div class="mini-image"><img src="${p.imgA || 'https://placehold.co/300x450?text=No+Photo'}" alt=""></div>
+          <div class="mini-score">${p.flexscore.toFixed(1)}</div>
+          <div class="mini-stars">
+            ${Array(p.stars).fill(`<img src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/${p.tierTheme}_star.png" alt="★">`).join('')}
+          </div>
+          <div class="mini-rank-label" style="color:var(--accent);">${label(p.rank)}</div>
+        </div>`;
+      card.addEventListener('click', ()=>{
+        STATE.spotlightIndex = i;
+        renderSpotlight();
+        renderInactiveCards();
+      });
+      inactiveEl.appendChild(card);
+    });
+  }
+
+  function renderSpotlight() {
+    const p = STATE.players[STATE.spotlightIndex];
+    if (!p) { 
+      spotlightEl.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text2);">No players in this tier yet.</div>'; 
+      return; 
+    }
+    const isFirst = p.rank === 1;
+
+    spotlightEl.innerHTML = `
+      <div class="spotlight-wrapper ${isFirst ? 'first-place' : ''}">
+        <div class="card spotlight-card theme-${p.tierTheme}">
+          <div class="gp-box name-container">${p.name}</div>
+
+          <div class="gp-box image-mask">
+  <div class="img-preloader">
+    <img src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/GP_2024_logo300x223.webp" alt="">
+  </div>
+  <div class="carousel">
+    ${p.photos && p.photos.length > 0 ? 
+      p.photos.map(photo => 
+        `<div class="slide"><img src="${photo || 'https://placehold.co/600x800?text=No+Photo'}" alt=""></div>`
+      ).join('') :
+      `<div class="slide"><img src="https://placehold.co/600x800?text=No+Photo" alt=""></div>`
+    }
+  </div>
+  <div class="dots"></div>
+  <img class="logo-overlay" src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/GP_2024_logo300x223.webp" alt="">
+</div>
+
+          <div class="gp-box flexscore-banner">
+            <div class="label">FLEXSCORE</div>
+            <div class="value">${p.flexscore.toFixed(1)}</div>
+          </div>
+
+          <div class="gp-box stats-container">
+            <div class="stat-row">
+              <div class="stat-head"><span class="stat-label">AGE</span><span class="stat-value">${p.age}</span></div>
+              <div class="rail"><div class="fill" style="width:${getAgeBarWidth(p.age)}%"></div></div>
+            </div>
+            <div class="stat-row">
+              <div class="stat-head"><span class="stat-label">HEIGHT</span><span class="stat-value">${formatHeight(p.heightCm, p.heightIn)}</span></div>
+              <div class="rail"><div class="fill" style="width:${getHeightBarWidth(p.heightCm, p.heightIn)}%"></div></div>
+            </div>
+            <div class="stat-row">
+              <div class="stat-head"><span class="stat-label">WEIGHT</span><span class="stat-value">${formatWeight(p.weightKg, p.weightLb)}</span></div>
+              <div class="rail"><div class="fill" style="width:${getWeightBarWidth(p.weightKg, p.weightLb)}%"></div></div>
+            </div>
+          </div>
+
+          <div class="gp-box star-zone">
+            <div class="star-row">
+              ${Array(p.stars).fill(`<img src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/${p.tierTheme}_star.png" alt="★">`).join('')}
+            </div>
+            <div class="train-label" style="font:600 14px/1 'Inter';color:var(--accent)">Training Age: ${formatTrainingAge(p.trainingAgeYears)}</div>
+          </div>
+
+          <div class="gp-box bottom-footer">GamePlan Player Card</div>
+        </div>
+        ${isFirst ? `<div class="spotlight-rank-label">🥇 1st Place</div>` : ''}
+      </div>
+    `;
+    setupCarousel();
+    
+    // Handle preloader animation
+    // Handle preloader animation
+setTimeout(() => {
+  const preloader = document.querySelector('.img-preloader');
+  if (preloader) {
+    preloader.addEventListener('animationend', (e) => {
+      if (e.animationName === 'irisReveal') {
+        preloader.remove();
+        // Clear images after iris animation completes
+        document.querySelectorAll('.spotlight-card .slide img').forEach(img => {
+          img.classList.add('clear');
+        });
+      }
+    });
+  }
+}, 0);
+  }
+
+  function setupCarousel() {
+    const spotlight = document.querySelector('.spotlight-card');
+    const carousel = spotlight?.querySelector('.carousel');
+    const slides = carousel?.children;
+    const dotsBox = spotlight?.querySelector('.dots');
+    if (!carousel || !slides || !dotsBox) return;
+
+    let idx = 0;
+    carousel.style.width = `${slides.length * 100}%`;
+    dotsBox.innerHTML = '';
+    [...slides].forEach((_, i) => {
+      const d = document.createElement('span');
+      d.className = 'dot' + (i === 0 ? ' active' : '');
+      d.onclick = () => go(i);
+      dotsBox.appendChild(d);
+    });
+    const dots = [...dotsBox.children];
+    function go(n){ 
+      idx = n; 
+      carousel.style.transform = `translateX(-${idx * 100}%)`; 
+      dots.forEach(d=>d.classList.remove('active')); 
+      dots[idx]?.classList.add('active'); 
+    }
+    spotlight.querySelector('.image-mask')?.addEventListener('click', () => go((idx + 1) % slides.length));
+  }
+
+  // Update tier switch active state
+  function updateTierButtons() {
+    tierSwitch.querySelectorAll('button[data-tier]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tier === STATE.tier);
+    });
+  }
+
+  // tier buttons rebuild from cache (no fetch)
+  tierSwitch.querySelectorAll('button[data-tier]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ 
+      STATE.tier = btn.dataset.tier; 
+      updateTierButtons();
+      buildFromCache(); 
+    });
+  });
+
+  // listen for provider updates
+  window.addEventListener('flexcheck:leaderboard-updated', (ev) => {
+    // if week changed or new savedAt, rebuild
+    const rec = ev.detail;
+    if (!STATE.cache || rec.savedAt !== STATE.cache.savedAt || rec.weekKey !== STATE.cache.weekKey) {
+      STATE.cache = rec;
+      buildFromCache();
+    }
+  });
+
+  // fallback timer: in case provider isn't present on this page
+  function scheduleFallback() {
+    if (STATE.timer) clearInterval(STATE.timer);
+    STATE.timer = setInterval(()=>{
+      const rec = loadCache();
+      if (rec && (!STATE.cache || rec.savedAt !== STATE.cache.savedAt)) {
+        STATE.cache = rec;
+        buildFromCache();
+      }
+    }, REFRESH_MS);
+  }
+
+  // boot
+  document.addEventListener('DOMContentLoaded', () => {
+    buildFromCache();     // render from whatever is in cache now
+    scheduleFallback();   // set up passive check
+  });
+})();
+</script>

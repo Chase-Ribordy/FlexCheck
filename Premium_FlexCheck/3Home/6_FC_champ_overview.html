@@ -1,0 +1,73 @@
+<!-- ░░░ FLEXCHECK INTRO (Scoped + Collision-Proof) ░░░ -->
+<style>
+  .fc-intro-container {
+    background: linear-gradient(to bottom right, #0f172a, #1e293b);
+    border: 1px solid #334155;
+    padding: 2rem 1.5rem;
+    border-radius: 1.5rem;
+    max-width: 780px;
+    margin: 3rem auto;
+    box-shadow: 0 0 24px rgba(56, 189, 248, 0.1);
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .fc-intro-container::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    width: 160%;
+    height: 200%;
+    background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent 60%);
+    z-index: 0;
+  }
+
+  .fc-intro-tagline {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .fc-intro-text {
+    font-size: 1.05rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .fc-intro-highlight {
+    display: inline-block;
+    margin-top: 1rem;
+    color: #f8fafc;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 600px) {
+    .fc-intro-tagline {
+      font-size: 1.5rem;
+    }
+
+    .fc-intro-text,
+    .fc-intro-highlight {
+      font-size: 0.75rem;
+    }
+  }
+</style>
+
+<div class="fc-intro-container">
+  <p class="fc-intro-tagline">Ready to Compete?</p>
+  <p class="fc-intro-text">
+    Learn how the game works to beat it.<br>
+    <span class="fc-intro-highlight">Click the sections below to learn more.</span>
+  </p>
+</div>

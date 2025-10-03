@@ -1,0 +1,341 @@
+<!-- 🔽 FAQ — Orange Glow Theme 🔽 -->
+<style>
+  .fc-faq-header {
+    background: linear-gradient(to bottom right, #231911, #271e0e);
+    border: 1px solid #fb923c;
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    box-shadow: 0 0 20px rgba(251, 146, 60, 0.15);
+    cursor: pointer;
+    transition: background 0.3s ease;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .fc-faq-header:hover {
+    background: linear-gradient(to bottom right, #2e1f13, #35210d);
+  }
+
+  .fc-faq-subheading {
+    font-size: 0.9rem;
+    color: #fdba74;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .fc-faq-heading {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #fb923c, #f97316);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.2;
+  }
+
+.expandable-content.fc-orange {
+  background: linear-gradient(145deg, #2e2114, #1e150b);
+  border: 1px solid #fb923c;
+  box-shadow: 0 0 16px rgba(251, 146, 60, 0.2);
+}
+
+  .expandable-content.open {
+    display: block;
+  }
+
+.faq-toggle-wrapper {
+  max-width: 540px;
+  margin: 2rem auto 1rem;
+  text-align: center;
+}
+
+.faq-toggle-btn {
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
+  background: #1e293b;
+  color: #facc15;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border-radius: 0.65rem;
+  padding: 0.65rem 1.25rem;
+  cursor: pointer;
+  transition: background 0.3s;
+  border: 1px solid #334155;
+}
+
+.faq-toggle-btn:hover {
+  background: #334155;
+}
+
+.faq-wrapper {
+  margin-top: 1.5rem;
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+  color: #e2e8f0;
+}
+
+.faq-wrapper.open {
+  display: block;
+  animation: fadeInFAQ 0.4s ease-in-out;
+}
+
+.faq-item {
+  border-bottom: 1px solid #334155;
+  padding: 0.85rem 0;
+  transition: background 0.2s;
+}
+
+.faq-question {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  position: relative;
+  padding-right: 1.5rem;
+  color: #f8fafc;
+  transition: color 0.3s;
+}
+
+.faq-question:hover {
+  color: #38bdf8;
+}
+
+.faq-question .faq-toggle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-weight: bold;
+  color: #94a3b8;
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.faq-item.open .faq-toggle {
+  transform: rotate(45deg);
+}
+
+.faq-answer {
+  display: none;
+  font-size: 0.9rem;
+  margin-top: 0.75rem;
+  line-height: 1.65;
+  background: #1e293b;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #334155;
+  color: #cbd5e1;
+}
+/* reveal the answer when its parent .faq-item gains .open */
+.faq-item.open .faq-answer {
+  display: block;
+}
+
+
+@keyframes fadeInFAQ {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+</style>
+
+<div class="fc-faq-header" style="--gp-arrow:#fbbf24;" onclick="toggleSection('faq')">
+  <div class="fc-faq-subheading">GamePlan Fitness</div>
+  <div class="fc-faq-heading">❓ FAQ</div>
+  <span class="gp-expand-arrow">
+    <svg width="20" height="9" viewBox="0 0 18 8" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="2,2 9,6 16,2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </span>
+</div>
+
+<div id="faq" class="expandable-content fc-orange">
+<!-- ░░░ FAQ TOGGLE + CONTENT ░░░ -->
+  <div class="faq-wrapper" id="faqWrapper">
+
+    <!-- Q1: What You Get -->
+    <div class="faq-item">
+      <div class="faq-question">
+        ✅ What do I get when I submit a FlexCheck?
+        <span class="faq-toggle">+</span>
+      </div>
+      <div class="faq-answer">
+        You’ll unlock your full <b>Premium FlexCheck Results</b>, including:
+        <ul style="margin-top:0.5rem;padding-left:1.2rem;">
+          <li>✅ Instant results + leaderboard placement</li>
+          <li>✅ Major & accessory muscle breakdowns</li>
+          <li>✅ Division fit % across 4 bodybuilding categories</li>
+          <li>✅ Aesthetic summary + feedback</li>
+          <li>✅ Biomechanics-based training suggestions</li>
+          <li>✅ Custom <b>Player Card</b> to compare with others</li>
+        </ul>
+<p style="margin-top:0.75rem">
+  🎟️ <b>Bonus:</b> Every submission also earns an entry into the weekly
+  <b>Re-Roll Raffle</b> — any entry from that week could be randomly selected for a <b>FREE prize</b>. Read the "Reroll Raffle" Challenge for more details:
+</p>
+<a href="https://www.gameplanfitness.com/flexcheck/flexcheck-player-card#Jomama" target="_blank" style="color:#ef4444;font-weight:600;">→ View the Challenges</a>
+      </div>
+    </div>
+
+    <!-- Q2: How to Improve -->
+    <div class="faq-item">
+      <div class="faq-question">
+        🔥 How do I improve my score?
+        <span class="faq-toggle">+</span>
+      </div>
+      <div class="faq-answer">
+        <b>What improves my FlexScore?</b><br>
+        Clear lighting, strong posing, symmetry, muscle visibility, and a clean background. Look intentional.
+        <br><br>
+        <b>Does flexing help?</b><br>
+        Yes — 95% of high scores are flexed. Don’t go loose unless it’s for the meme.
+        <br><br>
+        <b>What lowers my score?</b><br>
+        Higher body fat percentage, less muscle mass, less roundness. Other contributors include: Poor lighting, blurry or awkward photos, bad posture, covered physique.
+        <br><br>
+        <b>Are transformation photos helpful?</b><br>
+        Only if the “after” image is strong enough to score well by itself.
+        <br><br>
+        <b>Does showing my face matter?</b><br>
+        Not at all. We judge your physique, so cropping or blurring your face is totally fine. I cannot blur it for you.
+      </div>
+    </div>
+
+  <!-- Q2.5: Tier Selection -->
+    <div class="faq-item">
+      <div class="faq-question">
+        📊 How do I select my tier?
+        <span class="faq-toggle">+</span>
+      </div>
+      <div class="faq-answer">
+        You don't — it’s automatic. The algorithm sorts you based on your <b>FlexScore</b>.
+        <br><br>
+        <b>Why compete in Mid or Bot tier?</b><br>
+        Top tier isn’t the only path to glory. Mid and Bot tiers have their own battles and prizes:
+        <ul style="margin-top:0.5rem;padding-left:1.2rem;">
+          <li>💪 <b>Bot Tier</b> — “Cooked” physiques with the most room for improvement. Winning here is about the biggest comeback potential.</li>
+          <li>⚖️ <b>Mid Tier</b> — The most balanced physiques, sitting in the middle of the pack.</li>
+          <li>🏆 <b>Top Tier</b> — Highest-scoring physiques overall.</li>
+        </ul>
+        <b>How the formula works:</b><br>
+        <ul style="margin-top:0.5rem;padding-left:1.2rem;">
+          <li>Top tier → highest to lowest FlexScore</li>
+          <li>Bot tier → lowest to highest FlexScore</li>
+          <li>Mid tier → closest to the median (absolute value)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Q2.6: Winning Without Votes -->
+    <div class="faq-item">
+      <div class="faq-question">
+        🎯 Can I still win the prize if I never win the vote?
+        <span class="faq-toggle">+</span>
+      </div>
+      <div class="faq-answer">
+        Kind of — there’s a separate <b>easter egg prize</b> you can only unlock by completing <b>all of the Challenges</b>, even if you never win the weekly vote.
+        <br><br>
+        Think of it as the “side quest” of FlexCheck. If you can beat every challenge, you earn a special reward.
+        <br><br>
+        <a href="https://www.gameplanfitness.com/flexcheck/flexcheck-player-card#Jomama" target="_blank" style="color:#ef4444;font-weight:600;">→ View the Challenges</a>
+      </div>
+    </div>
+
+    <!-- Q3: Submission Format -->
+    <div class="faq-item">
+      <div class="faq-question">
+        📤 How should I format my submission?
+        <span class="faq-toggle">+</span>
+      </div>
+      <div class="faq-answer">
+        <b>How many photos should I submit?</b><br>
+        Between 3 to 6 — front, back, and side gives the best chance. Submitting just 1 is fine but less optimal. Keep in mind, your legs are part of the score! If they are not clearly shown, the score might be random.
+        <br><br>
+        <b>Can I update my submission?</b><br>
+        Yes — you can resubmit at any time before Thursday @ 7PM CT. Only the latest one counts.
+        <br><br>
+        <b>Should I reuse the same photos weekly?</b><br>
+        You can, but results may vary. Try new angles or lighting for better scores.
+        <br><br>
+        <b>What files work best?</b><br>
+        Standard JPG or PNG under 10MB. Avoid videos, collages, or low-res pics.
+      </div>
+    </div>
+
+    <!-- Q4: Weekly Participation -->
+    <div class="faq-item">
+      <div class="faq-question">
+        🔁 Can I enter again next week?
+        <span class="faq-toggle">+</span>
+      </div>
+      <div class="faq-answer">
+        <b>Can I enter every week?</b><br>
+        Absolutely. You can even enter multiple times in a week and try to win multiple tiers for the meme.
+        <br><br>
+        <b>Can I win more than once?</b><br>
+        Yes. Create a monopoly on victory.
+        <br><br>
+        <b>What if I already won?</b><br>
+        You can still compete.
+      </div>
+    </div>
+
+    <!-- Q5: Privacy -->
+    <div class="faq-item">
+      <div class="faq-question">
+        🕵️ Can I stay anonymous?
+        <span class="faq-toggle">+</span>
+      </div>
+      <div class="faq-answer">
+        Yes. If you skip adding a social media handle, you’ll be listed as <b>“Anonymous”</b>.
+        <br><br>
+        You’re also free to blur or crop your face — it won’t hurt your score.
+        <br><br>
+        Anonymous entries are still fully eligible to win.
+      </div>
+    </div>
+
+    <!-- Q6: Private Coaching -->
+    <div class="faq-item">
+      <div class="faq-question"">
+        💬 What if I want private coaching?
+        <span class="faq-toggle">+</span>
+      </div>
+      <div class="faq-answer">
+        You can upgrade to a <b>Private Physique Check</b> — a detailed, 1-on-1 video review of your body type, goals, and questions.
+        <br><br>
+        It’s personalized and confidential.
+        <br><br>
+        <a href="https://www.gameplanfitness.com/services/physique-check/" target="_blank" style="color:#22c55e;font-weight:600;">→ Get Personalized Coaching</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+  function toggleSection(id) {
+    const section = document.getElementById(id);
+    section.classList.toggle('open');
+  }
+
+  // One-open-at-a-time accordion
+  document.addEventListener('DOMContentLoaded', function () {
+    const wrapper = document.getElementById('faqWrapper');
+
+    wrapper.querySelectorAll('.faq-question').forEach(function (q) {
+      q.addEventListener('click', function () {
+        const item = this.parentNode;                  // .faq-item
+        const wasOpen = item.classList.contains('open');
+
+        // Close any other open items
+        wrapper.querySelectorAll('.faq-item.open').forEach(function (openItem) {
+          if (openItem !== item) openItem.classList.remove('open');
+        });
+
+        // Toggle the clicked item (re-open if it wasn’t already)
+        item.classList.toggle('open', !wasOpen);
+      });
+    });
+  });
+</script>

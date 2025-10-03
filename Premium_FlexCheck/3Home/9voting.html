@@ -1,0 +1,138 @@
+<!-- 🟢 Voting — Green Glow Theme -->
+<style>
+  /* 🟢 HEADER */
+  .fc-voting-header {
+    background: linear-gradient(to bottom right, #112317, #0e2715);
+    border: 1px solid #22c55e;
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
+    cursor: pointer;
+    transition: background 0.3s ease;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .fc-voting-header:hover {
+    background: linear-gradient(to bottom right, #142d1b, #11321b);
+  }
+
+  .fc-voting-subheading {
+    font-size: 0.9rem;
+    color: #86efac;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .fc-voting-heading {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.2;
+  }
+
+  /* 🟢 EXPANDABLE SECTION BASE */
+  .expandable-content {
+    display: none;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .expandable-content.open {
+    display: block;
+  }
+
+  /* ✅ GREEN THEME WRAPPER */
+.expandable-content.fc-green {
+    background: linear-gradient(145deg, #0e0416, #0e2416);
+  border: 1px solid #22c55e;
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.2);
+}
+
+</style>
+
+<!-- ✅ Voting Block -->
+<div class="fc-voting-header" style="--gp-arrow:#4ade80;" onclick="toggleSection('voting')">
+  <div class="fc-voting-subheading">GamePlan Fitness</div>
+  <div class="fc-voting-heading">🗳️ Voting</div>
+  <span class="gp-expand-arrow">
+    <svg width="20" height="9" viewBox="0 0 18 8" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="2,2 9,6 16,2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </span>
+</div>
+
+<div id="voting" class="expandable-content fc-green">
+
+  <!-- 📲 Step 1: Where & When -->
+  <div style="display:flex; align-items:flex-start; gap:0.75rem; margin-bottom:1.25rem;">
+    <div style="font-size:1.5rem;">📲</div>
+    <div>
+      <span style="color:#ffffff;"><b>Thursdays at 7PM CT</b></span> — voting opens on IG Stories at 
+      <a href="https://instagram.com/chase_ribordy" target="_blank" style="color:#38bdf8; font-weight:600;">@chase_ribordy</a>
+      <ul style="margin:0.5rem 0 0 1.2rem; padding:0; font-size:0.9rem;">
+        <li style="color:#ffffff;"><b>Voting is FREE</b></li>
+        <li style="color:#ffffff;"><b>Open for 24 hours</b></li>
+        <li style="color:#cbd5e1;"><b>3 polls</b> — one for each tier (Top, Mid, Bot)</li>
+        <li style="color:#94a3b8;">Competitor's FlexCheck pics are posted on story and then you vote however you want</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 🏆 Step 2: Who You're Voting On -->
+  <div style="display:flex; align-items:flex-start; gap:0.75rem; margin-bottom:1.25rem;">
+    <div style="font-size:1.5rem;">🏆</div>
+    <div>
+      You’ll vote between the <span style="color:#ffffff;"><b>Top 3 FlexChecks in each tier</b></span>
+      <ul style="margin:0.5rem 0 0 1.2rem; padding:0; font-size:0.9rem;">
+        <li style="color:#ffffff;"><b>Top:</b> <span style="color:#cbd5e1;">"Best Physique"</span></li>
+        <li style="color:#ffffff;"><b>Mid:</b> <span style="color:#cbd5e1;">"Relatable Physique"</span></li>
+        <li style="color:#ffffff;"><b>Bot:</b> <span style="color:#cbd5e1;">"Most Cooked"</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 📊 Step 3: Weekly Winners -->
+  <div style="display:flex; align-items:flex-start; gap:0.75rem; margin-bottom:1.25rem;">
+    <div style="font-size:1.5rem;">📊</div>
+    <div>
+      The winner of each tier becomes a <span style="color:#ffffff;"><b>Weekly Winner</b></span> and advances to the 
+      <span style="color:#cbd5e1;">Monthly Semifinals</span>.
+    </div>
+  </div>
+
+  <!-- ⚔️ Step 4: The Showdown -->
+  <div style="display:flex; align-items:flex-start; gap:0.75rem; margin-bottom:1.25rem;">
+    <div style="font-size:1.5rem;">⚔️</div>
+    <div>
+      Semifinalists battle in <span style="color:#ffffff;"><b>LIVE Physique Battles</b></span> — single elimination style.
+    </div>
+  </div>
+
+  <!-- 🎥 Step 5: Final Judgment -->
+  <div style="display:flex; align-items:flex-start; gap:0.75rem;">
+    <div style="font-size:1.5rem;">🎥</div>
+    <div>
+      <span style="color:#ffffff;"><b>Livestream starts Friday @7PM CT</b></span> — I judge the finals LIVE and crown the Monthly Champions. 
+      <br><span style="color:#cbd5e1;">Voting closes as the LIVE stream begins, so don’t miss it.</span>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div style="margin-top:2rem; text-align:center;">
+    <a href="https://instagram.com/chase_ribordy" target="_blank" style="display:inline-block; padding:0.75rem 1.5rem; background:#38bdf8; color:#0f172a; border-radius:0.5rem; font-weight:bold; font-size:1rem;">📲 Vote This Friday on IG →</a>
+  </div>
+</div>
+
+
+<script>
+  function toggleSection(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('open');
+  }
+</script>
