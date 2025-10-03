@@ -1,0 +1,119 @@
+<!-- ░░░  GAMEPLAN flexCHECK RESULTS  ░░░ -->
+<style>
+  /* ----- dark HUD card ----- */
+  .gpflex{font-family:Inter,system-ui,sans-serif;
+          background:#0d0d11;color:#e5e7eb;
+          max-width:450px;margin:2rem auto;padding:2rem;
+          border-radius:1.25rem;box-shadow:0 0 28px rgba(0,0,0,.65)}
+  .gpflex h1{background:linear-gradient(90deg,#0ea5e9,#38bdf8,#22c55e);
+             -webkit-background-clip:text;color:transparent;
+             font-size:1.45rem;font-weight:800;letter-spacing:.03em;
+             text-align:center;margin-bottom:.2rem}
+  /* score — subtle glow, no neon blur */
+  .gpscore{font-size:4rem;font-weight:900;text-align:center;
+           color:#38bdf8;text-shadow:0 0 4px rgba(56,189,248,.45)}
+  /* loader ring */
+  .gpscore.loading::after{content:'';display:block;margin:1.4rem auto 0;
+           width:32px;height:32px;border:4px solid #38bdf8;
+           border-top-color:transparent;border-radius:50%;
+           animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  /* CTA pulse */
+  @keyframes pulse{0%,100%{transform:scale(.97)}50%{transform:scale(1.03)}}
+  .gpcta{display:block;width:100%;padding:.9rem 1rem;margin-top:2.3rem;
+         background:#fbbf24;border:none;border-radius:.75rem;color:#0d0d11;
+         font-weight:700;font-size:.95rem;text-align:center;cursor:pointer;
+         animation:pulse 3s ease-in-out infinite;transition:background .2s}
+  .gpcta:hover{background:#facc15}
+  /* benefits list */
+  .gpsub ul{margin-top:1.2rem;list-style:none;padding:0;
+            font-size:.82rem;line-height:1.45}
+  .gpsub li::before{content:'◆';margin-right:.45rem;color:#facc15;font-size:.7rem}
+  /* canvas */
+  .gpflex canvas{margin-top:1.3rem}
+</style>
+
+<div class="gpflex">
+  <h1>GamePlan FlexScore</h1>
+  <p id="score" class="gpscore loading"></p>
+
+  <h3 style="margin-top:1.4rem;font-size:.9rem;font-weight:600;
+             letter-spacing:.04em;color:#94a3b8;text-transform:uppercase">
+    Your Results
+  </h3>
+  <canvas id="bars" height="220"></canvas>
+
+  <h3 style="margin-top:1.6rem;font-size:.93rem;font-weight:600;
+             letter-spacing:.04em;color:#94a3b8">Summary</h3>
+  <p id="summary" style="margin-top:.4rem;font-size:.9rem;line-height:1.55"></p>
+
+<div class="gpsub">
+  <a id="cta" href="https://www.gameplanfitness.com/premium-flexcheck"
+     class="gpcta">
+     Unlock Premium FlexCheck →
+  </a>
+  <ul>
+    <li>Upload up <strong>to 6 angles</strong> for finer detail</li>
+    <li>Division-specific readiness &amp; improvements</li>
+    <li>Detailed results (Arms = Biceps, Triceps, Forearms) &amp; takeaways</li>
+    <li>Join the <strong>leaderboard</strong> &amp; ranking</li>
+    <li>See how you <strong>stack up</strong> against others</li>
+  </ul>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+(async ()=>{
+  /* ---------- constants ---------- */
+  const ENDPOINT    = 'https://script.google.com/macros/s/AKfycbzI8AhHWmaRAEmzG3lJvmLXnEqGYpdPdQVLPD3bi3-NVAOaeO-4ZuMu3s_IBhFqa6BBpA/exec';
+  const PREMIUM_URL = 'https://www.gameplanfitness.com/premium-flexcheck';
+
+  const ticket = new URLSearchParams(location.search).get('ticket');
+  if(!ticket){document.querySelector('.gpflex').innerHTML='Missing ticket.';return;}
+
+  /* ---------- poll GAS ---------- */
+  for(let i=0;i<30;i++){
+    const data = await fetch(`${ENDPOINT}?ticket=${ticket}`).then(r=>r.json());
+    if(!data.pending){ render(data); return; }
+    await new Promise(r=>setTimeout(r,2000));
+  }
+  document.querySelector('.gpflex').innerHTML =
+    '<p style="text-align:center">Still processing – check your inbox shortly.</p>';
+
+  /* ---------- render ---------- */
+  function render(j){
+    const scoreEl = document.getElementById('score');
+    scoreEl.classList.remove('loading');
+
+    /* count-up effect */
+    let cur=0; const inc=Math.max(1,Math.round(j.score/50));
+    const id=setInterval(()=>{
+      cur+=inc; if(cur>=j.score){cur=j.score;clearInterval(id);}
+      scoreEl.textContent=cur;
+    },18);
+
+    /* summary */
+    document.getElementById('summary').textContent = j.summary;
+
+    /* chart (skip N/A) */
+    const labels=[], values=[];
+    for(const [k,v] of Object.entries(j.muscleRatings||{})){
+      if(typeof v==='number'){ labels.push(k); values.push(v); }
+    }
+    new Chart(document.getElementById('bars'),{
+      type:'bar',
+      data:{labels,datasets:[{data:values,background:'#3b82f6'}]},
+      options:{
+        responsive:true,
+        plugins:{legend:{display:false}},
+        scales:{y:{beginAtZero:true,max:100,
+                   grid:{color:'rgba(255,255,255,.08)'}}}
+      }
+    });
+  }
+
+  /* CTA navigation */
+  document.getElementById('cta').onclick=()=>location.href=PREMIUM_URL;
+})();
+</script>

@@ -1,0 +1,52 @@
+<h2 id="flex-status"
+    style="text-align:center;margin:4rem 0;font-family:sans-serif">
+  Checking your ticket…
+</h2>
+
+<div id="flexwrap" style="display:none">
+  [fluentform id="13"]        <!-- keep your Fluent Form shortcode -->
+</div>
+
+<script>
+(async () => {
+
+  /* -------------------- query params -------------------- */
+  const qs = new URLSearchParams(location.search),
+        ticket = qs.get('ticket'),
+        email  = qs.get('email');
+
+  if (!ticket || !email){
+    document.getElementById('flex-status').textContent =
+      '🔒 Missing ticket / email.';
+    return;
+  }
+
+  /* ---------- your current GAS deployment URL ---------- */
+  const ENDPOINT =
+    'https://script.google.com/macros/s/AKfycbyWdGurIz424Nqx3fcIg43BrlkIhVoAa_px2ylYQUYXu3cLt_Siozhq_wk1AhnMwYK7fA/exec';
+
+  try{
+    const v = await fetch(`${ENDPOINT}?ticket=${ticket}&email=${email}`)
+                     .then(r => r.json());
+
+    if (!v.ok){
+      document.getElementById('flex-status').textContent =
+        '⛔ ' + v.error.replace(/_/g,' ');
+      return;
+    }
+
+    /* ---------- unlock the form ---------- */
+    document.getElementById('flex-status').remove();
+    const wrap = document.getElementById('flexwrap');
+    wrap.style.display = '';
+    /* populate hidden fields the webhook expects */
+    wrap.querySelector('input[name="ticket"]').value = ticket;
+    wrap.querySelector('input[name="email"]') .value = email;
+
+  }catch(err){
+    console.error(err);
+    document.getElementById('flex-status').textContent =
+      '⚠️ Validator unavailable – try later.';
+  }
+})();
+</script>
