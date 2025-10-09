@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexCheck Championship Bracket</title>
+    <style>
+      
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #27BEFA;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(39, 190, 250, 0.5);
+        }
+
+        .header p {
+            color: #8b9dc3;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        /* Tier Selector */
+        .tier-selector {
+            display: flex;
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 4px;
+            gap: 2px;
+            margin-bottom: 30px;
+        }
+
+        .tier-btn {
+            flex: 1;
+            background: transparent;
+            color: #94a3b8;
+            border: none;
+            padding: 15px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tier-btn:hover {
+            color: #e2e8f0;
+            background: #334155;
+        }
+
+        .tier-btn.active {
+            background: #27BEFA;
+            color: #0b1630;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(39,190,250,0.3);
+        }
+
+        /* Bracket Container */
+        .bracket-wrapper {
+            background: #0b1630;
+            border: 2px solid #27BEFA;
+            border-radius: 12px;
+            padding: 30px 20px;
+            box-shadow: 0 0 14px rgba(39,190,250,0.2);
+        }
+
+        .bracket {
+            display: flex;
+            flex-direction: column;
+            gap: 35px;
+        }
+
+        /* Round Section */
+        .round-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .round-title {
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #27BEFA;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(39, 190, 250, 0.5);
+        }
+
+        .round-matches {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .match {
+            display: flex;
+            gap: 12px;
+            position: relative;
+            align-items: center;
+        }
+
+        .match::after {
+            content: 'VS';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: #0a0e27;
+            border: 2px solid #27BEFA;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #27BEFA;
+            z-index: 10;
+            box-shadow: 0 0 15px rgba(39, 190, 250, 0.4);
+        }
+
+        /* Competitor Card */
+        .competitor-card {
+            flex: 1;
+            background: #1e293b;
+            border: 2px solid rgba(39, 190, 250, 0.4);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .competitor-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 25px rgba(39, 190, 250, 0.3);
+            border-color: #27BEFA;
+        }
+
+        .competitor-card.winner {
+            background: rgba(39, 190, 250, 0.1);
+            border-color: #27BEFA;
+            box-shadow: 0 0 25px rgba(39, 190, 250, 0.4);
+        }
+
+        .competitor-card.winner::after {
+            content: '✓';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #27BEFA;
+            color: #0a0e27;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 0 15px rgba(39, 190, 250, 0.6);
+        }
+
+        .competitor-card.eliminated {
+            opacity: 0.3;
+            cursor: default;
+            border-color: rgba(139, 157, 195, 0.3);
+        }
+
+        .competitor-card.eliminated:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .competitor-card.eliminated .competitor-name {
+            text-decoration: line-through;
+        }
+
+        .competitor-card.empty {
+            background: rgba(15, 23, 42, 0.4);
+            border-style: dashed;
+            border-color: rgba(139, 157, 195, 0.3);
+            cursor: default;
+        }
+
+        .competitor-card.empty:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: rgba(139, 157, 195, 0.3);
+        }
+
+        .competitor-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #27BEFA, #0096c7);
+            color: #0a0e27;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0 auto 10px;
+            box-shadow: 0 0 15px rgba(39, 190, 250, 0.4);
+        }
+
+        .competitor-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .competitor-label {
+            font-size: 0.75rem;
+            color: #8b9dc3;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Semifinals */
+        .semifinals {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .semifinal-card {
+            flex: 1;
+        }
+
+        /* Champion */
+        .champion-section {
+            display: flex;
+            justify-content: center;
+        }
+
+.champion-card {
+    background: rgba(255, 215, 0, 0.1);
+    border: 3px solid #FFD700;
+    max-width: 300px;
+    width: 100%;
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+    position: relative;
+}
+
+.champion-card .competitor-name {
+    font-size: 1.2rem;
+    color: #FFD700;
+}
+
+        /* Divider */
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(39, 190, 250, 0.5), transparent);
+            margin: 10px 0;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #27BEFA;
+            font-size: 1.1rem;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        /* PLAYER CARD MODAL - Copied from Top 10 Leaderboard */
+        .player-card-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,.85);
+            backdrop-filter: blur(4px);
+        }
+
+        .player-card-popup {
+            position: relative;
+            width: min(95vw, 500px);
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 20px;
+            color: #e2e8f0;
+            background: linear-gradient(145deg, #0f1b33 0%, #0b1630 100%);
+            border: 1px solid rgba(39,190,250,.2);
+            box-shadow: 0 0 0 1px rgba(39,190,250,.1), 0 20px 40px rgba(0,0,0,.6);
+            font-family: Inter, sans-serif;
+        }
+
+        .close-popup {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 10;
+            background: rgba(0,0,0,.6);
+            border: 1px solid rgba(255,255,255,.1);
+            color: #fff;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            padding: 8px 10px;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+            transition: all .2s ease;
+        }
+
+        .close-popup:hover {
+            background: rgba(0,0,0,.8);
+            transform: scale(1.05);
+        }
+
+        .pc-header {
+            position: absolute;
+            top: 16px;
+            left: 20px;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pc-handle {
+            background: rgba(0,0,0,.7);
+            border: 1px solid rgba(255,255,255,.1);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #e2e8f0;
+            backdrop-filter: blur(8px);
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .pc-photos {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+        }
+
+        .pc-strip {
+            display: flex;
+            height: 100%;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+            scroll-behavior: smooth;
+        }
+
+        .pc-strip::-webkit-scrollbar { display: none; }
+
+        .pc-slide {
+            flex: 0 0 100%;
+            height: 100%;
+            scroll-snap-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pc-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            cursor: pointer;
+            transition: transform .2s ease;
+        }
+
+        .pc-slide img:hover { transform: scale(1.02); }
+
+        .pc-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 6;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,.2);
+            background: rgba(0,0,0,.6);
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            backdrop-filter: blur(8px);
+            transition: all .2s ease;
+        }
+
+        .pc-nav:hover {
+            background: rgba(0,0,0,.8);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .pc-nav.prev { left: 16px; }
+        .pc-nav.next { right: 16px; }
+        .pc-nav.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-50%) scale(0.8);
+        }
+
+        .pc-dots {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+            z-index: 6;
+        }
+
+        .pc-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.4);
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+
+        .pc-dot.active {
+            background: #27BEFA;
+            box-shadow: 0 0 8px rgba(39,190,250,.6);
+        }
+
+        .pc-content { padding: 24px; }
+
+        .pc-score-wrap {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .pc-score-label {
+            font-size: 13px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .pc-score-big {
+            font-size: 32px;
+            font-weight: 900;
+            color: #27BEFA;
+            text-shadow: 0 0 20px rgba(39,190,250,.4);
+        }
+
+        .pc-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .pc-stat {
+            background: rgba(15,27,51,.6);
+            border: 1px solid rgba(39,190,250,.1);
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+            transition: all .2s ease;
+        }
+
+        .pc-stat:hover {
+            border-color: rgba(39,190,250,.3);
+            background: rgba(15,27,51,.8);
+        }
+
+        .pc-stat .k {
+            display: block;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            font-weight: 500;
+        }
+
+        .pc-stat .v {
+            display: block;
+            font-weight: 700;
+            color: #e2e8f0;
+            font-size: 15px;
+        }
+
+        .unit-toggle {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 16px;
+        }
+
+        .unit-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            background: rgba(15,27,51,.6);
+            color: #94a3b8;
+            border: 1px solid rgba(39,190,250,.2);
+            font-weight: 600;
+            font-size: 12px;
+            transition: all .2s ease;
+        }
+
+        .unit-btn:hover {
+            background: rgba(15,27,51,.8);
+            transform: translateY(-1px);
+        }
+
+        .unit-btn.is-active {
+            background: linear-gradient(90deg, #27BEFA, #38bdf8);
+            color: #041324;
+            border-color: rgba(39,190,250,.6);
+            box-shadow: 0 0 12px rgba(39,190,250,.3);
+        }
+
+        .pc-muscle-section {
+            margin: 20px 0;
+            padding: 16px;
+            background: rgba(15,27,51,.4);
+            border: 1px solid rgba(39,190,250,.15);
+            border-radius: 12px;
+        }
+
+        .pc-section-title {
+            margin: 0 0 12px 0;
+            color: #27BEFA;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .pc-muscle-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .pc-muscle-item {
+            background: rgba(11,22,48,.6);
+            border: 1px solid rgba(39,190,250,.1);
+            border-radius: 8px;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .muscle-name {
+            font-size: 12px;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .muscle-rating {
+            font-size: 13px;
+            font-weight: 700;
+            color: #27BEFA;
+        }
+
+        .fullscreen-image-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(0,0,0,.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .fullscreen-image-container {
+            position: relative;
+            max-width: 95vw;
+            max-height: 95vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fullscreen-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 0 40px rgba(39,190,250,.3);
+        }
+
+        .fullscreen-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,.8);
+            border: 1px solid rgba(255,255,255,.2);
+            color: #fff;
+            cursor: pointer;
+            font-size: 24px;
+            line-height: 1;
+            padding: 12px 15px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+            transition: all .2s ease;
+        }
+
+        .fullscreen-close:hover {
+            background: rgba(0,0,0,.9);
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.5rem; }
+            .tier-btn { padding: 12px; font-size: 0.85rem; }
+            .bracket-wrapper { padding: 20px 15px; }
+            .competitor-card { padding: 15px; min-height: 90px; }
+        }
+    </style>
+
+    <div class="container">
+        <div class="header">
+            <h1>💪 FlexCheck Championship</h1>
+            <p>Single Elimination Tournament</p>
+        </div>
+
+        <!-- Tier Selector -->
+        <div class="tier-selector">
+            <button class="tier-btn active" onclick="switchTier('TOP')">Top Tier</button>
+            <button class="tier-btn" onclick="switchTier('MID')">Mid Tier</button>
+            <button class="tier-btn" onclick="switchTier('BOT')">Bot Tier</button>
+        </div>
+
+<!-- Add after the tier-selector div -->
+<div style="text-align: center; margin-bottom: 15px;">
+    <button onclick="forceRefresh()" style="
+        background: linear-gradient(135deg, #27BEFA, #0096c7);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        🔄 Refresh Bracket
+    </button>
+</div>
+
+        <!-- Bracket Display -->
+        <div id="loading" class="loading">Loading bracket data</div>
+        <div class="bracket-wrapper" id="bracket-wrapper" style="display: none;">
+            <div id="bracket-container"></div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // 🔥 PASTE YOUR GOOGLE APPS SCRIPT URL HERE
+        // ============================================
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbzCsgdQb25UFDUTDV89OgfpuCQEcrhLPDv3Hb4FilprDjCW4OBWe3cMbJUHSAxG76bY/exec';
+
+        // ============================================
+        // State Management
+        // ============================================
+        const CACHE_KEY = 'FC_bracket';
+        const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+        
+        let tournamentData = null;
+        let currentTier = 'TOP';
+
+        // ============================================
+        // Initialize
+        // ============================================
+        window.onload = function() {
+            loadTournamentData();
+        };
+
+        async function loadTournamentData() {
+            // Try cache first
+            const cached = loadFromCache();
+            if (cached && !isCacheStale(cached)) {
+                console.log('Using cached data');
+                setTournamentData(cached.data);
+                return;
+            }
+
+            // Fetch from Google Apps Script
+            console.log('Fetching fresh data from Google Apps Script');
+            try {
+                const response = await fetch(GAS_URL, {
+                    method: 'GET',
+                    cache: 'no-store'
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                saveToCache(data);
+                setTournamentData(data);
+            } catch (error) {
+                handleError(error);
+            }
+        }
+
+        function setTournamentData(data) {
+            tournamentData = data;
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('bracket-wrapper').style.display = 'block';
+            displayBracket(currentTier);
+        }
+
+        function handleError(error) {
+            console.error('Error loading tournament data:', error);
+            document.getElementById('loading').innerHTML = 
+                `<div style="color: #ff4444;">Error loading data. Please try again later.</div>`;
+        }
+
+        // ============================================
+        // Cache Management
+        // ============================================
+        function saveToCache(data) {
+            const cache = {
+                data: data,
+                timestamp: Date.now()
+            };
+            try {
+                localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+            } catch (e) {
+                console.warn('Failed to save to cache:', e);
+            }
+        }
+
+        function loadFromCache() {
+            try {
+                const cached = localStorage.getItem(CACHE_KEY);
+                return cached ? JSON.parse(cached) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function isCacheStale(cached) {
+            return (Date.now() - cached.timestamp) > CACHE_TTL;
+        }
+
+        // ============================================
+        // Tier Switching
+        // ============================================
+        function switchTier(tier) {
+            currentTier = tier;
+            
+            document.querySelectorAll('.tier-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            displayBracket(tier);
+        }
+
+        // ============================================
+        // Bracket Display
+        // ============================================
+        function displayBracket(tier) {
+            const bracket = tournamentData.brackets.find(b => b.tier === tier);
+            if (!bracket) return;
+
+            const container = document.getElementById('bracket-container');
+            
+            container.innerHTML = `
+                <div class="bracket">
+                    <!-- Opening Round -->
+                    <div class="round-section">
+<div class="round-title">⚔️ Weekly Winners</div>
+                        <div class="round-matches">
+                            <div class="match">
+                                ${createCompetitorCard(bracket.wk1, bracket.semifinal1, 'Week 1')}
+                                ${createCompetitorCard(bracket.wk2, bracket.semifinal1, 'Week 2')}
+                            </div>
+                            <div class="match">
+                                ${createCompetitorCard(bracket.wk3, bracket.semifinal2, 'Week 3')}
+                                ${createCompetitorCard(bracket.wk4, bracket.semifinal2, 'Week 4')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- Semifinals -->
+                    <div class="round-section">
+<div class="round-title">🔥 Championship</div>
+                        <div class="semifinals">
+                            ${createSemifinalCard(bracket.semifinal1, bracket.champion, 'Semifinal 1')}
+                            ${createSemifinalCard(bracket.semifinal2, bracket.champion, 'Semifinal 2')}
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- Champion -->
+                    <div class="round-section">
+                        <div class="round-title">🏆 Champion</div>
+                        <div class="champion-section">
+                            ${createChampionCard(bracket.champion)}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createCompetitorCard(entryId, winner, label) {
+            if (!entryId) {
+                return `
+                    <div class="competitor-card empty">
+                        <div class="competitor-avatar">?</div>
+                        <div class="competitor-name">TBD</div>
+                        <div class="competitor-label">${label}</div>
+                    </div>
+                `;
+            }
+
+            const competitor = tournamentData.competitors[entryId];
+            if (!competitor) {
+                return `
+                    <div class="competitor-card empty">
+                        <div class="competitor-avatar">?</div>
+                        <div class="competitor-name">${entryId}</div>
+                        <div class="competitor-label">${label}</div>
+                    </div>
+                `;
+            }
+
+            const isEliminated = winner && entryId !== winner;
+            const isWinner = winner && winner === entryId;
+            
+            let cardClass = 'competitor-card';
+            if (isEliminated) cardClass += ' eliminated';
+            if (isWinner) cardClass += ' winner';
+            
+            const displayName = competitor.socialHandle || competitor.ticket || entryId;
+            const initial = displayName.charAt(0).toUpperCase();
+            
+            return `
+                <div class="${cardClass}" onclick="openPlayerModal('${entryId}')">
+                    <div class="competitor-avatar">${initial}</div>
+                    <div class="competitor-name">${displayName}</div>
+                    <div class="competitor-label">${label}</div>
+                </div>
+            `;
+        }
+
+        function createSemifinalCard(entryId, winner, label) {
+            return createCompetitorCard(entryId, winner, label);
+        }
+
+        function createChampionCard(entryId) {
+            if (!entryId) {
+                return `
+                    <div class="competitor-card champion-card empty">
+                        <div class="competitor-avatar">?</div>
+                        <div class="competitor-name">TBD</div>
+                        <div class="competitor-label">Awaiting Champion</div>
+                    </div>
+                `;
+            }
+
+            const competitor = tournamentData.competitors[entryId];
+            const displayName = competitor?.socialHandle || competitor?.ticket || entryId;
+            const initial = displayName.charAt(0).toUpperCase();
+            
+            return `
+                <div class="competitor-card champion-card" onclick="openPlayerModal('${entryId}')">
+<div class="competitor-avatar" style="background: linear-gradient(135deg, #000000, #FFA500); font-size: 1.5rem;">👑</div>                    <div class="competitor-name">${displayName}</div>
+                    <div class="competitor-label">Champion</div>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // Player Modal (from Top 10 Leaderboard)
+        // ============================================
+        function openPlayerModal(entryId) {
+            const player = tournamentData.competitors[entryId];
+            if (!player) return;
+
+            const photos = getAllPhotos(player.photos);
+            const handle = player.socialHandle || player.ticket || 'Unknown';
+            
+            let muscleRatings = {};
+            try {
+                muscleRatings = JSON.parse(player.muscleRatings || '{}');
+            } catch (e) {}
+            
+            const toNum = (val) => {
+                const n = (typeof val === 'number') ? val : Number(val);
+                return Number.isFinite(n) ? n : null;
+            };
+
+            const cm = toNum(player.heightCm);
+            let inches = toNum(player.heightIn);
+            if (!Number.isFinite(inches) && Number.isFinite(cm)) inches = cm / 2.54;
+
+            const fmtHeightMetric = (cmVal) => Number.isFinite(cmVal) ? `${cmVal.toFixed(1)} cm` : '—';
+            const fmtHeightImperial = (inVal) => {
+                if (!Number.isFinite(inVal)) return '—';
+                const ft = Math.floor(inVal/12);
+                const re = (inVal % 12).toFixed(1);
+                return `${ft}′ ${re}″`;
+            };
+
+            const heightMetric = fmtHeightMetric(cm);
+            const heightImperial = fmtHeightImperial(inches);
+
+            const kg = toNum(player.weightKg);
+            let lb = toNum(player.weightLb);
+            if (!Number.isFinite(lb) && Number.isFinite(kg)) lb = kg * 2.2046226218;
+
+            const weightMetric = Number.isFinite(kg) ? `${kg.toFixed(1)} kg` : '—';
+            const weightImperial = Number.isFinite(lb) ? `${lb.toFixed(1)} lb` : '—';
+
+            const dots = photos.map((_, i) => `<div class="pc-dot ${i === 0 ? 'active' : ''}" data-slide="${i}"></div>`).join('');
+
+            const overlay = document.createElement('div');
+            overlay.className = 'player-card-overlay';
+            
+            overlay.innerHTML = `
+                <div class="player-card-popup">
+                    <button class="close-popup">×</button>
+
+                    <div class="pc-header">
+                        <div class="pc-handle">@${handle.replace(/^@/,'')}</div>
+                    </div>
+
+                    <div class="pc-photos">
+                        ${photos.length ? `
+                            <button class="pc-nav prev">‹</button>
+                            <div class="pc-strip">
+                                ${photos.map(url => `
+                                    <div class="pc-slide"><img src="${url}" alt="Player photo" data-fullscreen="${url}"></div>
+                                `).join('')}
+                            </div>
+                            <button class="pc-nav next">›</button>
+                            <div class="pc-dots">${dots}</div>
+                        ` : `
+                            <div class="pc-strip">
+                                <div class="pc-slide">
+                                    <img src="https://placehold.co/600x800?text=No+Photos" alt="No photos">
+                                </div>
+                            </div>
+                        `}
+                    </div>
+
+                    <div class="pc-content">
+                        <div class="pc-score-wrap">
+                            <div class="pc-score-label">FlexScore</div>
+                            <div class="pc-score-big">${player.score?.toFixed(1) || '—'}</div>
+                        </div>
+
+                        <div class="pc-stats">
+                            <div class="pc-stat"><span class="k">Age</span><span class="v">${player.age ?? '—'}</span></div>
+                            <div class="pc-stat"><span class="k">Training Years</span><span class="v">${player.trainingAgeYears ?? '—'}</span></div>
+                            <div class="pc-stat">
+                                <span class="k">Height</span>
+                                <span class="v" id="pc-height" data-metric="${heightMetric}" data-imperial="${heightImperial}">${heightMetric}</span>
+                            </div>
+                            <div class="pc-stat">
+                                <span class="k">Weight</span>
+                                <span class="v" id="pc-weight" data-metric="${weightMetric}" data-imperial="${weightImperial}">${weightMetric}</span>
+                            </div>
+                        </div>
+
+                        <div class="unit-toggle">
+                            <button class="unit-btn is-active" data-unit="metric">
+                                <span>📏</span><span>cm / kg</span>
+                            </button>
+                            <button class="unit-btn" data-unit="imperial">
+                                <span>⚖️</span><span>ft·in / lb</span>
+                            </button>
+                        </div>
+
+                        ${Object.keys(muscleRatings.major || {}).length > 0 ? `
+                            <div class="pc-muscle-section">
+                                <h4 class="pc-section-title">💪 Major Muscle Groups</h4>
+                                <div class="pc-muscle-grid">
+                                    ${Object.entries(muscleRatings.major || {}).map(([muscle, rating]) => `
+                                        <div class="pc-muscle-item">
+                                            <span class="muscle-name">${muscle}</span>
+                                            <span class="muscle-rating">${rating}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+
+            const close = () => overlay.remove();
+            overlay.querySelector('.close-popup').addEventListener('click', close);
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+
+            setupCarousel(overlay, photos);
+            setupUnitToggle(overlay);
+
+            document.body.appendChild(overlay);
+        }
+
+        function setupCarousel(overlay, photos) {
+            const strip = overlay.querySelector('.pc-strip');
+            if (!strip || !photos.length) return;
+
+            const slides = Array.from(strip.querySelectorAll('.pc-slide'));
+            const prev = overlay.querySelector('.pc-nav.prev');
+            const next = overlay.querySelector('.pc-nav.next');
+            const dotEls = Array.from(overlay.querySelectorAll('.pc-dot'));
+            let idx = 0;
+            
+            function updateArrows() {
+                if (prev) prev.classList.toggle('hidden', idx === 0);
+                if (next) next.classList.toggle('hidden', idx === slides.length - 1);
+            }
+            
+            function goTo(i) {
+                idx = Math.max(0, Math.min(slides.length - 1, i));
+                slides[idx]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                dotEls.forEach((d, di) => d.classList.toggle('active', di === idx));
+                updateArrows();
+            }
+            
+            prev?.addEventListener('click', () => goTo(idx - 1));
+            next?.addEventListener('click', () => goTo(idx + 1));
+            dotEls.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
+
+            slides.forEach(slide => {
+                const img = slide.querySelector('img[data-fullscreen]');
+                if (img) {
+                    img.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        showFullscreenImage(img.dataset.fullscreen);
+                    });
+                }
+            });
+
+            setTimeout(() => goTo(0), 50);
+        }
+
+        function setupUnitToggle(overlay) {
+            const heightEl = overlay.querySelector('#pc-height');
+            const weightEl = overlay.querySelector('#pc-weight');
+            const btns = overlay.querySelectorAll('.unit-btn');
+
+            function setUnit(unit) {
+                btns.forEach(b => b.classList.toggle('is-active', b.dataset.unit === unit));
+                if (heightEl) heightEl.textContent = heightEl.dataset[unit] || '—';
+                if (weightEl) weightEl.textContent = weightEl.dataset[unit] || '—';
+            }
+
+            btns.forEach(b => b.addEventListener('click', () => setUnit(b.dataset.unit)));
+            setUnit('metric');
+        }
+
+        function showFullscreenImage(imageSrc) {
+            const overlay = document.createElement('div');
+            overlay.className = 'fullscreen-image-overlay';
+            
+            overlay.innerHTML = `
+                <div class="fullscreen-image-container">
+                    <img src="${imageSrc}" class="fullscreen-image">
+                    <button class="fullscreen-close">×</button>
+                </div>
+            `;
+
+            const close = () => overlay.remove();
+            overlay.querySelector('.fullscreen-close').addEventListener('click', close);
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+
+            document.body.appendChild(overlay);
+        }
+
+        function getAllPhotos(photosStr) {
+            try {
+                const arr = JSON.parse(photosStr || '[]');
+                return Array.isArray(arr) ? arr : [];
+            } catch { return []; }
+        }
+// Add this function anywhere in your script section
+function forceRefresh() {
+    // Clear the cache
+    localStorage.removeItem(CACHE_KEY);
+    
+    // Show loading state
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('bracket-wrapper').style.display = 'none';
+    
+    // Fetch fresh data
+    loadTournamentData();
+}
+    </script>
