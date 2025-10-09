@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.cdnfonts.com/css/hemi-head" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #27BEFA;
+      --rail: #212830;
+      --text2: #8b909b;
+      --bg-dark: #0a0e1a;
+    }
+
+    .hof-container {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f35 100%);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      color: #fff;
+    }
+
+    .hof-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding-top: 1.5rem;
+    }
+
+    .hof-title {
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #fbbf24 0%, #ec4899 50%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.02em;
+    }
+
+    .hof-subtitle {
+      color: #d1d5db;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .hof-content {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+.hof-section {
+  margin-bottom: 3rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+    .section-divider {
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 3rem 0;
+      position: relative;
+    }
+
+    .section-divider::before,
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(147, 51, 234, 0.5), transparent);
+    }
+
+    .section-divider-icon {
+      font-size: 2rem;
+      margin: 0 1.5rem;
+      filter: drop-shadow(0 0 10px rgba(147, 51, 234, 0.5));
+    }
+
+    .section-header {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .section-header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .section-title-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-icon {
+      font-size: 2rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.5rem, 4vw, 1.875rem);
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.02em;
+      margin: 0;
+    }
+
+    .info-btn {
+      padding: 0.5rem 1rem;
+      background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+      color: white;
+      font-weight: 700;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      font-size: 0.875rem;
+      white-space: nowrap;
+      border: none;
+      cursor: pointer;
+    }
+
+    .info-btn:hover {
+      background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .info-btn.challenge-btn {
+      background: linear-gradient(135deg, #eab308 0%, #f97316 100%);
+      color: #000;
+    }
+
+    .info-btn.challenge-btn:hover {
+      background: linear-gradient(135deg, #ca8a04 0%, #ea580c 100%);
+    }
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .category-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+    .category-card {
+      backdrop-filter: blur(10px);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      border: 2px solid;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .category-card:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .category-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .category-name {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.02em;
+      margin: 0;
+    }
+
+    .entries-list {
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+
+    .entries-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .entries-list::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+
+    .entries-list::-webkit-scrollbar-thumb {
+      background: #6b7280;
+      border-radius: 3px;
+    }
+
+    .entry-tile {
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border: 1px solid;
+    }
+
+    .entry-tile:hover {
+      transform: translateX(4px);
+    }
+
+    .entry-rank {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.875rem;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .entry-name {
+      color: #fff;
+      font-weight: 600;
+      font-size: 1rem;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text2);
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      opacity: 0.3;
+      margin-bottom: 1rem;
+    }
+
+    .loading-container {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 2rem;
+      border: 4px solid rgba(168, 85, 247, 0.2);
+      border-top-color: #a855f7;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: #a855f7;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .featured-challenge {
+      backdrop-filter: blur(10px);
+      border-radius: 1.5rem;
+      padding: 2rem;
+      border: 2px solid;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .featured-header {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .featured-header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .featured-title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .featured-icon {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .featured-text h3 {
+      font-size: clamp(1.25rem, 4vw, 1.5rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #ef4444 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0 0 0.25rem 0;
+    }
+
+.legendary-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  border-radius: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-left: 0.5rem;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+}
+
+    .featured-desc {
+      color: #9ca3af;
+      font-size: 0.875rem;
+      margin: 0;
+    }
+
+    .cta-container {
+      text-align: center;
+      margin-top: 3rem;
+      padding: 2rem 1rem;
+    }
+
+    .cta-btn {
+      display: inline-block;
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, #9333ea 0%, #ec4899 50%, #9333ea 100%);
+      color: white;
+      font-weight: 800;
+      font-size: 1.125rem;
+      border-radius: 0.75rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 24px rgba(147, 51, 234, 0.4);
+      border: none;
+      cursor: pointer;
+    }
+
+    .cta-btn:hover {
+      background: linear-gradient(135deg, #7e22ce 0%, #db2777 50%, #7e22ce 100%);
+      box-shadow: 0 12px 32px rgba(147, 51, 234, 0.5);
+      transform: scale(1.05);
+    }
+
+    .error-message {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid #ef4444;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      text-align: center;
+      color: #fca5a5;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Modal & Golden Player Card Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 9999;
+      overflow-y: auto;
+      padding: 1rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      animation: scaleIn 0.3s ease;
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .close-modal {
+      position: absolute;
+      top: -50px;
+      right: 0;
+      background: #d4a427;
+      color: #000;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      z-index: 10000;
+      box-shadow: 0 4px 12px rgba(212, 164, 39, 0.4);
+    }
+
+    .close-modal:hover {
+      background: #ffd700;
+      transform: scale(1.1);
+    }
+
+    /* Golden Player Card */
+    .player-card {
+      position: relative;
+      aspect-ratio: 1365 / 2048;
+      width: 100%;
+      font-family: 'Inter', sans-serif;
+      color: #fff;
+      background: #0b1630 url('https://www.gameplanfitness.com/wp-content/uploads/2025/07/Final_playercard_gold.svg') center/contain no-repeat;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(212, 164, 39, 0.6);
+    }
+
+    .gp-box {
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .name-container {
+      top: 8%; left: 50%;
+      width: 70%; height: 10%;
+      transform: translateX(-50%);
+  font-family: 'Hemi Head', sans-serif;
+
+      font-size: clamp(14px, 4.5vw, 22px);
+      font-weight: 800;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0 6%;
+      clip-path: inset(0 round 6px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .image-mask {
+      top: 22.5%; left: 13%;
+      width: 45%; height: 46.5%;
+      overflow: hidden;
+      cursor: pointer;
+      border-radius: 0 0 0 10%;
+      clip-path: polygon(0 0, 87% 0, 100% 7.5%, 100% 100%, 0 100%);
+    }
+
+    .image-mask::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 4px solid #d4a427;
+      border-radius: inherit;
+      clip-path: inherit;
+      pointer-events: none;
+    }
+
+    .carousel {
+      display: flex;
+      height: 100%;
+      transition: transform 0.3s ease;
+    }
+
+    .slide {
+      flex: 0 0 100%;
+    }
+
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .dots {
+      position: absolute;
+      bottom: 6%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.4);
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background: #d4a427;
+    }
+
+    .stats-container {
+      position: absolute;
+      top: 41.5%; left: 60.5%;
+      width: 34%; height: 28%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: stretch;
+      padding: 2% 2.5%;
+      gap: 10%;
+      background: rgba(0, 0, 0, 0.28);
+      clip-path: inset(0 round 10px);
+      box-sizing: border-box;
+    }
+
+    .stat-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-head {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .stat-label {
+      font: 500 12px/1 'Inter';
+      color: #d4a427;
+    }
+
+    .stat-value {
+      font: 350 10px/1 'Inter';
+      color: var(--text2);
+    }
+
+    .rail {
+      position: relative;
+      height: 9px;
+      border-radius: 5px;
+      background: var(--rail);
+    }
+
+    .fill {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: #d4a427;
+      transition: width 1s ease;
+    }
+
+    .flexscore-banner {
+      top: 22.7%; left: 63.5%;
+      width: 29%; height: 15%;
+      flex-direction: column;
+      gap: .4em;
+    }
+
+    .flexscore-banner .label {
+      font: 500 14px/1 'Inter';
+      color: #d4a427;
+    }
+
+.flexscore-banner .value {
+  font: 700 44px/1 'Inter';
+  color: #d4a427;
+}
+
+@media (max-width: 480px) {
+  .flexscore-banner .value {
+    font-size: 30px;
+  }
+}
+
+    .star-zone {
+      top: 70%;
+      left: 7%;
+      width: 84%;
+      height: 14%;
+      flex-direction: column;
+      gap: .6em;
+    }
+
+    .star-row img {
+      width: 25px;
+      height: auto;
+    }
+
+    .bottom-footer {
+      top: 89%;
+      left: 50%;
+      width: 70%;
+      height: 4%;
+      transform: translateX(-50%);
+  font-family: 'Hemi Head', sans-serif;
+
+      font-style: italic;
+      font-size: 18px;
+      color: var(--text2);
+    }
+
+    .logo-overlay {
+      position: absolute;
+      bottom: 6%;
+      right: 6%;
+      width: clamp(32px, 14%, 60px);
+      height: auto;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      .close-modal {
+        top: -40px;
+        width: 36px;
+        height: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="hof-container">
+    <div class="hof-header">
+      <h1 class="hof-title">Hall of Fame</h1>
+      <p class="hof-subtitle">FlexCheck Champs</p>
+    </div>
+
+    <div class="hof-content" id="hofContent">
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading Hall of Fame...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Player Card Modal -->
+  <div class="modal" id="playerModal">
+    <div class="modal-wrapper">
+      <button class="close-modal" onclick="closePlayerCard()">×</button>
+      <div id="playerCardContent"></div>
+    </div>
+  </div>
+
+  <script>
+    // REPLACE THIS WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyymRc5XQl9TcLgfNU8sc91_y-Yh-3ULhibUfS658Yhdxpe5sQIEhbbgHfJCjVQTTte/exec';
+
+    const categories = {
+      champions: [
+        { key: 'TOP', name: 'TOP TIER', icon: '👑', gradient: 'linear-gradient(135deg, #fbbf24 0%, #f97316 100%)', accentColor: '#fbbf24', borderColor: 'rgba(251, 191, 36, 0.6)' },
+        { key: 'MID', name: 'MID TIER', icon: '⭐', gradient: 'linear-gradient(135deg, #c084fc 0%, #ec4899 100%)', accentColor: '#c084fc', borderColor: 'rgba(192, 132, 252, 0.6)' },
+        { key: 'BOT', name: 'BOT TIER', icon: '⚡', gradient: 'linear-gradient(135deg, #60a5fa 0%, #06b6d4 100%)', accentColor: '#60a5fa', borderColor: 'rgba(96, 165, 250, 0.6)' }
+      ],
+      challenges: [
+        { key: 'ChallengeMaster', name: 'Challenge Master', icon: '🏆', gradient: 'linear-gradient(135deg, #f87171 0%, #fb923c 50%, #fbbf24 100%)', accentColor: '#fb923c', borderColor: 'rgba(251, 146, 60, 0.8)', legendary: true },
+        { key: 'tierTrifecta', name: 'Tier Trifecta', icon: '🎯', gradient: 'linear-gradient(135deg, #4ade80 0%, #10b981 100%)', accentColor: '#34d399', borderColor: 'rgba(52, 211, 153, 0.6)' },
+        { key: 'consistencyKing', name: 'Consistency King', icon: '🥇', gradient: 'linear-gradient(135deg, #818cf8 0%, #a855f7 100%)', accentColor: '#818cf8', borderColor: 'rgba(129, 140, 248, 0.6)' },
+        { key: 'FullUnlock', name: 'Full Unlock', icon: '🔓', gradient: 'linear-gradient(135deg, #f0abfc 0%, #d946ef 100%)', accentColor: '#f0abfc', borderColor: 'rgba(240, 171, 252, 0.6)' },
+        { key: 'rerollRaffle', name: 'Reroll Raffle', icon: '🎲', gradient: 'linear-gradient(135deg, #2dd4bf 0%, #3b82f6 100%)', accentColor: '#2dd4bf', borderColor: 'rgba(45, 212, 191, 0.6)' }
+      ]
+    };
+
+    let hallOfFameData = null;
+
+    async function loadHallOfFame() {
+      try {
+        const cacheBuster = `?t=${Date.now()}`;
+        const response = await fetch(SCRIPT_URL + cacheBuster);
+        const data = await response.json();
+        
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to load data');
+        }
+
+        hallOfFameData = data;
+        renderHallOfFame(data);
+      } catch (error) {
+        console.error('Error loading Hall of Fame:', error);
+        document.getElementById('hofContent').innerHTML = `
+          <div class="error-message">
+            ⚠️ Failed to load Hall of Fame. Please try again later.
+          </div>
+        `;
+      }
+    }
+
+    function renderHallOfFame(data) {
+      const content = document.getElementById('hofContent');
+      
+      let html = '';
+
+      // FlexCheck Champions Section
+      html += `
+        <div class="hof-section">
+          <div class="section-header">
+            <div class="section-title-wrapper">
+              <span class="section-icon">🔥</span>
+              <h2 class="section-title">FLEXCHECK CHAMPIONS</h2>
+            </div>
+            <a href="https://www.gameplanfitness.com/flexcheck/#compete-section" target="_blank" rel="noopener noreferrer" class="info-btn">
+              How to Compete →
+            </a>
+          </div>
+          <div class="category-grid">
+            ${categories.champions.map(cat => renderCategory(cat, data.hallOfFame[cat.key] || [], data.competitors)).join('')}
+          </div>
+        </div>
+      `;
+
+      // Section Divider
+      html += `
+        <div class="section-divider">
+          <span class="section-divider-icon">⚔️</span>
+        </div>
+      `;
+
+      // Challenge Conquests Section
+      html += `
+        <div class="hof-section">
+          <div class="section-header">
+            <div class="section-title-wrapper">
+              <span class="section-icon">🏆</span>
+              <h2 class="section-title">CHALLENGE CONQUESTS</h2>
+            </div>
+            <a href="https://www.gameplanfitness.com/flexcheck/flexcheck-player-card#Jomama" target="_blank" rel="noopener noreferrer" class="info-btn challenge-btn">
+              Learn About Challenges →
+            </a>
+          </div>
+          ${renderFeaturedChallenge(categories.challenges[0], data.hallOfFame[categories.challenges[0].key] || [], data.competitors)}
+          <div class="category-grid">
+            ${categories.challenges.slice(1).map(cat => renderCategory(cat, data.hallOfFame[cat.key] || [], data.competitors)).join('')}
+          </div>
+        </div>
+      `;
+
+      // Bottom CTA
+      html += `
+        <div class="cta-container">
+          <a href="https://www.gameplanfitness.com/flexcheck/flexcheck-player-card/#" target="_blank" rel="noopener noreferrer" class="cta-btn">
+            Get Your Own FlexCheck →
+          </a>
+        </div>
+      `;
+
+      content.innerHTML = html;
+    }
+
+    function renderCategory(category, entries, competitors) {
+      const bgColor = `${category.accentColor}10`;
+      
+      if (entries.length === 0) {
+        return `
+          <div class="category-card" style="background-color: ${bgColor}; border-color: ${category.borderColor};">
+            <div class="category-header">
+              <div class="category-icon" style="background: ${category.gradient};">${category.icon}</div>
+              <h3 class="category-name">${category.name}</h3>
+            </div>
+            <div class="empty-state">
+              <div class="empty-icon">${category.icon}</div>
+              <div>No legends yet... Be the first!</div>
+            </div>
+          </div>
+        `;
+      }
+
+      const entriesHtml = entries.map((entryId, index) => {
+        const competitor = competitors[entryId];
+        const displayName = competitor?.socialHandle || entryId;
+        const entryBg = `${category.accentColor}20`;
+        const entryBorder = `${category.accentColor}40`;
+        
+        return `
+          <div class="entry-tile" style="background-color: ${entryBg}; border-color: ${entryBorder};" onclick="openPlayerCard('${entryId}', '${category.name}')">
+            <div class="entry-rank" style="background: ${category.gradient};">${index + 1}</div>
+            <div class="entry-name">${displayName}</div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="category-card" style="background-color: ${bgColor}; border-color: ${category.borderColor};">
+          <div class="category-header">
+            <div class="category-icon" style="background: ${category.gradient};">${category.icon}</div>
+            <h3 class="category-name">${category.name}</h3>
+          </div>
+          <div class="entries-list">${entriesHtml}</div>
+        </div>
+      `;
+    }
+
+    function renderFeaturedChallenge(challenge, entries, competitors) {
+      const bgColor = `${challenge.accentColor}15`;
+      
+      const entriesHtml = entries.map((entryId, index) => {
+        const competitor = competitors[entryId];
+        const displayName = competitor?.socialHandle || entryId;
+        const entryBg = `${challenge.accentColor}20`;
+        const entryBorder = `${challenge.accentColor}40`;
+        
+        return `
+          <div class="entry-tile" style="background-color: ${entryBg}; border-color: ${entryBorder};" onclick="openPlayerCard('${entryId}', '${challenge.name}')">
+            <div class="entry-rank" style="background: ${challenge.gradient};">${index + 1}</div>
+            <div class="entry-name">${displayName}</div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="featured-challenge" style="background-color: ${bgColor}; border-color: ${challenge.borderColor};">
+          <div class="featured-header">
+            <div class="featured-title-group">
+              <div class="featured-icon" style="background: ${challenge.gradient};">${challenge.icon}</div>
+              <div class="featured-text">
+                <h3>${challenge.name}</h3>
+                <p class="featured-desc">Conquered ALL challenges</p>
+              </div>
+            </div>
+          </div>
+          ${entries.length > 0 ? 
+            `<div class="entries-list" style="max-height: 500px;">${entriesHtml}</div>` : 
+            `<div class="empty-state"><div class="empty-icon">${challenge.icon}</div><div>No legends yet... Be the first!</div></div>`
+          }
+        </div>
+      `;
+    }
+
+    function openPlayerCard(entryId, categoryName) {
+      const competitor = hallOfFameData.competitors[entryId];
+      
+      if (!competitor) {
+        alert('Player data not found');
+        return;
+      }
+
+      const modal = document.getElementById('playerModal');
+      const content = document.getElementById('playerCardContent');
+
+      const photos = JSON.parse(competitor.photos || '[]');
+      const score = Number(competitor.score) || 0;
+      const stars = Math.max(1, Math.min(10, Math.floor(competitor.trainingAgeYears || 1)));
+      const displayName = competitor.socialHandle || entryId;
+
+      // Helper functions
+      function formatHeight(heightCm, heightIn) {
+        if (heightIn) {
+          const feet = Math.floor(heightIn / 12);
+          const inches = Math.round(heightIn % 12);
+          return `${feet} ft ${inches} in`;
+        }
+        if (heightCm) {
+          const totalInches = heightCm / 2.54;
+          const feet = Math.floor(totalInches / 12);
+          const inches = Math.round(totalInches % 12);
+          return `${feet} ft ${inches} in`;
+        }
+        return 'N/A';
+      }
+
+      function formatWeight(weightKg, weightLb) {
+        if (weightLb) return `${Math.round(weightLb)} lb`;
+        if (weightKg) return `${Math.round(weightKg * 2.205)} lb`;
+        return 'N/A';
+      }
+
+      function formatTrainingAge(years) {
+        const numYears = Number(years) || 0;
+        return numYears >= 10 ? '10+ Years' : `${numYears} Year${numYears === 1 ? '' : 's'}`;
+      }
+
+      function getAgeBarWidth(age) {
+        const minAge = 18, maxAge = 50;
+        const clampedAge = Math.min(Math.max(age, minAge), maxAge);
+        return Math.round(((clampedAge - minAge) / (maxAge - minAge)) * 100);
+      }
+
+      function getHeightBarWidth(heightCm, heightIn) {
+        let inches = heightIn;
+        if (!inches && heightCm) inches = heightCm / 2.54;
+        if (!inches) return 50;
+        
+        const minHeight = 60, maxHeight = 78;
+        const clampedHeight = Math.min(Math.max(inches, minHeight), maxHeight);
+        return Math.round(((clampedHeight - minHeight) / (maxHeight - minHeight)) * 100);
+      }
+
+      function getWeightBarWidth(weightKg, weightLb) {
+        let pounds = weightLb;
+        if (!pounds && weightKg) pounds = weightKg * 2.205;
+        if (!pounds) return 50;
+        
+        const minWeight = 120, maxWeight = 250;
+        const clampedWeight = Math.min(Math.max(pounds, minWeight), maxWeight);
+        return Math.round(((clampedWeight - minWeight) / (maxWeight - minWeight)) * 100);
+      }
+
+      content.innerHTML = `
+        <div class="player-card">
+          <div class="gp-box name-container">${displayName}</div>
+
+          <div class="gp-box image-mask">
+            <div class="carousel" id="carousel">
+              ${photos.length > 0 ? 
+                photos.map(photo => `<div class="slide"><img src="${photo}" alt=""></div>`).join('') :
+                '<div class="slide"><img src="https://placehold.co/600x800?text=No+Photo" alt=""></div>'
+              }
+            </div>
+            <div class="dots" id="dots"></div>
+            <img class="logo-overlay" src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/GP_2024_logo300x223.webp" alt="">
+          </div>
+
+          <div class="gp-box flexscore-banner">
+            <div class="label">FLEXSCORE</div>
+            <div class="value">${score.toFixed(1)}</div>
+          </div>
+
+          <div class="gp-box stats-container">
+            <div class="stat-row">
+              <div class="stat-head"><span class="stat-label">AGE</span><span class="stat-value">${competitor.age || 'N/A'}</span></div>
+              <div class="rail"><div class="fill" style="width:${getAgeBarWidth(competitor.age)}%"></div></div>
+            </div>
+            <div class="stat-row">
+              <div class="stat-head"><span class="stat-label">HEIGHT</span><span class="stat-value">${formatHeight(competitor.heightCm, competitor.heightIn)}</span></div>
+              <div class="rail"><div class="fill" style="width:${getHeightBarWidth(competitor.heightCm, competitor.heightIn)}%"></div></div>
+            </div>
+            <div class="stat-row">
+              <div class="stat-head"><span class="stat-label">WEIGHT</span><span class="stat-value">${formatWeight(competitor.weightKg, competitor.weightLb)}</span></div>
+              <div class="rail"><div class="fill" style="width:${getWeightBarWidth(competitor.weightKg, competitor.weightLb)}%"></div></div>
+            </div>
+          </div>
+
+          <div class="gp-box star-zone">
+            <div class="star-row">
+              ${Array(stars).fill('<img src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/gold_star.png" alt="★">').join('')}
+            </div>
+            <div style="font:600 14px/1 'Inter';color:#d4a427">Training Age: ${formatTrainingAge(competitor.trainingAgeYears)}</div>
+          </div>
+
+          <div class="gp-box bottom-footer">GamePlan Player Card</div>
+        </div>
+      `;
+
+      modal.classList.add('active');
+      setupCarousel();
+    }
+
+    function closePlayerCard() {
+      document.getElementById('playerModal').classList.remove('active');
+    }
+
+    function setupCarousel() {
+      const carousel = document.getElementById('carousel');
+      const dotsContainer = document.getElementById('dots');
+      const slides = carousel?.children;
+      
+      if (!carousel || !slides || slides.length === 0) return;
+
+      let currentIndex = 0;
+      carousel.style.width = `${slides.length * 100}%`;
+      
+      dotsContainer.innerHTML = '';
+      Array.from(slides).forEach((_, i) => {
+        const dot = document.createElement('span');
+        dot.className = 'dot' + (i === 0 ? ' active' : '');
+        dot.onclick = () => goToSlide(i);
+        dotsContainer.appendChild(dot);
+      });
+
+      const dots = dotsContainer.children;
+
+      function goToSlide(index) {
+        currentIndex = index;
+        carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+        Array.from(dots).forEach(d => d.classList.remove('active'));
+        dots[currentIndex]?.classList.add('active');
+      }
+
+      document.querySelector('.image-mask')?.addEventListener('click', () => {
+        goToSlide((currentIndex + 1) % slides.length);
+      });
+    }
+
+    // Close modal on background click
+    document.getElementById('playerModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closePlayerCard();
+      }
+    });
+
+    // Load data on page load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadHallOfFame);
+    } else {
+      loadHallOfFame();
+    }
+  </script>
+</body>
+</html>
