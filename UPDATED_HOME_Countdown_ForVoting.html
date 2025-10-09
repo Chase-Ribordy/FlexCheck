@@ -1,0 +1,344 @@
+<!-- 🔥 WEEKLY FLEXCHECK COUNTDOWN -->
+<div id="weekly-countdown" style="
+  position: relative;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: #0f172a;
+  border-radius: 1rem;
+  border: 1px solid #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.01);
+  max-width: 700px;
+  margin: 2rem auto;
+  overflow: hidden;
+  font-family: 'Hemi Head', 'Inter', sans-serif;
+  transition: all 0.3s ease;
+">
+
+  <!-- 🔷 Background Logo -->
+  <img src="https://www.gameplanfitness.com/wp-content/uploads/2025/07/GP_2024_logo300x223.webp" alt="GamePlan Logo" style="
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    max-width: 300px;
+    opacity: 0.04;
+    z-index: 0;
+    pointer-events: none;
+  ">
+
+  <!-- 🎯 Status Banner (Hidden by default) -->
+  <div id="voting-banner" style="
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0.5rem;
+    font-weight: 800;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: white;
+    z-index: 2;
+  "></div>
+
+  <!-- ⏱️ Countdown Timer -->
+  <div id="weekly-timer" style="
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #38bdf8;
+    text-shadow: 0 0 3px #38bdf8;
+    z-index: 1;
+    position: relative;
+  ">00:00:00</div>
+
+  <!-- 📝 Caption -->
+  <p id="countdown-caption" style="
+    color: #cbd5e1;
+    font-weight: 500;
+    font-size: 0.75rem;
+    margin-top: 0.75rem;
+    z-index: 1;
+    position: relative;
+  ">Submissions close every <span style="color:#38bdf8; font-weight:600;">Thursday @ 7PM CT</span></p>
+
+  <!-- 🎬 Action Button (Hidden by default) -->
+  <div id="action-button" style="
+    display: none;
+    margin-top: 1.5rem;
+    z-index: 1;
+    position: relative;
+  "></div>
+</div>
+
+<!-- 💥 Enhanced Weekly Countdown Script -->
+<script>
+  // ---- Time helpers (America/Chicago safe across DST) ----
+  function nowInCT() {
+    const now = new Date();
+    const fmt = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Chicago',
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hour12: false
+    });
+    const parts = Object.fromEntries(fmt.formatToParts(now).map(p => [p.type, p.value]));
+    return new Date(
+      Number(parts.year),
+      Number(parts.month) - 1,
+      Number(parts.day),
+      Number(parts.hour),
+      Number(parts.minute),
+      Number(parts.second),
+      0
+    );
+  }
+
+  // ---- Check if valid voting week (first 4 Fridays only) ----
+  function isValidVotingWeek() {
+    const now = nowInCT();
+    const currentDate = now.getDate();
+    const currentDay = now.getDay();
+    
+    // Find Friday of this week
+    let fridayDate = new Date(now);
+    const daysToFriday = (5 - currentDay + 7) % 7;
+    
+    if (daysToFriday === 0) {
+      // Today is Friday
+      fridayDate = now;
+    } else {
+      fridayDate.setDate(currentDate + daysToFriday);
+    }
+    
+    // Which Friday of the month
+    const fridayDateNum = fridayDate.getDate();
+    const fridayCount = Math.ceil(fridayDateNum / 7);
+    
+    return fridayCount <= 4;
+  }
+
+  // ---- Determine current state ----
+  function getCurrentState() {
+    if (!isValidVotingWeek()) {
+      return { type: 'skip', target: null };
+    }
+
+    const now = nowInCT();
+    const day = now.getDay();
+    const hour = now.getHours();
+    const minute = now.getMinutes();
+    const timeInMinutes = hour * 60 + minute;
+
+    // Thursday after 7PM
+    if (day === 4) {
+      if (timeInMinutes >= 1140) {
+        // Voting open - count to Friday 7PM
+        const target = new Date(now);
+        target.setDate(now.getDate() + 1);
+        target.setHours(19, 0, 0, 0);
+        return { type: 'voting', target };
+      }
+    }
+    
+    // Friday
+    if (day === 5) {
+      if (timeInMinutes < 1140) {
+        // Still voting - count to Friday 7PM
+        const target = new Date(now);
+        target.setHours(19, 0, 0, 0);
+        return { type: 'voting', target };
+      } else if (timeInMinutes < 1200) {
+        // Live reveal - 7PM to 8PM
+        const target = new Date(now);
+        target.setHours(20, 0, 0, 0);
+        return { type: 'live', target };
+      }
+    }
+
+    // Normal countdown to Thursday 7PM
+    const daysUntilThu = (4 - day + 7) % 7;
+    const target = new Date(now);
+    target.setHours(19, 0, 0, 0);
+    
+    if (daysUntilThu === 0) {
+      if (now.getHours() >= 19) {
+        target.setDate(now.getDate() + 7); // Next week
+      }
+    } else {
+      target.setDate(now.getDate() + daysUntilThu);
+    }
+    
+    return { type: 'normal', target };
+  }
+
+  // ---- Update display ----
+  function updateCountdown() {
+    const el = document.getElementById('weekly-timer');
+    const container = document.getElementById('weekly-countdown');
+    const caption = document.getElementById('countdown-caption');
+    const banner = document.getElementById('voting-banner');
+    const actionButton = document.getElementById('action-button');
+    
+    if (!el) return;
+
+    const state = getCurrentState();
+    
+    // Handle skip week
+    if (state.type === 'skip') {
+      container.style.borderColor = '#38bdf8';
+      el.style.color = '#38bdf8';
+      el.style.textShadow = '0 0 3px #38bdf8';
+      el.style.marginTop = '1rem';
+      el.innerText = '--:--:--';
+      caption.innerHTML = '<span style="color: #94a3b8;">No voting this week (5th Friday)</span>';
+      banner.style.display = 'none';
+      actionButton.style.display = 'none';
+      return;
+    }
+
+    const now = nowInCT();
+    const diff = state.target - now;
+
+    // Format time
+    let timeText = '00:00:00';
+    if (diff > 0) {
+      const h = String(Math.floor(diff / 3.6e6)).padStart(2, '0');
+      const m = String(Math.floor((diff % 3.6e6) / 6e4)).padStart(2, '0');
+      const s = String(Math.floor((diff % 6e4) / 1000)).padStart(2, '0');
+      timeText = `${h}:${m}:${s}`;
+    }
+
+    // Apply state-specific styling
+    if (state.type === 'voting') {
+      // Green theme
+      container.style.borderColor = '#10b981';
+      el.style.color = '#10b981';
+      el.style.textShadow = '0 0 3px #10b981';
+      el.style.marginTop = '2.5rem';
+      el.innerText = timeText;
+      
+      banner.style.display = 'block';
+      banner.style.background = 'linear-gradient(135deg, #10b981, #34d399)';
+      banner.innerHTML = '✨ VOTING OPEN NOW! ✨';
+      
+      caption.innerHTML = '<span style="color: #10b981; font-weight: 600;">⏰ Voting closes Friday @ 7PM CT</span>';
+      
+      actionButton.style.display = 'block';
+      actionButton.innerHTML = `
+        <a href="https://www.gameplanfitness.com/flexcheck/voting/" 
+           target="_blank"
+           style="display: inline-block; 
+                  padding: 0.75rem 2rem; 
+                  background: linear-gradient(135deg, #10b981, #34d399); 
+                  color: white; 
+                  border-radius: 0.5rem; 
+                  font-weight: 600; 
+                  text-decoration: none; 
+                  text-transform: uppercase;
+                  transition: transform 0.2s;">
+          🗳️ CAST YOUR VOTE
+        </a>
+      `;
+      
+    } else if (state.type === 'live') {
+      // Red theme
+      container.style.borderColor = '#ef4444';
+      el.style.color = '#ef4444';
+      el.style.textShadow = '0 0 3px #ef4444';
+      el.style.marginTop = '2.5rem';
+      el.style.fontSize = '3rem';
+      el.innerText = '🔴 LIVE';
+      
+      banner.style.display = 'block';
+      banner.style.background = 'linear-gradient(135deg, #ef4444, #f87171)';
+      banner.innerHTML = '🔥 RESULTS REVEAL! 🔥';
+      
+      caption.innerHTML = '<span style="color: #ef4444; font-weight: 600;">📺 Watch the results on Instagram!</span>';
+      
+      actionButton.style.display = 'block';
+      actionButton.innerHTML = `
+        <a href="https://instagram.com/chase_ribordy" 
+           target="_blank"
+           style="display: inline-block; 
+                  padding: 0.75rem 2rem; 
+                  background: linear-gradient(135deg, #C13584, #E1306C); 
+                  color: white; 
+                  border-radius: 0.5rem; 
+                  font-weight: 600; 
+                  text-decoration: none; 
+                  text-transform: uppercase;
+                  transition: transform 0.2s;">
+          📸 WATCH ON INSTAGRAM
+        </a>
+      `;
+      
+    } else {
+      // Normal blue theme
+      container.style.borderColor = '#38bdf8';
+      el.style.color = '#38bdf8';
+      el.style.textShadow = '0 0 3px #38bdf8';
+      el.style.marginTop = '1rem';
+      el.style.fontSize = '3.5rem';
+      el.innerText = timeText;
+      
+      banner.style.display = 'none';
+      caption.innerHTML = 'Submissions close every <span style="color:#38bdf8; font-weight:600;">Thursday @ 7PM CT</span>';
+      actionButton.style.display = 'none';
+    }
+  }
+
+  // Start ticking
+  updateCountdown();
+  const _weeklyTimerInterval = setInterval(updateCountdown, 1000);
+
+  // ---- Flash effects ----
+  window.addEventListener('DOMContentLoaded', () => {
+    const timer = document.getElementById('weekly-timer');
+    if (!timer) return;
+    timer.classList.add('flash-once');
+    setTimeout(() => timer.classList.remove('flash-once'), 600);
+  });
+
+  document.addEventListener('click', (e) => {
+    const timer = document.getElementById('weekly-timer');
+    if (!timer || !timer.contains(e.target)) return;
+    timer.classList.remove('flash-once');
+    void timer.offsetWidth;
+    timer.classList.add('flash-once');
+    setTimeout(() => timer.classList.remove('flash-once'), 600);
+  });
+</script>
+
+<!-- ⚡ Animation Styles -->
+<style>
+@keyframes crystalFlash {
+  0%, 100% {
+    color: inherit;
+    text-shadow: 0 0 12px currentColor;
+  }
+  50% {
+    filter: brightness(1.3);
+    text-shadow: 0 0 18px currentColor;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 1; }
+}
+
+.flash-once {
+  animation: crystalFlash 0.5s ease-in-out;
+}
+
+#voting-banner {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+#action-button a:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+</style>

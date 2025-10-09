@@ -1,0 +1,546 @@
+// FlexCheck Voting Operations - COMPLETE REWORK
+// Deploy as Web App with "Anyone" access
+
+const SHEET_ID = '1bshL5-uBrkz3pMr9SiAMnQaR_Zzk-WWlN7inofEc5p0';
+const VOTERS_TAB = 'Voters';
+const VOTE_TOTALS_TAB = 'VoteTotals';
+const TZ = 'America/Chicago';
+
+function doGet(e) {
+  try {
+    const action = e.parameter.action;
+    
+    Logger.log('Voting API - Action: ' + action);
+    Logger.log('Voting API - Parameters: ' + JSON.stringify(e.parameter));
+    
+    let result;
+    
+    if (!action) {
+      result = {
+        success: true,
+        message: 'FlexCheck Voting API v4.0 - Complete Rework',
+        timestamp: new Date().toISOString(),
+        votingOpen: isVotingWindowOpen(),
+        currentWeek: getCurrentWeekKey()
+      };
+    } else if (action === 'batchVote') {
+      result = processBatchVote(e.parameter);
+    } else if (action === 'getVoteTotals') {
+      result = getVoteTotals(e.parameter.weekKey);
+    } else {
+      result = { success: false, message: 'Invalid action: ' + action };
+    }
+    
+    Logger.log('Voting API - Result: ' + JSON.stringify(result));
+    
+    const callback = e.parameter.callback;
+    if (callback) {
+      return ContentService.createTextOutput(callback + '(' + JSON.stringify(result) + ')')
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify(result))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    Logger.log('Error in doGet: ' + error.toString());
+    Logger.log('Stack trace: ' + error.stack);
+    
+    return ContentService.createTextOutput(JSON.stringify({
+      success: false,
+      message: 'Server error: ' + error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// ============================================
+// WEEK KEY FUNCTIONS
+// ============================================
+
+function getCurrentWeekKey() {
+  const now = new Date();
+  const nowCt = toCt_(now);
+  const anchor = weekAnchorFriday_(nowCt);
+  return Utilities.formatDate(anchor, TZ, 'yyyy-MM-dd');
+}
+
+function toCt_(d) {
+  if (!(d instanceof Date) || isNaN(d)) return null;
+  const fmt = Utilities.formatDate(d, TZ, "yyyy-MM-dd'T'HH:mm:ss");
+  return new Date(fmt);
+}
+
+function weekAnchorFriday_(dCt) {
+  const wd = parseInt(Utilities.formatDate(dCt, TZ, 'u'), 10);
+  const daysSinceFri = (wd >= 5) ? (wd - 5) : (wd + 2);
+  const fri = new Date(dCt);
+  fri.setDate(dCt.getDate() - daysSinceFri);
+  fri.setHours(20, 0, 0, 0);
+  if (dCt < fri) { fri.setDate(fri.getDate() - 7); }
+  return fri;
+}
+
+function isVotingWindowOpen() {
+  const now = new Date();
+  const ct = toCt_(now);
+  const dayOfWeek = ct.getDay();
+  const hour = ct.getHours();
+  
+  const isThursdayEvening = dayOfWeek === 4 && hour >= 19;
+  const isFridayDay = dayOfWeek === 5 && hour < 19;
+  
+  return isThursdayEvening || isFridayDay;
+}
+
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+
+function getVoterProfile(email) {
+  const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(VOTERS_TAB);
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0];
+  const emailCol = headers.indexOf('email');
+  
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][emailCol] === email) {
+      const voterProfile = {};
+      headers.forEach((header, index) => {
+        if (header !== 'verification_token') {
+          voterProfile[header] = data[i][index];
+        }
+      });
+      return voterProfile;
+    }
+  }
+  
+  return null;
+}
+
+// ============================================
+// BATCH VOTE FUNCTION
+// ============================================
+
+function processBatchVote(params) {
+  try {
+    const email = params.email;
+    const devOverride = params.devOverride === 'true';
+    
+    const topEntryId = params.topEntryId;
+    const topPoints = parseInt(params.topPoints);
+    const midEntryId = params.midEntryId;
+    const midPoints = parseInt(params.midPoints);
+    const lowEntryId = params.lowEntryId;
+    const lowPoints = parseInt(params.lowPoints);
+    
+    Logger.log('=== BATCH VOTE START ===');
+    Logger.log('Email: ' + email);
+    Logger.log('Votes: top=' + topEntryId + '(' + topPoints + 'pts), mid=' + midEntryId + '(' + midPoints + 'pts), low=' + lowEntryId + '(' + lowPoints + 'pts)');
+    
+    if (!email || !topEntryId || !midEntryId || !lowEntryId) {
+      return { success: false, message: 'Missing required parameters' };
+    }
+    
+    if (!isVotingWindowOpen() && !devOverride) {
+      return { success: false, message: 'Voting window is closed' };
+    }
+    
+    if (topPoints > 100 || midPoints > 100 || lowPoints > 100 ||
+        topPoints < 1 || midPoints < 1 || lowPoints < 1) {
+      return { success: false, message: 'Invalid vote multiplier values' };
+    }
+    
+    const votersSheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(VOTERS_TAB);
+    if (!votersSheet) {
+      return { success: false, message: 'Voters sheet not found' };
+    }
+    
+    const votersData = votersSheet.getDataRange().getValues();
+    const votersHeaders = votersData[0];
+    
+    let voterRow = null;
+    let voterRowIndex = -1;
+    const emailCol = votersHeaders.indexOf('email');
+    
+    for (let i = 1; i < votersData.length; i++) {
+      if (votersData[i][emailCol] === email) {
+        voterRow = votersData[i];
+        voterRowIndex = i + 1;
+        break;
+      }
+    }
+    
+    if (!voterRow) {
+      return { success: false, message: 'Voter not found' };
+    }
+    
+    const verifiedCol = votersHeaders.indexOf('verified');
+    if (voterRow[verifiedCol] !== true && voterRow[verifiedCol] !== 'TRUE') {
+      return { success: false, message: 'Email not verified' };
+    }
+    
+    const votedTopCol = votersHeaders.indexOf('voted_top');
+    const votedMidCol = votersHeaders.indexOf('voted_mid');
+    const votedLowCol = votersHeaders.indexOf('voted_low');
+    
+    if ((voterRow[votedTopCol] === true || voterRow[votedTopCol] === 'TRUE') &&
+        (voterRow[votedMidCol] === true || voterRow[votedMidCol] === 'TRUE') &&
+        (voterRow[votedLowCol] === true || voterRow[votedLowCol] === 'TRUE')) {
+      return { success: false, message: 'You have already voted in all tiers' };
+    }
+    
+    const currentWeekKey = getCurrentWeekKey();
+    const timestamp = new Date().toISOString();
+    
+    // Update VoteTotals
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    let totalsSheet = ss.getSheetByName(VOTE_TOTALS_TAB);
+    
+    if (!totalsSheet) {
+      Logger.log('Creating VoteTotals sheet');
+      totalsSheet = ss.insertSheet(VOTE_TOTALS_TAB);
+      totalsSheet.getRange(1, 1, 1, 7).setValues([
+        ['weekKey', 'tier', 'entryId', 'totalVotes', 'totalPoints', 'rank', 'lastUpdated']
+      ]);
+    }
+    
+    // Process votes
+    const votes = [
+      { tier: 'top', entryId: topEntryId, points: topPoints },
+      { tier: 'mid', entryId: midEntryId, points: midPoints },
+      { tier: 'low', entryId: lowEntryId, points: lowPoints }
+    ];
+    
+    votes.forEach(vote => {
+      updateVoteTotals(totalsSheet, currentWeekKey, vote.tier, vote.entryId, vote.points);
+    });
+    
+    // Update Voters sheet
+    Logger.log('Updating Voters sheet at row ' + voterRowIndex);
+    votersSheet.getRange(voterRowIndex, votedTopCol + 1).setValue(true);
+    votersSheet.getRange(voterRowIndex, votedMidCol + 1).setValue(true);
+    votersSheet.getRange(voterRowIndex, votedLowCol + 1).setValue(true);
+    
+    // Update timestamps
+    const votedTopTimestampCol = votersHeaders.indexOf('voted_top_timestamp');
+    const votedMidTimestampCol = votersHeaders.indexOf('voted_mid_timestamp');
+    const votedLowTimestampCol = votersHeaders.indexOf('voted_low_timestamp');
+    
+    if (votedTopTimestampCol >= 0) votersSheet.getRange(voterRowIndex, votedTopTimestampCol + 1).setValue(timestamp);
+    if (votedMidTimestampCol >= 0) votersSheet.getRange(voterRowIndex, votedMidTimestampCol + 1).setValue(timestamp);
+    if (votedLowTimestampCol >= 0) votersSheet.getRange(voterRowIndex, votedLowTimestampCol + 1).setValue(timestamp);
+    
+    // Update vote counts
+    const voteCountTopCol = votersHeaders.indexOf('vote_count_top');
+    const voteCountMidCol = votersHeaders.indexOf('vote_count_mid');
+    const voteCountLowCol = votersHeaders.indexOf('vote_count_low');
+    
+    const currentTopCount = Number(voterRow[voteCountTopCol]) || 0;
+    const currentMidCount = Number(voterRow[voteCountMidCol]) || 0;
+    const currentLowCount = Number(voterRow[voteCountLowCol]) || 0;
+    
+    votersSheet.getRange(voterRowIndex, voteCountTopCol + 1).setValue(currentTopCount + topPoints);
+    votersSheet.getRange(voterRowIndex, voteCountMidCol + 1).setValue(currentMidCount + midPoints);
+    votersSheet.getRange(voterRowIndex, voteCountLowCol + 1).setValue(currentLowCount + lowPoints);
+    
+    Logger.log('Vote counts updated: ' + (currentTopCount + topPoints) + ', ' + (currentMidCount + midPoints) + ', ' + (currentLowCount + lowPoints));
+    
+    // ✅ KEY FIX: Return the updated voter profile in response
+    const updatedVoter = getVoterProfile(email);
+    
+    Logger.log('=== BATCH VOTE COMPLETE ===');
+    Logger.log('Updated voter profile: ' + JSON.stringify(updatedVoter));
+    
+    return {
+      success: true,
+      message: 'Votes submitted successfully!',
+      voter: updatedVoter
+    };
+    
+  } catch (error) {
+    Logger.log('Error in processBatchVote: ' + error.toString());
+    Logger.log('Stack: ' + error.stack);
+    return { success: false, message: 'Server error: ' + error.toString() };
+  }
+}
+
+// ============================================
+// UPDATE VOTE TOTALS - BULLETPROOF VERSION
+// ============================================
+
+function updateVoteTotals(sheet, weekKey, tier, entryId, points) {
+  Logger.log('=== UPDATE VOTE TOTALS ===');
+  Logger.log('Looking for: weekKey=' + weekKey + ', tier=' + tier + ', entryId=' + entryId);
+  
+  // ALWAYS re-fetch fresh data
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0];
+  
+  const weekKeyCol = headers.indexOf('weekKey');
+  const tierCol = headers.indexOf('tier');
+  const entryIdCol = headers.indexOf('entryId');
+  const totalVotesCol = headers.indexOf('totalVotes');
+  const totalPointsCol = headers.indexOf('totalPoints');
+  const lastUpdatedCol = headers.indexOf('lastUpdated');
+  
+  // Convert to strings for comparison
+  const searchWeekKey = String(weekKey).trim();
+  const searchTier = String(tier).trim();
+  const searchEntryId = String(entryId).trim();
+  
+  Logger.log('Search strings: [' + searchWeekKey + '] [' + searchTier + '] [' + searchEntryId + ']');
+  
+  // Find existing row
+  let foundRow = -1;
+  
+  for (let i = 1; i < data.length; i++) {
+    const rowWeekKey = String(data[i][weekKeyCol]).trim();
+    const rowTier = String(data[i][tierCol]).trim();
+    const rowEntryId = String(data[i][entryIdCol]).trim();
+    
+    Logger.log('Row ' + i + ': [' + rowWeekKey + '] [' + rowTier + '] [' + rowEntryId + ']');
+    
+    if (rowWeekKey === searchWeekKey && 
+        rowTier === searchTier && 
+        rowEntryId === searchEntryId) {
+      foundRow = i + 1; // Sheet rows are 1-indexed
+      Logger.log('✓ FOUND existing row at: ' + foundRow);
+      break;
+    }
+  }
+  
+  if (foundRow === -1) {
+    // Create new row
+    Logger.log('✓ Creating NEW row');
+    const newRow = new Array(headers.length).fill('');
+    newRow[weekKeyCol] = weekKey;
+    newRow[tierCol] = tier;
+    newRow[entryIdCol] = entryId;
+    newRow[totalVotesCol] = 1;
+    newRow[totalPointsCol] = points;
+    newRow[lastUpdatedCol] = new Date().toISOString();
+    
+    sheet.appendRow(newRow);
+    Logger.log('New row appended: totalVotes=1, totalPoints=' + points);
+    
+  } else {
+    // Update existing row
+    const currentVotes = Number(data[foundRow - 1][totalVotesCol]) || 0;
+    const currentPoints = Number(data[foundRow - 1][totalPointsCol]) || 0;
+    
+    const newVotes = currentVotes + 1;
+    const newPoints = currentPoints + Number(points);
+    
+    Logger.log('✓ UPDATING existing row');
+    Logger.log('  Old: votes=' + currentVotes + ', points=' + currentPoints);
+    Logger.log('  New: votes=' + newVotes + ', points=' + newPoints);
+    
+    sheet.getRange(foundRow, totalVotesCol + 1).setValue(newVotes);
+    sheet.getRange(foundRow, totalPointsCol + 1).setValue(newPoints);
+    sheet.getRange(foundRow, lastUpdatedCol + 1).setValue(new Date().toISOString());
+  }
+  
+  Logger.log('=== UPDATE COMPLETE ===');
+}
+
+// ============================================
+// GET VOTE TOTALS
+// ============================================
+
+function getVoteTotals(weekKey) {
+  try {
+    Logger.log('=== GET VOTE TOTALS ===');
+    Logger.log('Week: ' + (weekKey || 'current'));
+    
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const totalsSheet = ss.getSheetByName(VOTE_TOTALS_TAB);
+    
+    if (!totalsSheet) {
+      Logger.log('VoteTotals sheet not found');
+      return { 
+        success: true, 
+        weekKey: weekKey || getCurrentWeekKey(), 
+        totals: { top: [], mid: [], low: [] } 
+      };
+    }
+    
+    const data = totalsSheet.getDataRange().getValues();
+    if (data.length < 2) {
+      Logger.log('No vote data found');
+      return { 
+        success: true, 
+        weekKey: weekKey || getCurrentWeekKey(), 
+        totals: { top: [], mid: [], low: [] } 
+      };
+    }
+    
+    const headers = data[0];
+    const currentWeek = weekKey || getCurrentWeekKey();
+    const totals = { top: [], mid: [], low: [] };
+    
+    const weekKeyCol = headers.indexOf('weekKey');
+    const tierCol = headers.indexOf('tier');
+    
+    // Get competitor names from Leaderboard sheet (optional)
+    let competitorNames = {};
+    try {
+      const lbSheet = ss.getSheetByName('Leaderboard');
+      if (lbSheet) {
+        const lbData = lbSheet.getDataRange().getValues();
+        const lbHeaders = lbData[0];
+        const entryIdCol = lbHeaders.indexOf('entryId');
+        const nameCol = lbHeaders.indexOf('socialHandle');
+        
+        if (entryIdCol >= 0 && nameCol >= 0) {
+          for (let i = 1; i < lbData.length; i++) {
+            const entryId = String(lbData[i][entryIdCol]);
+            const name = lbData[i][nameCol];
+            if (entryId && name) {
+              competitorNames[entryId] = name;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      Logger.log('Could not load competitor names: ' + e.toString());
+    }
+    
+    // Collect entries for current week
+    for (let i = 1; i < data.length; i++) {
+      const rowWeekKey = String(data[i][weekKeyCol]).trim();
+      
+      if (rowWeekKey === String(currentWeek).trim()) {
+        const tier = data[i][tierCol];
+        if (totals[tier]) {
+          const entry = {};
+          headers.forEach((header, index) => {
+            entry[header] = data[i][index];
+          });
+          
+          const entryId = String(entry.entryId);
+          if (competitorNames[entryId]) {
+            entry.competitorName = competitorNames[entryId];
+          }
+          
+          totals[tier].push(entry);
+        }
+      }
+    }
+    
+    // Sort and rank each tier
+    ['top', 'mid', 'low'].forEach(tier => {
+      totals[tier].sort((a, b) => (Number(b.totalPoints) || 0) - (Number(a.totalPoints) || 0));
+      totals[tier].forEach((entry, index) => {
+        entry.rank = index + 1;
+      });
+    });
+    
+    Logger.log('Totals: top=' + totals.top.length + ', mid=' + totals.mid.length + ', low=' + totals.low.length);
+    
+    return {
+      success: true,
+      weekKey: currentWeek,
+      totals: totals
+    };
+    
+  } catch (error) {
+    Logger.log('Error in getVoteTotals: ' + error.toString());
+    return { 
+      success: false, 
+      message: 'Server error: ' + error.toString() 
+    };
+  }
+}
+
+// ============================================
+// WEEKLY RESET - WITH VOTETOTALS CLEANUP
+// ============================================
+
+function weeklyReset() {
+  Logger.log('=== WEEKLY RESET START ===');
+  
+  const currentWeekKey = getCurrentWeekKey();
+  Logger.log('Current week: ' + currentWeekKey);
+  
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  
+  // 1. Reset Voters sheet
+  const votersSheet = ss.getSheetByName(VOTERS_TAB);
+  if (!votersSheet) {
+    Logger.log('ERROR: Voters sheet not found');
+    return { success: false, message: 'Voters sheet not found' };
+  }
+  
+  const votersData = votersSheet.getDataRange().getValues();
+  const votersHeaders = votersData[0];
+  
+  const weekKeyCol = votersHeaders.indexOf('weekKey');
+  const votedTopCol = votersHeaders.indexOf('voted_top');
+  const votedMidCol = votersHeaders.indexOf('voted_mid');
+  const votedLowCol = votersHeaders.indexOf('voted_low');
+  const emailCol = votersHeaders.indexOf('email');
+  
+  let votersReset = 0;
+  
+  for (let i = 1; i < votersData.length; i++) {
+    if (votersData[i][weekKeyCol] !== currentWeekKey) {
+      const rowIndex = i + 1;
+      Logger.log('Resetting voter: ' + votersData[i][emailCol]);
+      
+      votersSheet.getRange(rowIndex, weekKeyCol + 1).setValue(currentWeekKey);
+      votersSheet.getRange(rowIndex, votedTopCol + 1).setValue(false);
+      votersSheet.getRange(rowIndex, votedMidCol + 1).setValue(false);
+      votersSheet.getRange(rowIndex, votedLowCol + 1).setValue(false);
+      
+      votersReset++;
+    }
+  }
+  
+  // 2. Clear old VoteTotals
+  const totalsSheet = ss.getSheetByName(VOTE_TOTALS_TAB);
+  if (!totalsSheet) {
+    Logger.log('VoteTotals sheet not found, skipping cleanup');
+    return {
+      success: true,
+      votersReset: votersReset,
+      voteTotalsDeleted: 0,
+      weekKey: currentWeekKey
+    };
+  }
+  
+  const totalsData = totalsSheet.getDataRange().getValues();
+  const totalsHeaders = totalsData[0];
+  const totalsWeekKeyCol = totalsHeaders.indexOf('weekKey');
+  
+  const rowsToDelete = [];
+  
+  for (let i = 1; i < totalsData.length; i++) {
+    const rowWeekKey = String(totalsData[i][totalsWeekKeyCol]).trim();
+    if (rowWeekKey !== String(currentWeekKey).trim()) {
+      rowsToDelete.push(i + 1); // Sheet rows are 1-indexed
+    }
+  }
+  
+  // Delete rows in reverse order (bottom to top)
+  let voteTotalsDeleted = 0;
+  if (rowsToDelete.length > 0) {
+    Logger.log('Deleting ' + rowsToDelete.length + ' old VoteTotals rows');
+    
+    for (let i = rowsToDelete.length - 1; i >= 0; i--) {
+      totalsSheet.deleteRow(rowsToDelete[i]);
+      voteTotalsDeleted++;
+    }
+  }
+  
+  Logger.log('=== WEEKLY RESET COMPLETE ===');
+  Logger.log('Voters reset: ' + votersReset);
+  Logger.log('VoteTotals deleted: ' + voteTotalsDeleted);
+  
+  return {
+    success: true,
+    votersReset: votersReset,
+    voteTotalsDeleted: voteTotalsDeleted,
+    weekKey: currentWeekKey,
+    timestamp: new Date().toISOString()
+  };
+}

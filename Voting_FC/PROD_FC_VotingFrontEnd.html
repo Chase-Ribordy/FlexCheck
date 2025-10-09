@@ -1,0 +1,1763 @@
+<style>
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    /* Loading Spinner */
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #27BEFA;
+    }
+    
+    .spinner {
+      border: 3px solid rgba(39, 190, 250, 0.3);
+      border-top: 3px solid #27BEFA;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 1rem auto;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Error Message */
+    .error-message {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid #f87171;
+      color: #f87171;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    
+ /* Login Widget */
+    .login-widget {
+      background: rgba(11, 22, 48, 0.9);
+      border: 2px solid #27BEFA;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .login-title {
+      color: #27BEFA;
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+      text-align: center;
+    }
+    
+    .login-form {
+      display: flex;
+  flex-wrap: nowrap; /* prevent wrapping */
+      gap: 0.5rem;
+    }
+    
+    .login-input {
+  flex: 1 1 auto;     /* allow shrinking */
+  min-width: 0;       /* fixes overflow on small screens */
+      flex: 1;
+      padding: 0.6rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      color: white;
+      font-size: 0.9rem;
+    }
+    
+    .btn {
+      padding: 0.6rem 1.2rem;
+      background: #27BEFA;
+      border: none;
+      border-radius: 6px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      white-space: nowrap;
+  flex: 0 0 auto;     /* button stays fixed size */
+
+    }
+    
+    .btn:hover { background: #1fa8e0; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    
+    .user-info {
+      text-align: center;
+      font-size: 0.85rem;
+    }
+
+
+.pending-verification {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(251, 191, 36, 0.05));
+  border: 2px solid rgba(251, 191, 36, 0.4);
+  color: #fbbf24;
+  padding: 1.25rem;
+  border-radius: 10px;
+  text-align: center;
+  margin-top: 1rem;
+  font-weight: 600;
+}
+    
+    /* Voting Widget */
+    .voting-widget {
+      background: rgba(11, 22, 48, 0.9);
+      border: 2px solid #27BEFA;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .voting-disabled {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #8b909b;
+    }
+    
+    /* Tier Selector with Selections */
+    .tier-selections {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+.tier-selection { 
+  font-size: 0.65rem; 
+  color: white; 
+  margin-top: 0.25rem; 
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  display: block;
+}
+.tier-selection.empty { color: #555; font-style: italic; }
+    
+ .tier-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 0.6rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  min-height: 85px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+    
+    .tier-card.active {
+      border-color: #27BEFA;
+      background: rgba(39, 190, 250, 0.1);
+    }
+    
+    .tier-card.voted::after {
+      content: '✓';
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #4ade80;
+      color: #000;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    
+    .tier-emoji { font-size: 1.5rem; display: block; margin-bottom: 0.25rem; }
+    .tier-label { font-size: 0.7rem; text-transform: uppercase; font-weight: 600; color: #8b909b; }
+    .tier-selection { font-size: 0.75rem; color: white; margin-top: 0.25rem; font-weight: 600; }
+    .tier-selection.empty { color: #555; font-style: italic; }
+    
+    /* Question */
+    .question {
+      text-align: center;
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+      color: #27BEFA;
+      font-weight: 600;
+    }
+    
+    /* Horizontal Carousel */
+    .carousel-container {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+    
+    .carousel {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 1rem;
+      padding: 0.5rem;
+      scrollbar-width: thin;
+      scrollbar-color: #27BEFA rgba(255, 255, 255, 0.1);
+    }
+    
+    .carousel::-webkit-scrollbar { height: 6px; }
+    .carousel::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
+    .carousel::-webkit-scrollbar-thumb { background: #27BEFA; border-radius: 3px; }
+    
+    .competitor-card {
+      min-width: 140px;
+      max-width: 140px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 0.75rem;
+      text-align: center;
+      cursor: pointer;
+      scroll-snap-align: start;
+      transition: all 0.3s;
+      position: relative;
+    }
+    
+    .competitor-card:hover {
+      border-color: #27BEFA;
+      transform: scale(1.05);
+    }
+    
+    .competitor-card.selected {
+      border-color: #4ade80;
+      background: rgba(74, 222, 128, 0.15);
+      box-shadow: 0 0 15px rgba(74, 222, 128, 0.3);
+    }
+    
+    .competitor-card.selected::after {
+      content: '✓';
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: #4ade80;
+      color: #000;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      font-size: 1rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .placement {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      background: #27BEFA;
+      color: #000;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      font-weight: bold;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .competitor-image {
+      width: 100%;
+      height: 160px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      overflow: hidden;
+    }
+    
+    .competitor-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .competitor-name {
+      color: #27BEFA;
+      font-weight: bold;
+      font-size: 0.75rem;
+      margin-bottom: 0.25rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    .competitor-score {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    
+    /* Submit Button */
+.submit-section {
+  text-align: center;
+}
+    
+    .btn-large {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+      background: linear-gradient(135deg, #27BEFA, #4ade80);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    
+    .btn-large:hover:not(:disabled) { transform: scale(1.02); }
+    .btn-large:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: #333;
+    }
+    
+    .btn-voted {
+      background: linear-gradient(135deg, #4ade80, #22c55e);
+      cursor: default;
+    }
+    
+    /* Results Widget */
+    .results-widget {
+      background: rgba(11, 22, 48, 0.9);
+      border: 2px solid #4ade80;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    
+    .results-widget.show { display: block; }
+    
+    .results-title {
+      color: #4ade80;
+      font-size: 1.2rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      font-weight: bold;
+    }
+    
+    .results-grid {
+      display: grid;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .result-tier {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      padding: 1rem;
+    }
+    
+    .result-tier-name {
+      color: #27BEFA;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+    }
+    
+    .result-standings {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 0.5rem;
+    }
+    
+    .standing-item {
+      text-align: center;
+    }
+    
+    .standing-place {
+      color: #8b909b;
+      font-size: 0.7rem;
+    }
+    
+    .standing-votes {
+      color: white;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+    
+    .results-cta {
+      background: rgba(39, 190, 250, 0.1);
+      border: 1px solid #27BEFA;
+      border-radius: 6px;
+      padding: 1rem;
+      text-align: center;
+      margin-top: 1rem;
+    }
+    
+    .results-cta-title {
+      color: #27BEFA;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    
+    .results-cta-text {
+      color: #8b909b;
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .results-cta-link {
+      display: inline-block;
+      padding: 0.6rem 1.5rem;
+      background: #27BEFA;
+      color: #000;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      margin-top: 0.5rem;
+    }
+    
+    /* Overlay */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    
+    .overlay.show { display: flex; }
+    
+    /* Confirmation Modal */
+    .confirm-modal {
+      background: linear-gradient(135deg, #0b1630, #162444);
+      border: 3px solid #27BEFA;
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+    
+    .confirm-title {
+      color: #27BEFA;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      font-weight: bold;
+    }
+    
+    .confirm-selections {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .confirm-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .confirm-item:last-child { border-bottom: none; }
+    
+    .confirm-tier { color: #8b909b; font-size: 0.85rem; }
+    .confirm-name { color: white; font-weight: bold; }
+    
+    .confirm-buttons {
+      display: flex;
+      gap: 0.75rem;
+    }
+    
+    .btn-secondary {
+      flex: 1;
+      padding: 0.75rem;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    /* RNG Modal */
+    .rng-modal {
+      background: linear-gradient(135deg, #0b1630, #162444);
+      border: 3px solid #27BEFA;
+      border-radius: 16px;
+      padding: 2.5rem;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+    
+    .rng-title {
+      color: #27BEFA;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    
+    .rng-display {
+      font-size: 5rem;
+      font-weight: bold;
+      color: #4ade80;
+      margin: 1.5rem 0;
+      text-shadow: 0 0 30px rgba(74, 222, 128, 0.5);
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .rng-display.spinning { animation: spin-scale 0.1s infinite; }
+    
+    @keyframes spin-scale {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    .rng-subtitle {
+      color: #8b909b;
+      font-size: 0.9rem;
+    }
+    
+    /* Multiplier Result Modal */
+    .multiplier-result-modal {
+      background: linear-gradient(135deg, #0b1630, #162444);
+      border: 3px solid #4ade80;
+      border-radius: 16px;
+      padding: 2.5rem;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+    
+    .multiplier-result-title {
+      color: #4ade80;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      font-weight: bold;
+    }
+    
+    .multiplier-result-value {
+      font-size: 4rem;
+      font-weight: bold;
+      color: #4ade80;
+      margin: 1.5rem 0;
+      text-shadow: 0 0 30px rgba(74, 222, 128, 0.5);
+    }
+    
+    .multiplier-result-text {
+      color: #8b909b;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    /* Coupon Modal */
+    .coupon-modal {
+      background: linear-gradient(135deg, #0b1630, #162444);
+      border: 3px solid #4ade80;
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+    
+    .coupon-title {
+      color: #4ade80;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      font-weight: bold;
+    }
+    
+    .coupon-text {
+      color: #8b909b;
+      margin-bottom: 1rem;
+    }
+    
+    .coupon-input {
+      width: 100%;
+      padding: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      color: white;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    
+    .coupon-buttons {
+      display: flex;
+      gap: 0.75rem;
+    }
+    
+    /* Thanks Modal */
+    .thanks-modal {
+      background: linear-gradient(135deg, #0b1630, #162444);
+      border: 3px solid #27BEFA;
+      border-radius: 16px;
+      padding: 2.5rem;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+    
+    .thanks-title {
+      color: #27BEFA;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      font-weight: bold;
+    }
+    
+    .thanks-text {
+      color: #8b909b;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    /* Timezone Modal */
+    .timezone-modal {
+      background: linear-gradient(135deg, #0b1630, #162444);
+      border: 3px solid #27BEFA;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 400px;
+      width: 100%;
+    }
+    
+    .timezone-title {
+      color: #27BEFA;
+      font-size: 1.3rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .timezone-info {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .timezone-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .timezone-row:last-child { border-bottom: none; }
+    
+    .timezone-label {
+      color: #8b909b;
+      font-size: 0.85rem;
+    }
+    
+    .timezone-value {
+      color: white;
+      font-weight: bold;
+    }
+    
+    .timezone-close {
+      width: 100%;
+      padding: 0.75rem;
+      background: #27BEFA;
+      border: none;
+      border-radius: 6px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+/* Initial Loading State */
+.initial-loading {
+  background: rgba(11, 22, 48, 0.9);
+  border: 2px solid #27BEFA;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.initial-loading .spinner {
+  margin: 1 auto;
+}
+
+/* Add spacing between widgets */
+.login-widget,
+.initial-loading {
+  margin-bottom: 1.5rem;
+}
+
+
+/* Mobile-friendly UI */
+@media (max-width: 500px) {
+  .login-widget,
+  .initial-loading {
+    padding: 1.5rem 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .login-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .login-subtitle {
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .login-form {
+    gap: 0.5rem;
+    /* removed flex-direction: column */
+  }
+  
+  .login-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0.75rem 0.875rem;
+    font-size: 0.95rem;
+    height: 46px;
+  }
+  
+  .btn {
+    flex: 0 0 auto;
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+    height: 46px;
+    min-width: 90px;
+  }
+  
+  .user-info {
+    font-size: 0.9rem;
+    padding: 1rem;
+  }
+  
+  .user-email {
+    font-size: 1rem;
+  }
+}
+    
+    @media (max-width: 400px) {
+      .competitor-card {
+        min-width: 120px;
+        max-width: 120px;
+      }
+      
+      .competitor-image { height: 140px; }
+    }
+  </style>
+
+
+<div class="container">
+    <!-- Login Widget -->
+<div id="login-widget" class="initial-loading">
+    <div>
+      <div class="spinner"></div>
+      <p style="color: #27BEFA; margin-top: 1rem;">Loading FlexCheck...</p>
+    </div>
+  </div>    
+    <!-- Voting Widget -->
+    <div id="voting-widget" class="voting-widget"></div>
+    
+    <!-- Results Widget -->
+    <div id="results-widget" class="results-widget"></div>
+    
+    <!-- Overlay for modals -->
+    <div id="overlay" class="overlay"></div>
+  </div>
+
+  <script>
+// ============================================
+// FlexCheck Voting Frontend v5.0 - COMPLETE REDESIGN
+// Simplified, Minimal State, Clean Architecture
+// ============================================
+
+// CONFIGURATION - SET THIS TO false FOR PRODUCTION
+const CONFIG = {
+  DEV_MODE: false,  // ← CHANGE THIS TO false FOR PRODUCTION
+  LEADERBOARD_URL: 'https://script.google.com/macros/s/AKfycbzgvbWWjQNPdUTJeGmq0-790Vm7enUQvHW2B3Dy6wYre3jp98gQdpNMcTm3YXvGnLXW7Q/exec',
+  AUTH_URL: 'https://script.google.com/macros/s/AKfycbzqraaj0ot3-2jjug6U8Vp8hMyT8_S137asNWLcFVLlXjHryF6GBET7oReqf8sqgX0lig/exec',
+  VOTING_URL: 'https://script.google.com/macros/s/AKfycbxMHMf3q2Gf_H9uFA6wzlzK1wgZPMddZW1r7dYG1pznPpi6DQ0QO456V4XcdSHjwNH6tw/exec',
+  AUTH_KEY: 'fc_user_auth',
+  CACHE_KEY: 'fc_lb_cache_voting',
+  CACHE_EXPIRY: 24 * 60 * 60 * 1000
+};
+
+// ============================================
+// STATE MANAGEMENT (Simplified)
+// ============================================
+
+const STATE = {
+  user: null,              // { email, verified, voted_top, voted_mid, voted_low }
+  currentTier: 'top',
+  selections: { top: null, mid: null, low: null },
+  competitors: { top: [], mid: [], low: [] },
+  voteMultiplier: null,
+  leaderboardData: null
+};
+
+// ============================================
+// UTILITIES
+// ============================================
+
+function log(...args) {
+  if (CONFIG.DEV_MODE) {
+    console.log('[FlexCheck v5]', ...args);
+  }
+}
+
+function showError(message) {
+  const widget = document.getElementById('voting-widget');
+  widget.innerHTML = `<div class="error-message">❌ ${message}</div>`;
+}
+
+function showLoading(element, message = 'Loading...') {
+  element.innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>${message}</p>
+    </div>
+  `;
+}
+
+function getFirstPhoto(photosStr) {
+  try {
+    const photos = JSON.parse(photosStr);
+    return photos[0] || 'https://placehold.co/300x400?text=No+Photo';
+  } catch {
+    return 'https://placehold.co/300x400?text=No+Photo';
+  }
+}
+
+function isVotingOpen() {
+  if (CONFIG.DEV_MODE) return true;
+  
+  const now = new Date();
+  const day = now.getDay();
+  const hour = now.getHours();
+  
+  return (day === 4 && hour >= 19) || (day === 5 && hour < 19);
+}
+
+// ============================================
+// CACHE MANAGEMENT (Minimal)
+// ============================================
+
+function saveAuth(user) {
+  try {
+    // ✅ ONLY save essential fields
+    const minimalUser = {
+      email: user.email,
+      verified: user.verified,
+      voted_top: user.voted_top,
+      voted_mid: user.voted_mid,
+      voted_low: user.voted_low
+    };
+    localStorage.setItem(CONFIG.AUTH_KEY, JSON.stringify(minimalUser));
+    log('✅ Auth saved (minimal):', minimalUser);
+  } catch (e) {
+    console.error('Failed to save auth:', e);
+  }
+}
+
+function loadAuth() {
+  try {
+    const auth = localStorage.getItem(CONFIG.AUTH_KEY);
+    return auth ? JSON.parse(auth) : null;
+  } catch (e) {
+    console.error('Failed to load auth:', e);
+    return null;
+  }
+}
+
+function clearAuth() {
+  localStorage.removeItem(CONFIG.AUTH_KEY);
+  log('Auth cleared');
+}
+
+function saveToCache(key, data) {
+  try {
+    const cacheData = { data, timestamp: Date.now() };
+    localStorage.setItem(key, JSON.stringify(cacheData));
+  } catch (e) {
+    console.error('Cache save failed:', e);
+  }
+}
+
+function loadFromCache(key) {
+  try {
+    const cached = localStorage.getItem(key);
+    if (!cached) return null;
+    
+    const { data, timestamp } = JSON.parse(cached);
+    if (Date.now() - timestamp > CONFIG.CACHE_EXPIRY) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    
+    return data;
+  } catch (e) {
+    return null;
+  }
+}
+
+// ============================================
+// API CALLS
+// ============================================
+
+async function fetchLeaderboard() {
+  log('Fetching leaderboard...');
+  
+  try {
+    const response = await fetch(CONFIG.LEADERBOARD_URL);
+    if (!response.ok) throw new Error('Failed to fetch');
+    
+    const data = await response.json();
+    log('Leaderboard data:', data);
+    
+    saveToCache(CONFIG.CACHE_KEY, data);
+    return data;
+    
+  } catch (error) {
+    console.error('Leaderboard error:', error);
+    const cached = loadFromCache(CONFIG.CACHE_KEY);
+    if (cached) {
+      log('Using cached leaderboard');
+      return cached;
+    }
+    throw error;
+  }
+}
+
+async function authenticateEmail(email) {
+  log('Authenticating:', email);
+  try {
+    // Pass devOverride to backend for consistent behavior
+    const url = `${CONFIG.AUTH_URL}?action=authenticateEmail&email=${encodeURIComponent(email)}&devOverride=${CONFIG.DEV_MODE}`;
+    const response = await fetch(url, { method: 'GET' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const result = await response.json();
+    log('Auth response:', result);
+    return result;
+  } catch (error) {
+    console.error('Auth error:', error);
+    throw error;
+  }
+}
+
+async function submitVotes(email, selections, multiplier) {
+  log('Submitting votes:', { email, selections, multiplier });
+  
+  try {
+    const params = new URLSearchParams({
+      action: 'batchVote',
+      email: email,
+      topEntryId: selections.top,
+      topPoints: multiplier,        // ✅ Just the RNG multiplier
+      midEntryId: selections.mid,
+      midPoints: multiplier,        // ✅ Same multiplier for all tiers
+      lowEntryId: selections.low,
+      lowPoints: multiplier,        // ✅ No cache values involved
+      devOverride: String(CONFIG.DEV_MODE)
+    });
+    
+    const url = `${CONFIG.VOTING_URL}?${params.toString()}`;
+    log('Request URL:', url);
+    
+    const response = await fetch(url, { method: 'GET' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    
+    const result = await response.json();
+    log('Vote response:', result);
+    
+    return result;
+    
+  } catch (error) {
+    console.error('Vote submission error:', error);
+    throw error;
+  }
+}
+
+async function fetchVoteTotals(weekKey) {
+  log('Fetching vote totals...');
+  try {
+    const params = new URLSearchParams({ 
+      action: 'getVoteTotals',
+      devOverride: String(CONFIG.DEV_MODE)
+    });
+    if (weekKey) params.append('weekKey', weekKey);
+    
+    const url = `${CONFIG.VOTING_URL}?${params.toString()}`;
+    const response = await fetch(url, { method: 'GET' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    
+    const result = await response.json();
+    log('Vote totals response:', result);
+    
+    return result;
+  } catch (error) {
+    console.error('Vote totals error:', error);
+    throw error;
+  }
+}
+
+async function verifyEmailToken(token) {
+  log('Verifying token:', token);
+  try {
+    const url = `${CONFIG.AUTH_URL}?action=verifyEmail&token=${encodeURIComponent(token)}&devOverride=${CONFIG.DEV_MODE}`;
+    const response = await fetch(url, { method: 'GET' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    
+    const result = await response.json();
+    log('Verification response:', result);
+    
+    return result;
+  } catch (error) {
+    console.error('Verification error:', error);
+    throw error;
+  }
+}
+
+// ============================================
+// RENDER FUNCTIONS
+// ============================================
+
+function renderLogin() {
+  const widget = document.getElementById('login-widget');
+  
+  if (STATE.user) {
+    widget.innerHTML = `
+      <div class="user-info">
+        <div style="color: #8b909b;">Signed in as: <span class="user-email">${STATE.user.email}</span></div>
+      </div>
+    `;
+  } else {
+    widget.innerHTML = `
+<div>
+      <div class="login-form">
+        <input type="email" id="email-input" class="login-input" placeholder="your@email.com">
+        <button class="btn" onclick="handleLogin()">Sign In</button>
+      </div>
+      <div id="login-message"></div>
+</div>
+    `;
+  }
+}
+
+function renderVoting() {
+  const widget = document.getElementById('voting-widget');
+  
+  if (!STATE.user) {
+    widget.innerHTML = '<div class="voting-disabled">🔒 Sign in to vote</div>';
+    return;
+  }
+  
+  if (!STATE.user.verified) {
+    widget.innerHTML = `
+      <div class="voting-disabled">
+        <p style="margin-bottom: 1rem; color: #27BEFA;">⏳ Email Verification Required</p>
+        <p style="color: #8b909b; font-size: 0.9rem; margin-bottom: 1rem;">
+          Please check your email and click the verification link.
+        </p>
+        <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="resendVerification()">
+          Resend Email
+        </button>
+      </div>
+    `;
+    return;
+  }
+  
+  if (!isVotingOpen()) {
+    widget.innerHTML = '<div class="voting-disabled">⏰ Voting opens Thursday 7pm CT</div>';
+    return;
+  }
+  
+  const hasVotedAll = STATE.user.voted_top && STATE.user.voted_mid && STATE.user.voted_low;
+  
+  if (hasVotedAll) {
+    widget.innerHTML = `
+      <div class="voting-disabled">
+        <p style="margin-bottom: 1rem;">✅ You've Already Voted!</p>
+
+        <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="scrollToResults()">
+          View Results
+        </button>
+      </div>
+    `;
+    renderResults();
+    document.getElementById('results-widget').classList.add('show');
+    return;
+  }
+  
+  if (STATE.competitors.top.length === 0) {
+    showLoading(widget, 'Loading competitors...');
+    return;
+  }
+  
+  const competitors = STATE.competitors[STATE.currentTier];
+  
+  widget.innerHTML = `
+    <div class="tier-selections">
+      ${['top', 'mid', 'low'].map(tier => {
+        const emoji = tier === 'top' ? '🔥' : tier === 'mid' ? '📈' : '💀';
+        const label = tier === 'top' ? 'Top' : tier === 'mid' ? 'Mid' : 'Bot';
+        const selected = STATE.selections[tier];
+        const selectionName = selected ? 
+          STATE.competitors[tier].find(c => c.entryId === selected)?.socialHandle : 
+          'Not selected';
+        
+        return `
+          <div class="tier-card ${STATE.currentTier === tier ? 'active' : ''} ${STATE.user[`voted_${tier}`] ? 'voted' : ''}" 
+               onclick="changeTier('${tier}')">
+            <span class="tier-emoji">${emoji}</span>
+            <div class="tier-label">${label} Tier</div>
+            <div class="tier-selection ${!selected ? 'empty' : ''}">${selectionName}</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+    
+    <div class="question">Who advances to semifinals?</div>
+    
+    <div class="carousel-container">
+      <div class="carousel">
+        ${competitors.slice(0, 3).map((comp, idx) => `
+          <div class="competitor-card ${STATE.selections[STATE.currentTier] === comp.entryId ? 'selected' : ''}" 
+               onclick="selectCompetitor(${comp.entryId})">
+            <div class="placement">${idx + 1}</div>
+            <div class="competitor-image">
+              <img src="${getFirstPhoto(comp.photos)}" alt="${comp.socialHandle}">
+            </div>
+            <div class="competitor-name">${comp.socialHandle}</div>
+            <div class="competitor-score">${comp.score.toFixed(1)}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    
+    <div class="submit-section">
+      <button class="btn-large" 
+              ${!STATE.selections.top || !STATE.selections.mid || !STATE.selections.low ? 'disabled' : ''}
+              onclick="showConfirmation()">
+        ${STATE.selections.top && STATE.selections.mid && STATE.selections.low ? 
+          'Confirm Vote' : 'Select one from each tier'}
+      </button>
+    </div>
+  `;
+}
+
+function renderResults() {
+  const widget = document.getElementById('results-widget');
+  widget.classList.add('show');
+  showLoading(widget, 'Loading vote results...');
+  
+  const weekKey = STATE.leaderboardData?.weekKey || null;
+  log('Fetching vote totals for week:', weekKey || 'current');
+  
+  fetchVoteTotals(weekKey)
+    .then(result => {
+      log('Vote totals response:', result);
+      
+      if (result.success && result.totals) {
+        displayResults(result.totals);
+      } else {
+        displayResults({ top: [], mid: [], low: [] });
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching totals:', error);
+      displayResults({ top: [], mid: [], low: [] });
+    });
+  
+  function displayResults(totals) {
+    widget.innerHTML = `
+      <h2 class="results-title">Current Vote Standings</h2>
+      
+      <div class="results-grid">
+        ${['top', 'mid', 'low'].map(tier => {
+          const label = tier === 'top' ? 'Top' : tier === 'mid' ? 'Mid' : 'Bot';
+          const tierTotals = totals[tier] || [];
+          
+          const top3 = tierTotals.slice(0, 3);
+          while (top3.length < 3) {
+            top3.push({ totalPoints: 0, competitorName: 'TBA' });
+          }
+          
+          return `
+            <div class="result-tier">
+              <div class="result-tier-name">${label} Tier</div>
+              <div class="result-standings">
+                ${top3.map((entry, idx) => {
+                  let name = entry.competitorName || '';
+                  
+                  if (!name && entry.entryId && STATE.competitors[tier]) {
+                    const comp = STATE.competitors[tier].find(c => String(c.entryId) === String(entry.entryId));
+                    if (comp) name = comp.socialHandle;
+                  }
+                  
+                  return `
+                    <div class="standing-item">
+                      <div class="standing-place">${idx + 1}${idx === 0 ? 'st' : idx === 1 ? 'nd' : 'rd'}</div>
+                      <div class="standing-votes">${entry.totalPoints || 0}</div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+      
+      <div style="text-align: center; color: #8b909b; font-size: 1rem; margin: 1.5rem 0; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px;">
+        <strong style="color: #27BEFA;">Can't tell who is winning?</strong><br>
+        The only way to find out is to watch it LIVE!
+      </div>
+      
+      <div class="results-cta">
+        <div class="results-cta-title">🎥 Watch the Live Results!</div>
+<div class="results-cta-text">
+  Join us Friday @ 
+  <a href="https://dateful.com/convert/usa-central-time" target="_blank" style="color: #27BEFA; text-decoration: underline;">
+    7pm CT
+  </a> 
+  on Instagram!
+</div>
+
+        <a href="https://instagram.com/chase_ribordy" target="_blank" class="results-cta-link">
+          Follow on Instagram
+        </a>
+      </div>
+      <div class="results-cta" style="margin-top: 1rem;">
+        <div class="results-cta-title">💬 Can't Watch Live?</div>
+        <div class="results-cta-text">
+          Join the community and get updates on who is winning the FlexCheck Championship!
+        </div>
+        <a href="https://discord.gg/8cuTRv7eZd" target="_blank" class="results-cta-link">
+          Join Discord
+        </a>
+      </div>
+    `;
+  }
+}
+
+// ============================================
+// USER ACTIONS
+// ============================================
+
+window.handleLogin = async function() {
+  const emailInput = document.getElementById('email-input');
+  const email = emailInput.value.trim().toLowerCase();
+  const messageEl = document.getElementById('login-message');
+  
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    messageEl.innerHTML = '<div class="error-message">Please enter a valid email</div>';
+    return;
+  }
+  
+  emailInput.disabled = true;
+  messageEl.innerHTML = '<div class="loading"><div class="spinner"></div><p>Authenticating...</p></div>';
+  
+  try {
+    const result = await authenticateEmail(email);
+    
+    if (result.success) {
+      STATE.user = result.voter;
+      saveAuth(result.voter);
+      
+      if (result.voter.verified) {
+        renderLogin();
+        renderVoting();
+        messageEl.innerHTML = '';
+      } else {
+        renderLogin();
+        renderVoting();
+        messageEl.innerHTML = `
+          <div class="pending-verification">
+            ⏳ Please check your email to verify your account
+          </div>
+        `;
+      }
+    } else {
+      if (result.votingClosed) {
+        document.getElementById('login-widget').innerHTML = `
+          <div class="voting-disabled" style="padding: 2rem;">
+            <p style="color: #27BEFA; font-size: 1.2rem; margin-bottom: 1rem;">⏰ Voting is Closed</p>
+            <p style="color: #8b909b;">Voting opens Thursday 7pm CT</p>
+          </div>
+        `;
+        document.getElementById('voting-widget').style.display = 'none';
+      } else {
+        messageEl.innerHTML = `<div class="error-message">${result.message}</div>`;
+      }
+    }
+  } catch (error) {
+    messageEl.innerHTML = '<div class="error-message">Connection error. Please try again.</div>';
+  } finally {
+    emailInput.disabled = false;
+  }
+};
+
+window.changeTier = function(tier) {
+  STATE.currentTier = tier;
+  renderVoting();
+};
+
+window.selectCompetitor = function(entryId) {
+  STATE.selections[STATE.currentTier] = entryId;
+  renderVoting();
+};
+
+window.showConfirmation = function() {
+  const overlay = document.getElementById('overlay');
+  
+  overlay.innerHTML = `
+    <div class="confirm-modal">
+      <div class="confirm-title">Confirm Your Votes</div>
+      <div class="confirm-selections">
+        ${['top', 'mid', 'low'].map(tier => {
+          const label = tier === 'top' ? 'Top' : tier === 'mid' ? 'Mid' : 'Bot';
+          const competitor = STATE.competitors[tier].find(c => c.entryId === STATE.selections[tier]);
+          return `
+            <div class="confirm-item">
+              <span class="confirm-tier">${label} Tier:</span>
+              <span class="confirm-name">${competitor.socialHandle}</span>
+            </div>
+          `;
+        }).join('')}
+      </div>
+      <p style="color: #8b909b; margin-bottom: 1rem; font-size: 0.9rem;">
+        Ready to generate your vote multiplier?
+      </p>
+      <div class="confirm-buttons">
+        <button class="btn-secondary" onclick="closeOverlay()">Cancel</button>
+        <button class="btn" style="flex: 1;" onclick="showRNG()">Let's Go!</button>
+      </div>
+    </div>
+  `;
+  overlay.classList.add('show');
+};
+
+window.showRNG = function() {
+  const overlay = document.getElementById('overlay');
+  let currentNumber = 1;
+  let iterations = 0;
+  const maxIterations = 30;
+  
+  overlay.innerHTML = `
+    <div class="rng-modal">
+      <div class="rng-title">Vote Multiplier</div>
+      <div class="rng-display spinning" id="rng-display">1</div>
+      <div class="rng-subtitle">Generating...</div>
+    </div>
+  `;
+  
+  const interval = setInterval(() => {
+    currentNumber = Math.floor(Math.random() * 100) + 1;
+    document.getElementById('rng-display').textContent = currentNumber;
+    iterations++;
+    
+    if (iterations >= maxIterations) {
+      clearInterval(interval);
+      
+      const finalNumber = Math.floor(Math.random() * 100) + 1;
+      const display = document.getElementById('rng-display');
+      display.textContent = finalNumber;
+      display.classList.remove('spinning');
+      
+      STATE.voteMultiplier = finalNumber;
+      
+      setTimeout(() => {
+        showMultiplierResult(finalNumber);
+      }, 1500);
+    }
+  }, 100);
+};
+
+function showMultiplierResult(multiplier) {
+  const overlay = document.getElementById('overlay');
+  
+  overlay.innerHTML = `
+    <div class="multiplier-result-modal">
+      <div class="multiplier-result-title">🎉 Your Vote Power</div>
+      <div class="multiplier-result-value">${multiplier}x</div>
+      <div class="multiplier-result-text">
+        Each selection will receive <strong style="color: #4ade80;">${multiplier} points</strong>!
+      </div>
+      <button class="btn" style="width: 100%; padding: 1rem;" onclick="submitVotesNow()">
+        Submit Votes
+      </button>
+    </div>
+  `;
+}
+
+window.submitVotesNow = async function() {
+  const overlay = document.getElementById('overlay');
+  
+  overlay.innerHTML = `
+    <div class="rng-modal">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Submitting your votes...</p>
+      </div>
+    </div>
+  `;
+  
+  try {
+    // Submit votes to backend
+    const result = await submitVotes(
+      STATE.user.email,
+      STATE.selections,
+      STATE.voteMultiplier
+    );
+    
+    log('Vote submission result:', result);
+    
+    if (result.success) {
+      // Update user state with returned data
+      if (result.voter) {
+        STATE.user = result.voter;
+        saveAuth(result.voter);
+      }
+      
+      // Update UI to show voted status
+      renderLogin();
+      renderVoting();
+      
+      // Show coupon offer
+      log('Showing coupon offer...');
+      window.showCouponOffer();
+      
+    } else {
+      throw new Error(result.message || 'Vote submission failed');
+    }
+  } catch (error) {
+    log('Vote submission error:', error);
+    overlay.innerHTML = `
+      <div class="confirm-modal">
+        <div class="error-message" style="margin-bottom: 1rem;">
+          Error: ${error.message || 'Failed to submit votes. Please try again.'}
+        </div>
+        <button class="btn" style="width: 100%;" onclick="closeOverlay()">Close</button>
+      </div>
+    `;
+  }
+};
+
+// Add these new functions for the coupon flow
+window.showCouponOffer = function() {
+  const overlay = document.getElementById('overlay');
+  
+  overlay.innerHTML = `
+    <div class="coupon-modal">
+      <div class="coupon-title">🎉 Thanks for Voting!</div>
+      <p class="coupon-text">
+        Get <strong style="color: #4ade80;">15% OFF</strong> FlexCheck this week!
+      </p>
+      <input type="email" class="coupon-input" id="coupon-email" 
+             placeholder="Enter email for coupon" 
+             value="${STATE.user?.email || ''}">
+      <div class="coupon-buttons">
+        <button class="btn-secondary" style="flex: 1;" onclick="skipCoupon()">
+          No Thanks
+        </button>
+        <button class="btn" style="flex: 1;" onclick="sendCoupon()">
+          Send Coupon
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+window.sendCoupon = async function() {
+  const email = document.getElementById('coupon-email').value.trim();
+  
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    // Show error briefly
+    const input = document.getElementById('coupon-email');
+    input.style.borderColor = '#f87171';
+    input.placeholder = 'Please enter a valid email';
+    setTimeout(() => {
+      input.style.borderColor = '';
+      input.placeholder = 'Enter email for coupon';
+    }, 2000);
+    return;
+  }
+  
+  const overlay = document.getElementById('overlay');
+  
+  // Show loading
+  overlay.innerHTML = `
+    <div class="coupon-modal">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Sending your coupon...</p>
+      </div>
+    </div>
+  `;
+  
+  try {
+    // Call the backend to send coupon - pass devOverride
+    const url = `${CONFIG.AUTH_URL}?action=sendCoupon&email=${encodeURIComponent(email)}&devOverride=${CONFIG.DEV_MODE}`;
+    const response = await fetch(url, { method: 'GET' });
+    
+    if (!response.ok) throw new Error('Failed to send coupon');
+    
+    const result = await response.json();
+    log('Coupon send result:', result);
+    
+    if (result.success) {
+      // Show success
+      overlay.innerHTML = `
+        <div class="thanks-modal">
+          <div class="thanks-title">Coupon Sent! ✉️</div>
+          <p class="thanks-text">
+            Check <strong style="color: #27BEFA;">${email}</strong> for your 15% OFF coupon!
+          </p>
+          <p class="thanks-text" style="margin-top: 1rem;">
+            <strong style="color: #4ade80;">Thanks for voting!</strong>
+          </p>
+          <button class="btn" style="width: 100%; padding: 1rem;" onclick="closeAndShowResults()">
+            View Live Results
+          </button>
+        </div>
+      `;
+    } else {
+      throw new Error(result.message || 'Failed to send coupon');
+    }
+    
+  } catch (error) {
+    log('Coupon error:', error);
+    
+    // Show error but still thank them for voting
+    overlay.innerHTML = `
+      <div class="thanks-modal">
+        <div class="error-message" style="margin-bottom: 1rem;">
+          Couldn't send coupon. Please try again later.
+        </div>
+        <p class="thanks-text">
+          <strong style="color: #4ade80;">Thanks for voting!</strong>
+        </p>
+        <button class="btn" style="width: 100%; padding: 1rem;" onclick="closeAndShowResults()">
+          View Results
+        </button>
+      </div>
+    `;
+  }
+};
+
+window.skipCoupon = function() {
+  const overlay = document.getElementById('overlay');
+  overlay.innerHTML = `
+    <div class="thanks-modal">
+      <div class="thanks-title">Thanks for Voting! 🎉</div>
+      <p class="thanks-text">
+        Your ${STATE.voteMultiplier}x votes have been counted!
+      </p>
+      <button class="btn" style="width: 100%; padding: 1rem; margin-top: 1rem;" onclick="closeAndShowResults()">
+        View Live Results
+      </button>
+    </div>
+  `;
+};
+
+window.refreshUserStatus = async function() {
+  if (!STATE.user?.email) return;
+  
+  const widget = document.getElementById('voting-widget');
+  showLoading(widget, 'Checking verification status...');
+  
+  try {
+    const result = await authenticateEmail(STATE.user.email);
+    
+    if (result.success) {
+      STATE.user = result.voter;
+      saveAuth(result.voter);
+      
+      renderLogin();
+      renderVoting();
+    }
+  } catch (error) {
+    showError('Connection error. Please try again.');
+  }
+};
+
+window.resendVerification = async function() {
+  if (!STATE.user?.email) return;
+  
+  const widget = document.getElementById('voting-widget');
+  showLoading(widget, 'Resending verification email...');
+  
+  try {
+    const result = await authenticateEmail(STATE.user.email);
+    
+    if (result.success) {
+      widget.innerHTML = `
+        <div class="voting-disabled">
+          <p style="margin-bottom: 1rem; color: #4ade80;">✅ Verification Email Sent!</p>
+          <p style="color: #8b909b; font-size: 0.9rem;">
+            Please check your email inbox and spam folder.
+          </p>
+        </div>
+      `;
+      
+      setTimeout(() => {
+        renderVoting();
+      }, 3000);
+    }
+  } catch (error) {
+    showError('Connection error. Please try again.');
+  }
+};
+
+window.closeOverlay = function() {
+  document.getElementById('overlay').classList.remove('show');
+};
+
+window.closeAndShowResults = function() {
+  closeOverlay();
+  renderResults();
+  setTimeout(() => {
+    const resultsWidget = document.getElementById('results-widget');
+    if (resultsWidget) {
+      resultsWidget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 100);
+};
+
+window.scrollToResults = function() {
+  document.getElementById('results-widget')?.scrollIntoView({ behavior: 'smooth' });
+};
+
+window.showTimezoneConverter = function() {
+  // Timezone modal code (keep existing implementation)
+  closeOverlay();
+};
+
+// ============================================
+// EMAIL VERIFICATION HANDLER
+// ============================================
+
+async function handleEmailVerification(token) {
+  const loginWidget = document.getElementById('login-widget');
+  
+  loginWidget.innerHTML = `
+<div>
+    <div class="loading" style="margin-top: 1rem;">
+      <div class="spinner"></div>
+      <p>Verifying your email...</p>
+    </div>
+</div>
+  `;
+  
+  try {
+    const result = await verifyEmailToken(token);
+    
+    if (result.success) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
+      const authResult = await authenticateEmail(result.email);
+      
+      if (authResult.success && authResult.voter.verified) {
+        STATE.user = authResult.voter;
+        saveAuth(authResult.voter);
+        
+        loginWidget.innerHTML = `
+          <div class="pending-verification" style="background: rgba(74, 222, 128, 0.2); border-color: #4ade80; color: #4ade80;">
+            ✅ Email verified successfully!
+          </div>
+        `;
+        
+        setTimeout(() => {
+          renderLogin();
+          renderVoting();
+        }, 1500);
+      }
+    } else {
+      window.history.replaceState({}, document.title, window.location.pathname);
+      renderLogin();
+    }
+  } catch (error) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+    renderLogin();
+  }
+}
+
+// ============================================
+// INITIALIZATION
+// ============================================
+
+async function init() {
+  log('═══════════════════════════════════');
+  log('🚀 FlexCheck Voting System v5.0');
+  log('═══════════════════════════════════');
+  log('🔧 DEV_MODE:', CONFIG.DEV_MODE ? 'ENABLED' : 'DISABLED');
+  
+  // Load cached user
+  STATE.user = loadAuth();
+  if (STATE.user) {
+    log('User loaded from cache:', STATE.user.email);
+  }
+  
+  renderLogin();
+  
+  // Check for verification token
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('token');
+  if (token) {
+    await handleEmailVerification(token);
+  }
+  
+  // Fetch leaderboard
+  showLoading(document.getElementById('voting-widget'), 'Loading competitors...');
+  
+  try {
+    const leaderboardData = await fetchLeaderboard();
+    STATE.leaderboardData = leaderboardData;
+    
+    STATE.competitors = {
+      top: (leaderboardData.top3?.top || leaderboardData.tiers?.top || []).slice(0, 3),
+      mid: (leaderboardData.top3?.mid || leaderboardData.tiers?.mid || []).slice(0, 3),
+      low: (leaderboardData.top3?.low || leaderboardData.tiers?.low || []).slice(0, 3)
+    };
+    
+    renderVoting();
+    
+    if (STATE.user?.voted_top && STATE.user?.voted_mid && STATE.user?.voted_low) {
+      renderResults();
+    }
+  } catch (error) {
+    showError('Failed to load competitors. Please refresh.');
+  }
+  
+  log('✅ Initialization complete');
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+  </script>
